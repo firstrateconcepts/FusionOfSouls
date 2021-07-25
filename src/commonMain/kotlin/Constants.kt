@@ -11,3 +11,6 @@ const val cellSize = 40
 const val gridWidth = virtualWidth / cellSize
 const val gridHeight = virtualHeight / cellSize
 const val basicMargin = 5
+
+// Settings
+

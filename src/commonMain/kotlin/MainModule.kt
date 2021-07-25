@@ -1,10 +1,13 @@
 
 import com.soywiz.korge.scene.Module
+import com.soywiz.korge.service.storage.storage
+import com.soywiz.korge.view.views
 import com.soywiz.korinject.AsyncInjector
 import com.soywiz.korma.geom.SizeInt
-import scene.Battle
-import scene.MainMenu
-import scene.Settings
+import model.Settings
+import scene.BattleScene
+import scene.MainMenuScene
+import scene.SettingsScene
 
 object MainModule : Module() {
     override val title = gameTitle
@@ -13,11 +16,12 @@ object MainModule : Module() {
     override val size = SizeInt(virtualWidth, virtualHeight)
     override val bgcolor = primaryBgColor
 
-    override val mainScene = MainMenu::class
+    override val mainScene = MainMenuScene::class
 
     override suspend fun AsyncInjector.configure() {
-        mapPrototype { MainMenu() }
-        mapPrototype { Battle() }
-        mapPrototype { Settings() }
+        mapInstance(Settings(views().storage))
+        mapPrototype { MainMenuScene(get()) }
+        mapPrototype { BattleScene() }
+        mapPrototype { SettingsScene(get()) }
     }
 }

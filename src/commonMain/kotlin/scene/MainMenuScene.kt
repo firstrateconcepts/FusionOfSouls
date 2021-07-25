@@ -8,10 +8,14 @@ import com.soywiz.korge.view.alignTopToBottomOf
 import com.soywiz.korge.view.centerXOnStage
 import com.soywiz.korge.view.text
 import com.soywiz.korim.text.TextAlignment
+import model.Settings
 import virtualHeight
 
-class MainMenu : Scene() {
+class MainMenuScene(private val settings: Settings) : Scene() {
     override suspend fun Container.sceneInit() {
+        views.gameWindow.fullscreen = settings.fullscreen
+        views.gameWindow.vsync = settings.vsync
+
         text("Fusion of Souls", 50.0, alignment = TextAlignment.CENTER) {
             centerXOnStage()
             y = (virtualHeight / 5).toDouble()
@@ -22,7 +26,7 @@ class MainMenu : Scene() {
             y = (virtualHeight / 2).toDouble()
 
             onClick {
-                sceneContainer.changeTo<Battle>()
+                sceneContainer.changeTo<BattleScene>()
             }
         }
 
@@ -31,7 +35,7 @@ class MainMenu : Scene() {
             alignTopToBottomOf(startRunButton, basicMargin.toDouble())
 
             onClick {
-                sceneContainer.changeTo<Settings>()
+                sceneContainer.changeTo<SettingsScene>()
             }
         }
 
