@@ -1,4 +1,4 @@
-package model
+package com.runt9.fusionOfSouls.model
 
 import com.soywiz.korge.service.storage.InmemoryStorage
 import com.soywiz.korge.service.storage.get

@@ -1,7 +1,7 @@
-package scene
+package com.runt9.fusionOfSouls.scene
 
-import basicMargin
-import cellSize
+import com.runt9.fusionOfSouls.basicMargin
+import com.runt9.fusionOfSouls.cellSize
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.ui.uiButton
@@ -16,9 +16,9 @@ import com.soywiz.korge.view.centerXOn
 import com.soywiz.korge.view.centerXOnStage
 import com.soywiz.korge.view.text
 import com.soywiz.korim.text.TextAlignment
-import model.Settings
-import virtualHeight
-import virtualWidth
+import com.runt9.fusionOfSouls.model.Settings
+import com.runt9.fusionOfSouls.virtualHeight
+import com.runt9.fusionOfSouls.virtualWidth
 
 class SettingsScene(private val settings: Settings) : Scene() {
     override suspend fun Container.sceneInit() {

@@ -1,13 +1,13 @@
-
+package com.runt9.fusionOfSouls
 import com.soywiz.korge.scene.Module
 import com.soywiz.korge.service.storage.storage
 import com.soywiz.korge.view.views
 import com.soywiz.korinject.AsyncInjector
 import com.soywiz.korma.geom.SizeInt
-import model.Settings
-import scene.BattleScene
-import scene.MainMenuScene
-import scene.SettingsScene
+import com.runt9.fusionOfSouls.model.Settings
+import com.runt9.fusionOfSouls.scene.BattleScene
+import com.runt9.fusionOfSouls.scene.MainMenuScene
+import com.runt9.fusionOfSouls.scene.SettingsScene
 
 object MainModule : Module() {
     override val title = gameTitle

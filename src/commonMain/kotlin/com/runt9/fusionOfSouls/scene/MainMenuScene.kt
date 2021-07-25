@@ -1,5 +1,5 @@
-package scene
-import basicMargin
+package com.runt9.fusionOfSouls.scene
+import com.runt9.fusionOfSouls.basicMargin
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.ui.uiButton
@@ -8,8 +8,8 @@ import com.soywiz.korge.view.alignTopToBottomOf
 import com.soywiz.korge.view.centerXOnStage
 import com.soywiz.korge.view.text
 import com.soywiz.korim.text.TextAlignment
-import model.Settings
-import virtualHeight
+import com.runt9.fusionOfSouls.model.Settings
+import com.runt9.fusionOfSouls.virtualHeight
 
 class MainMenuScene(private val settings: Settings) : Scene() {
     override suspend fun Container.sceneInit() {

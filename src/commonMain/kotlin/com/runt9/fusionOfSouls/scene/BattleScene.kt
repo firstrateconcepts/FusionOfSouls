@@ -1,4 +1,4 @@
-package scene
+package com.runt9.fusionOfSouls.scene
 
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.view.Container
