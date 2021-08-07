@@ -1,5 +1,7 @@
 package com.runt9.fusionOfSouls.scene
 import com.runt9.fusionOfSouls.basicMargin
+import com.runt9.fusionOfSouls.model.Settings
+import com.runt9.fusionOfSouls.viewportHeight
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.ui.uiButton
@@ -8,8 +10,6 @@ import com.soywiz.korge.view.alignTopToBottomOf
 import com.soywiz.korge.view.centerXOnStage
 import com.soywiz.korge.view.text
 import com.soywiz.korim.text.TextAlignment
-import com.runt9.fusionOfSouls.model.Settings
-import com.runt9.fusionOfSouls.virtualHeight
 
 class MainMenuScene(private val settings: Settings) : Scene() {
     override suspend fun Container.sceneInit() {
@@ -18,15 +18,15 @@ class MainMenuScene(private val settings: Settings) : Scene() {
 
         text("Fusion of Souls", 50.0, alignment = TextAlignment.CENTER) {
             centerXOnStage()
-            y = (virtualHeight / 5).toDouble()
+            y = (viewportHeight / 5).toDouble()
         }
 
-        val startRunButton = uiButton(text = "Start Run") {
+        val startRunButton = uiButton(text = "New Run") {
             centerXOnStage()
-            y = (virtualHeight / 2).toDouble()
+            y = (viewportHeight / 2).toDouble()
 
             onClick {
-                sceneContainer.changeTo<BattleScene>()
+                sceneContainer.changeTo<RunStartScene>()
             }
         }
 
@@ -47,6 +47,5 @@ class MainMenuScene(private val settings: Settings) : Scene() {
                 views.closeSuspend()
             }
         }
-
     }
 }

@@ -18,32 +18,32 @@ class SecondaryAttributeTest {
 
     @Test
     fun `Test HP - Base`() {
-        assertEquals(150.0, secondary.hp.value)
+        assertEquals(150.0, secondary.maxHp.value)
     }
 
     @Test
     fun `Test HP - Various Recalculations`() {
         primary.body.addModifier(flatModifier = 50.0, percentModifier = 0.25)
         primary.mind.addModifier(flatModifier = 25.0, percentModifier = 0.5)
-        assertEquals(281.25, secondary.hp.value)
+        assertEquals(281.25, secondary.maxHp.value)
 
-        secondary.hp.addModifier(flatModifier = 50.0, percentModifier = 0.25)
-        assertEquals(414.0625, secondary.hp.value)
+        secondary.maxHp.addModifier(flatModifier = 50.0, percentModifier = 0.25)
+        assertEquals(414.0625, secondary.maxHp.value)
     }
 
     @Test
     fun `Test Damage - Base`() {
-        assertEquals(50.0, secondary.damage.value)
+        assertEquals(50.0, secondary.baseDamage.value)
     }
 
     @Test
     fun `Test Damage - Various Recalculations`() {
         primary.body.addModifier(flatModifier = 50.0, percentModifier = 0.25)
         primary.instinct.addModifier(flatModifier = 25.0, percentModifier = 0.5)
-        assertEquals(93.75, secondary.damage.value)
+        assertEquals(93.75, secondary.baseDamage.value)
 
-        secondary.damage.addModifier(flatModifier = 5.0, percentModifier = 0.50)
-        assertEquals(148.125, secondary.damage.value)
+        secondary.baseDamage.addModifier(flatModifier = 5.0, percentModifier = 0.50)
+        assertEquals(148.125, secondary.baseDamage.value)
     }
 
     @Test

@@ -7,10 +7,12 @@ const val gameTitle = "Fusion of Souls"
 val primaryBgColor = Colors["#2b2b2b"]
 
 // Sizes
-const val virtualWidth = 640
-const val virtualHeight = 360
+const val viewportWidth = 640
+const val viewportHeight = 360
 const val cellSize = 40
-const val gridWidth = virtualWidth / cellSize
-const val gridHeight = virtualHeight / cellSize
+const val battleWidth = viewportWidth - (cellSize * 2)
+const val battleHeight = viewportHeight - (cellSize * 2)
+const val gridWidth = battleWidth / cellSize
+const val gridHeight = battleHeight / cellSize
 const val basicMargin = 5
 
