@@ -1,7 +1,7 @@
 package com.runt9.fusionOfSouls.scene
 
 import com.runt9.fusionOfSouls.basicMargin
-import com.runt9.fusionOfSouls.model.unit.Hero
+import com.runt9.fusionOfSouls.model.unit.hero.defaultHero
 import com.runt9.fusionOfSouls.service.RunState
 import com.runt9.fusionOfSouls.viewportHeight
 import com.soywiz.korge.input.onClick
@@ -11,11 +11,9 @@ import com.soywiz.korge.view.Container
 import com.soywiz.korge.view.alignTopToBottomOf
 import com.soywiz.korge.view.centerXOnStage
 import com.soywiz.korge.view.text
-import com.soywiz.korim.format.readBitmap
 import com.soywiz.korim.text.TextAlignment
-import com.soywiz.korio.file.std.resourcesVfs
 
-class RunStartScene(private val runState: RunState) : Scene() {
+class RunStartScene(val runState: RunState) : Scene() {
     override suspend fun Container.sceneInit() {
         text("Choose Hero", 50.0, alignment = TextAlignment.CENTER) {
             centerXOnStage()
@@ -28,10 +26,10 @@ class RunStartScene(private val runState: RunState) : Scene() {
 
             onClick {
                 // TODO: Hero selection
-                val hero = Hero("hero", resourcesVfs["blueArrow-tp.png"].readBitmap())
+                val hero = defaultHero
                 runState.hero = hero
 
-                sceneContainer.changeTo<DuringRunScene>(runState)
+                sceneContainer.changeTo<DuringRunScene>()
             }
         }
 

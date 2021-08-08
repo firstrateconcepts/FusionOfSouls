@@ -1,7 +1,7 @@
 package com.runt9.fusionOfSouls.service
 
 import com.runt9.fusionOfSouls.model.unit.GameUnit
-import com.runt9.fusionOfSouls.model.unit.Hero
+import com.runt9.fusionOfSouls.model.unit.hero.Hero
 
 class RunState {
     var floor = 1

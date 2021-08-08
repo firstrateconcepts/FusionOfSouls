@@ -4,7 +4,10 @@ import com.runt9.fusionOfSouls.scene.DuringRunScene
 import com.runt9.fusionOfSouls.scene.MainMenuScene
 import com.runt9.fusionOfSouls.scene.RunStartScene
 import com.runt9.fusionOfSouls.scene.SettingsScene
+import com.runt9.fusionOfSouls.service.AttackService
+import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.BattleUnitManager
+import com.runt9.fusionOfSouls.service.EnemyGenerator
 import com.runt9.fusionOfSouls.service.GridService
 import com.runt9.fusionOfSouls.service.PathService
 import com.runt9.fusionOfSouls.service.RunState
@@ -25,13 +28,18 @@ object MainModule : Module() {
 
     override suspend fun AsyncInjector.configure() {
         mapInstance(Settings(views().storage))
-        mapInstance(RunState())
         mapInstance(GridService())
-        mapInstance(BattleUnitManager(get(), get()))
-        mapInstance(PathService(get(), get()))
+        mapInstance(AttackService())
+        mapInstance(EnemyGenerator(get()))
+
+        mapSingleton { RunState() }
+        mapSingleton { BattleManager(get(), get(), get(), get(), get(), get()) }
+        mapPrototype { BattleUnitManager(get(), get(), get(), get()) }
+        mapPrototype { PathService(get(), get()) }
+
         mapPrototype { MainMenuScene(get()) }
         mapPrototype { RunStartScene(get()) }
-        mapPrototype { DuringRunScene(get(), get(), get(), get()) }
+        mapPrototype { DuringRunScene(get(), get()) }
         mapPrototype { SettingsScene(get()) }
     }
 }

@@ -29,6 +29,13 @@ abstract class Attribute {
         valueListeners.forEach { it.invoke(value) }
     }
 
+    fun addListener(applyImmediately: Boolean = true, listener: ValueChangeListener) {
+        valueListeners.add(listener)
+        if (applyImmediately) {
+            listener.invoke(value)
+        }
+    }
+
     fun addModifier(flatModifier: Double = 0.0, percentModifier: Double = 0.0) {
         modifiers.add(AttributeModifier(flatModifier, percentModifier))
         recalculate()

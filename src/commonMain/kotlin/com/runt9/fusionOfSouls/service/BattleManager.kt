@@ -1,47 +1,53 @@
 package com.runt9.fusionOfSouls.service
 
-import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
 import com.soywiz.korge.view.Container
-import com.soywiz.korim.format.readBitmap
 import com.soywiz.korio.async.launchImmediately
-import com.soywiz.korio.file.std.resourcesVfs
 import kotlin.coroutines.CoroutineContext
 
 enum class BattleStatus {
     BEFORE, DURING, AFTER
 }
 
+// TODO: Detach view logic (container + unit drawing) from service logic
 class BattleManager(
     private val runState: RunState,
     private val gridService: GridService,
     private val pathService: PathService,
     private val unitManager: BattleUnitManager,
-    private val coroutineContext: CoroutineContext,
-    val onBattleComplete: suspend (Team) -> Unit
-) : Container() {
+    private val enemyGenerator: EnemyGenerator,
+    private val coroutineContext: CoroutineContext
+) {
     private var battleStatus = BattleStatus.BEFORE
+    lateinit var onBattleComplete: suspend (Team) -> Unit
 
-    suspend fun newBattle() {
-        runState.units.filter { it.savedGridPos != null }.forEach { unitManager.playerTeam.add(BattleUnit(it, Team.PLAYER)) }
+    suspend fun newBattle(gridContainer: Container) {
+        runState.units.filter { it.savedGridPos != null }.forEach {
+            val playerUnit = BattleUnit(it, Team.PLAYER)
+            playerUnit.draw(gridContainer)
+            unitManager.playerTeam.add(playerUnit)
+        }
         gridService.blockAll(unitManager.playerTeam.map(BattleUnit::gridPos))
 
         val hero = BattleUnit(runState.hero, Team.PLAYER)
+        hero.draw(gridContainer)
         unitManager.playerTeam.add(hero)
         gridService.block(hero.gridPos)
 
-        // TODO: Algorithm for floor/room changes # of enemies
-        val randomEnemyPoint = gridService.addRandomlyToGrid(gridWidth - 5, gridWidth - 1)
-        val enemyUnit = GameUnit("enemy", resourcesVfs["redArrow-tp.png"].readBitmap())
-        enemyUnit.savedGridPos = randomEnemyPoint
-        unitManager.enemyTeam.add(BattleUnit(enemyUnit, Team.ENEMY))
+        // TODO: Algorithm for floor/room changes # and strength of enemies
+
+        enemyGenerator.generateEnemies(1, -0.25).forEach {
+            it.draw(gridContainer)
+            unitManager.enemyTeam.add(it)
+        }
     }
 
     fun start() {
         battleStatus = BattleStatus.DURING
+        unitManager.initSkills()
     }
 
     suspend fun handleTurn() {
@@ -91,7 +97,7 @@ class BattleManager(
     }
 
     private suspend fun battleComplete(team: Team) {
-        runState.units.forEach(GameUnit::purgeTemporaryModifiers)
+        runState.units.forEach(GameUnit::reset)
         unitManager.clear()
         battleStatus = BattleStatus.AFTER
         onBattleComplete(team)
