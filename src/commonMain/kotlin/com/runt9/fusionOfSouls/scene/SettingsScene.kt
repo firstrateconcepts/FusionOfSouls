@@ -1,7 +1,10 @@
-package scene
+package com.runt9.fusionOfSouls.scene
 
-import basicMargin
-import cellSize
+import com.runt9.fusionOfSouls.basicMargin
+import com.runt9.fusionOfSouls.cellSize
+import com.runt9.fusionOfSouls.model.Settings
+import com.runt9.fusionOfSouls.viewportHeight
+import com.runt9.fusionOfSouls.viewportWidth
 import com.soywiz.korge.input.onClick
 import com.soywiz.korge.scene.Scene
 import com.soywiz.korge.ui.uiButton
@@ -16,23 +19,20 @@ import com.soywiz.korge.view.centerXOn
 import com.soywiz.korge.view.centerXOnStage
 import com.soywiz.korge.view.text
 import com.soywiz.korim.text.TextAlignment
-import model.Settings
-import virtualHeight
-import virtualWidth
 
 class SettingsScene(private val settings: Settings) : Scene() {
     override suspend fun Container.sceneInit() {
         val window = views.gameWindow
 
         uiContainer {
-            scaledHeight = virtualHeight.toDouble()
-            scaledWidth = (virtualWidth * (2 / 3)).toDouble()
+            scaledHeight = viewportHeight.toDouble()
+            scaledWidth = (viewportWidth * (2 / 3)).toDouble()
 
             centerOnStage()
 
             text("Settings", textSize = cellSize.toDouble(), alignment = TextAlignment.CENTER) {
                 centerXOnStage()
-                y = (virtualHeight / 5).toDouble()
+                y = (viewportHeight / 5).toDouble()
             }
 
             val fullScreenCheckbox = uiCheckBox(text = "Fullscreen", checked = window.fullscreen) {
