@@ -39,7 +39,7 @@ class AttackService {
         val totalDamage = if (request.critResult.isCrit) {
             (baseDamage * request.critResult.totalCritMulti).toIntRound()
         } else {
-            baseDamage
+            (baseDamage * request.critResult.rollMulti).toIntRound()
         }
 
         val rawDamage = totalDamage * request.totalDamageMultiplier

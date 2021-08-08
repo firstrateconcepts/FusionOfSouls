@@ -98,6 +98,7 @@ class BattleManager(
 
     private suspend fun battleComplete(team: Team) {
         runState.units.forEach(GameUnit::reset)
+        runState.hero.reset()
         unitManager.clear()
         battleStatus = BattleStatus.AFTER
         onBattleComplete(team)
