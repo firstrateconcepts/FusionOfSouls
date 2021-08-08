@@ -21,7 +21,7 @@ class BattleManager(
     private val pathService: PathService,
     private val unitManager: BattleUnitManager,
     private val coroutineContext: CoroutineContext,
-    val onBattleComplete: suspend (String) -> Unit
+    val onBattleComplete: suspend (Team) -> Unit
 ) : Container() {
     private var battleStatus = BattleStatus.BEFORE
 
@@ -47,6 +47,12 @@ class BattleManager(
     suspend fun handleTurn() {
         if (battleStatus != BattleStatus.DURING) {
             return
+        }
+
+        if (unitManager.playerTeam.isEmpty()) {
+            battleComplete(Team.ENEMY)
+        } else if (unitManager.enemyTeam.isEmpty()) {
+            battleComplete(Team.PLAYER)
         }
 
         unitManager.allUnits.filter { it.movingToGridPos != null }.forEach(unitManager::unitMoveComplete)
@@ -84,11 +90,11 @@ class BattleManager(
         }
     }
 
-    suspend fun battleComplete() {
+    private suspend fun battleComplete(team: Team) {
         runState.units.forEach(GameUnit::purgeTemporaryModifiers)
         unitManager.clear()
         battleStatus = BattleStatus.AFTER
-        onBattleComplete("test")
+        onBattleComplete(team)
         gridService.reset()
     }
 }

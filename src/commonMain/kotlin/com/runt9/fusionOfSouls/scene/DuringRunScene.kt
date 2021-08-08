@@ -6,6 +6,7 @@ import com.runt9.fusionOfSouls.cellSize
 import com.runt9.fusionOfSouls.gridHeight
 import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.gridYStart
+import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.resourceBarHeight
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.BattleUnitManager
@@ -46,7 +47,7 @@ class DuringRunScene(private val runState: RunState, private val gridService: Gr
     private lateinit var updater: Cancellable
 
     override suspend fun Container.sceneInit() {
-        battleManager = BattleManager(runState, gridService, pathService, unitManager, coroutineContext) { str -> onBattleComplete(str) }
+        battleManager = BattleManager(runState, gridService, pathService, unitManager, coroutineContext) { team -> onBattleComplete(team) }
 
         previousSpeed = speed
         val root = fixedSizeContainer(viewportWidth, viewportHeight)
@@ -86,13 +87,13 @@ class DuringRunScene(private val runState: RunState, private val gridService: Gr
         }
     }
 
-    private fun Container.drawStartButton() {
-        uiButton(text = "Start Battle") {
+    private fun drawStartButton() {
+        sceneContainer.uiButton(text = "Start Battle") {
             centerOnStage()
 
             onClick {
                 removeFromParent()
-                battleManager.start()
+                startBattle()
             }
         }
     }
@@ -119,21 +120,39 @@ class DuringRunScene(private val runState: RunState, private val gridService: Gr
         }
     }
 
-    private suspend fun Container.onBattleComplete(str: String) {
+    private suspend fun onBattleComplete(team: Team) {
         // Show post-battle rewards
         // After post-battle rewards, start new battle
+        println("$team won!")
         updater.cancel()
-        newBattle()
+        sceneContainer.uiButton(text = "Next Battle") {
+            centerOnStage()
+
+            onClick {
+                removeFromParent()
+                newBattle()
+            }
+        }
+
+        if (runState.room == 10) {
+            runState.floor++
+            runState.room = 1
+        } else {
+            runState.room++
+        }
+        println("Now on Floor ${runState.floor} Room ${runState.room}")
     }
 
-    private suspend fun Container.newBattle() {
+    private suspend fun newBattle() {
         drawStartButton()
         battleManager.newBattle()
-        unitManager.playerTeam.forEach { it.addTo(this) }
-        unitManager.enemyTeam.forEach { it.addTo(this) }
+        unitManager.playerTeam.forEach { it.addTo(sceneContainer) }
+        unitManager.enemyTeam.forEach { it.addTo(sceneContainer) }
+    }
 
-        updater = addFixedUpdater(1.timesPerSecond) {
-            println("Fixed updater")
+    private suspend fun startBattle() {
+        battleManager.start()
+        updater = stage.addFixedUpdater(1.timesPerSecond) {
             launchImmediately {
                 battleManager.handleTurn()
             }

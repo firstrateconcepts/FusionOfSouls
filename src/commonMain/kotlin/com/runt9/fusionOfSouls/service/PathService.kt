@@ -1,6 +1,7 @@
 package com.runt9.fusionOfSouls.service
 
 import com.runt9.fusionOfSouls.extension.isAdjacentTo
+import com.runt9.fusionOfSouls.extension.isWithinRange
 import com.runt9.fusionOfSouls.gridHeight
 import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.GridPoint
@@ -8,6 +9,7 @@ import com.runt9.fusionOfSouls.view.BattleUnit
 import com.soywiz.kds.intArrayListOf
 import kotlin.math.abs
 
+// TODO: This probably needs some refactoring and some code cleanup, mostly copy/pasted from proof-of-concept
 class PathService(private val gridService: GridService, private val unitManager: BattleUnitManager) {
     fun findNextPoint(unit: BattleUnit): GridPoint {
         var nextPoint = if (unit.target != null) {
@@ -70,13 +72,14 @@ class PathService(private val gridService: GridService, private val unitManager:
         }
 
     private fun nextTowardsTarget(unit: BattleUnit): GridPoint? {
+        val attackRange = unit.unit.attackRange
         val pos = unit.gridPos
         val rx = ((gridWidth - 1) / 2.0).compareTo(pos.x)
         val ry = findDirectionOfNextColumnOpen(unit)
         val safeTarget = unit.target!!
         val targetPos = if (safeTarget.movingToGridPos != null) safeTarget.movingToGridPos!! else safeTarget.gridPos
 
-        if (pos.isAdjacentTo(targetPos)) {
+        if (pos.isWithinRange(targetPos, attackRange)) {
             return pos
         }
 
@@ -91,13 +94,13 @@ class PathService(private val gridService: GridService, private val unitManager:
                         return@let
                     }
 
-                    if (testPoint.isAdjacentTo(targetPos)) {
+                    if (testPoint.isWithinRange(targetPos, attackRange)) {
                         return testPoint
                     }
 
                     // TODO: Maybe not the right spot for this
                     // If the tile is adjacent to a non-target enemy, change target to that enemy and return the point
-                    val possibleNewTargets = getPossibleNewTargets(unitManager.enemyTeamOf(unit), testPoint)
+                    val possibleNewTargets = getPossibleNewTargets(unitManager.enemyTeamOf(unit), testPoint, attackRange)
                     if (possibleNewTargets.isNotEmpty()) {
                         unit.target = possibleNewTargets.first()
                         return testPoint
@@ -109,6 +112,7 @@ class PathService(private val gridService: GridService, private val unitManager:
                             distance,
                             listOf(pos),
                             targetPos,
+                            attackRange,
                             unitManager.enemyTeamOf(unit)
                         ))
                     ) {
@@ -130,6 +134,7 @@ class PathService(private val gridService: GridService, private val unitManager:
         bestDistanceSoFar: Double,
         previousPoints: Collection<GridPoint>,
         targetPos: GridPoint,
+        attackRange: Int,
         enemies: Collection<BattleUnit>
     ): Boolean {
         val rx = ((gridWidth - 1) / 2.0).compareTo(startingPoint.x)
@@ -142,17 +147,17 @@ class PathService(private val gridService: GridService, private val unitManager:
                         return@let
                     }
 
-                    if (testPoint.isAdjacentTo(targetPos)) {
+                    if (testPoint.isWithinRange(targetPos, attackRange)) {
                         return true
                     }
 
-                    val possibleNewTargets = getPossibleNewTargets(enemies, testPoint)
+                    val possibleNewTargets = getPossibleNewTargets(enemies, testPoint, attackRange)
                     if (possibleNewTargets.isNotEmpty()) {
                         return true
                     }
 
                     val distance = testPoint.manhattanDistance(targetPos)
-                    if (distance < bestDistanceSoFar && checkNextStep(testPoint, distance, previousPoints + testPoint, targetPos, enemies)) {
+                    if (distance < bestDistanceSoFar && checkNextStep(testPoint, distance, previousPoints + testPoint, targetPos, attackRange, enemies)) {
                         return true
                     }
 
@@ -164,6 +169,6 @@ class PathService(private val gridService: GridService, private val unitManager:
         return false
     }
 
-    private fun getPossibleNewTargets(enemies: Collection<BattleUnit>, testPoint: GridPoint) =
-        enemies.filter { testPoint.isAdjacentTo(it.gridPos) || (it.movingToGridPos != null && testPoint.isAdjacentTo(it.movingToGridPos!!)) }
+    private fun getPossibleNewTargets(enemies: Collection<BattleUnit>, testPoint: GridPoint, attackRange: Int) =
+        enemies.filter { testPoint.isWithinRange(it.gridPos, attackRange) || (it.movingToGridPos != null && testPoint.isWithinRange(it.movingToGridPos!!, attackRange)) }
 }

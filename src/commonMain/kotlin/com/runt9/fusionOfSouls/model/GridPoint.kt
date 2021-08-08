@@ -4,8 +4,6 @@ import com.runt9.fusionOfSouls.cellSize
 import com.runt9.fusionOfSouls.gridXStart
 import com.runt9.fusionOfSouls.gridYStart
 import com.soywiz.korma.geom.IPoint
-import com.soywiz.korma.geom.Point
-import com.soywiz.korma.math.roundDecimalPlaces
 import kotlin.math.abs
 
 class GridPoint(
@@ -15,11 +13,6 @@ class GridPoint(
     val worldX: Double = x * cellSize + cellSize / 2 + gridXStart,
     val worldY: Double = y * cellSize + cellSize / 2 + gridYStart
 ) : IPoint {
-    companion object {
-        fun fromWorldPoint(point: Point) =
-            GridPoint(((point.x - cellSize / 2) / cellSize).roundDecimalPlaces(0), ((point.y - cellSize / 2) / cellSize).roundDecimalPlaces(0))
-    }
-
     fun manhattanDistance(other: GridPoint) = abs(x - other.x) + abs(y - other.y)
 
     override fun equals(other: Any?): Boolean {
@@ -41,6 +34,6 @@ class GridPoint(
     }
 
     override fun toString(): String {
-        return "GridPoint(x=$x, y=$y)"
+        return "($x, $y)"
     }
 }
