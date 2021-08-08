@@ -27,6 +27,10 @@ class SecondaryAttributes(primary: PrimaryAttributes) {
     val all = setOf(maxHp, baseDamage, skillMulti, defense, evasion, critThreshold, critBonus, attackSpeed, cooldownReduction)
 
     init {
-        all.forEach { it.recalculate() }
+        all.forEach(Attribute::recalculate)
+    }
+
+    fun purgeTemporaryModifiers() {
+        all.forEach(SecondaryAttribute::purgeTemporaryModifiers)
     }
 }

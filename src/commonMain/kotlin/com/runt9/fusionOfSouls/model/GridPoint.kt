@@ -1,6 +1,8 @@
 package com.runt9.fusionOfSouls.model
 
 import com.runt9.fusionOfSouls.cellSize
+import com.runt9.fusionOfSouls.gridXStart
+import com.runt9.fusionOfSouls.gridYStart
 import com.soywiz.korma.geom.IPoint
 import com.soywiz.korma.geom.Point
 import com.soywiz.korma.math.roundDecimalPlaces
@@ -10,8 +12,8 @@ class GridPoint(
     override val x: Double,
     override val y: Double,
     var isBlocked: Boolean = false,
-    val worldX: Double = x * cellSize + cellSize / 2,
-    val worldY: Double = y * cellSize + cellSize / 2
+    val worldX: Double = x * cellSize + cellSize / 2 + gridXStart,
+    val worldY: Double = y * cellSize + cellSize / 2 + gridYStart
 ) : IPoint {
     companion object {
         fun fromWorldPoint(point: Point) =

@@ -8,7 +8,7 @@ abstract class Attribute {
     var value: Double by Delegates.observable(0.0) { _, _, _ -> valueChanged() }
         private set
 
-    private val modifiers = mutableListOf<AttributeModifier>()
+    protected val modifiers = mutableListOf<AttributeModifier>()
     val valueListeners = mutableListOf<ValueChangeListener>()
 
     protected abstract fun getBase(): Double
@@ -43,9 +43,13 @@ abstract class Attribute {
         modifiers.remove(modifier)
         recalculate()
     }
+
+    fun purgeTemporaryModifiers() {
+        modifiers.removeAll { it.isTemporary }
+    }
 }
 
-data class AttributeModifier(val flatModifier: Double = 0.0, val percentModifier: Double = 0.0)
+data class AttributeModifier(val flatModifier: Double = 0.0, val percentModifier: Double = 0.0, val isTemporary: Boolean = false)
 
 operator fun Attribute.plus(value: Double) = this.value + value
 operator fun Attribute.plus(attr: Attribute) = this + attr.value

@@ -9,26 +9,29 @@ import com.soywiz.korge.view.center
 import com.soywiz.korge.view.image
 import com.soywiz.korge.view.rotation
 import com.soywiz.korge.view.xy
-import com.soywiz.korim.bitmap.Bitmap
+import com.soywiz.korio.lang.Cancellable
 
 enum class BattleUnitState {
     MOVING, ATTACKING, USING_SKILL
 }
 
-class BattleUnit(val unit: GameUnit, val team: Team, var gridPos: GridPoint, unitImage: Bitmap) : Container() {
+class BattleUnit(val unit: GameUnit, val team: Team) : Container() {
     val body: View
+    var gridPos = unit.savedGridPos!!
     val currentHp = unit.secondaryAttrs.maxHp
-    val states = mutableListOf<BattleUnitState>()
+    val states = mutableSetOf<BattleUnitState>()
     var aggroRangeFlat = 2
     var previousGridPos: GridPoint? = null
     var movingToGridPos: GridPoint? = null
-    var currentTarget: BattleUnit? = null
+    var target: BattleUnit? = null
+    var attackJob: Cancellable? = null
 
 
     init {
         name = unit.name
 
         xy(gridPos.worldX, gridPos.worldY)
-        body = image(unitImage).center().rotation(team.initialRotation)
+        body = image(unit.unitImage).center().rotation(team.initialRotation)
     }
+
 }

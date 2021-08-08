@@ -14,6 +14,10 @@ class PrimaryAttributes {
     val all = setOf(body, mind, instinct, luck)
 
     init {
-        all.forEach { it.recalculate() }
+        all.forEach(Attribute::recalculate)
+    }
+
+    fun purgeTemporaryModifiers() {
+        all.forEach(PrimaryAttribute::purgeTemporaryModifiers)
     }
 }

@@ -4,6 +4,10 @@ import com.runt9.fusionOfSouls.scene.DuringRunScene
 import com.runt9.fusionOfSouls.scene.MainMenuScene
 import com.runt9.fusionOfSouls.scene.RunStartScene
 import com.runt9.fusionOfSouls.scene.SettingsScene
+import com.runt9.fusionOfSouls.service.BattleUnitManager
+import com.runt9.fusionOfSouls.service.GridService
+import com.runt9.fusionOfSouls.service.PathService
+import com.runt9.fusionOfSouls.service.RunState
 import com.soywiz.korge.scene.Module
 import com.soywiz.korge.service.storage.storage
 import com.soywiz.korge.view.views
@@ -21,9 +25,13 @@ object MainModule : Module() {
 
     override suspend fun AsyncInjector.configure() {
         mapInstance(Settings(views().storage))
+        mapInstance(RunState())
+        mapInstance(GridService())
+        mapInstance(BattleUnitManager(get(), get()))
+        mapInstance(PathService(get(), get()))
         mapPrototype { MainMenuScene(get()) }
-        mapPrototype { RunStartScene() }
-        mapPrototype { DuringRunScene() }
+        mapPrototype { RunStartScene(get()) }
+        mapPrototype { DuringRunScene(get(), get(), get(), get()) }
         mapPrototype { SettingsScene(get()) }
     }
 }
