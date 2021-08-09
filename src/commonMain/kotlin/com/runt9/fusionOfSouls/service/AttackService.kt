@@ -10,11 +10,10 @@ import com.runt9.fusionOfSouls.model.unit.attack.DamageCalcResult
 import com.soywiz.kmem.toIntRound
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.random.Random
 
 // TODO: Unit tests!
-class AttackService {
-    private fun rawRoll() = Random.nextInt(0, 100)
+class AttackService(val runState: RunState) {
+    private fun rawRoll() = runState.rng.nextInt(0, 100)
 
     fun attackRoll(request: AttackRollRequest): AttackRollResult {
         val rawRoll = when(request.lucky) {

@@ -29,10 +29,10 @@ object MainModule : Module() {
     override suspend fun AsyncInjector.configure() {
         mapInstance(Settings(views().storage))
         mapInstance(GridService())
-        mapInstance(AttackService())
         mapInstance(EnemyGenerator(get()))
 
         mapSingleton { RunState() }
+        mapSingleton { AttackService(get()) }
         mapSingleton { BattleManager(get(), get(), get(), get(), get(), get()) }
         mapPrototype { BattleUnitManager(get(), get(), get(), get()) }
         mapPrototype { PathService(get(), get()) }
