@@ -3,8 +3,10 @@ package com.runt9.fusionOfSouls.service
 import com.runt9.fusionOfSouls.gridHeight
 import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.GridPoint
+import com.runt9.fusionOfSouls.view.BattleUnit
 import com.soywiz.kds.Array2
 import com.soywiz.korma.math.betweenInclusive
+import kotlin.math.abs
 
 class GridService {
     private val grid = Array2.withGen(gridWidth, gridHeight) { x, y -> GridPoint(x.toDouble(), y.toDouble()) }
@@ -50,3 +52,23 @@ class GridService {
     fun tryGet(x: Int, y: Int) = grid.tryGet(x, y)
     fun findBy(predicate: (GridPoint) -> Boolean) = grid.filter(predicate)
 }
+
+fun GridPoint.isAdjacentTo(other: GridPoint): Boolean {
+    return isWithinRange(other, 1)
+}
+
+fun BattleUnit.isWithinRange(others: Collection<BattleUnit>, range: Int): Boolean {
+    return others.any { it.isWithinRange(this, range) }
+}
+
+fun BattleUnit.isWithinRange(other: BattleUnit, range: Int): Boolean {
+    val selfPos = gridPos
+    val otherPos = other.gridPos
+    return selfPos.isWithinRange(otherPos, range)
+}
+
+fun GridPoint.isWithinRange(other: GridPoint, range: Int): Boolean {
+    return abs(x - other.x) <= range && abs(y - other.y) <= range
+}
+
+fun BattleUnit.diagonalTo(other: BattleUnit) = abs(gridPos.x - other.gridPos.x) == 1.0 && abs(gridPos.y - other.gridPos.y) == 1.0
