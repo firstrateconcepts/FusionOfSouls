@@ -1,8 +1,8 @@
 package com.runt9.fusionOfSouls.service
 
-import com.runt9.fusionOfSouls.extension.diagonalTo
-import com.runt9.fusionOfSouls.extension.isWithinRange
 import com.runt9.fusionOfSouls.model.GridPoint
+import com.runt9.fusionOfSouls.model.event.OnHitEvent
+import com.runt9.fusionOfSouls.model.event.WhenHitEvent
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.attack.AttackRollRequest
 import com.runt9.fusionOfSouls.model.unit.attack.CritCheckRequest
@@ -14,13 +14,13 @@ import com.soywiz.klock.milliseconds
 import com.soywiz.klock.seconds
 import com.soywiz.klock.timesPerSecond
 import com.soywiz.kmem.toIntRound
+import com.soywiz.korev.dispatch
 import com.soywiz.korge.view.addFixedUpdater
 import com.soywiz.korge.view.tween.hide
 import com.soywiz.korge.view.tween.moveBy
 import com.soywiz.korge.view.tween.moveTo
 import com.soywiz.korge.view.tween.rotateTo
 import com.soywiz.korio.async.launchImmediately
-import com.soywiz.korio.lang.cancel
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.geom.cosine
 import com.soywiz.korma.geom.sine
@@ -50,12 +50,12 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
     }
 
     suspend fun checkAttackRange(unit: BattleUnit): Boolean {
-        if (!unit.canAttack(enemyTeamOf(unit))) {
+        if (!unit.withinAttackRange(enemyTeamOf(unit))) {
             return false
         }
 
-        if (unit.target == null || !unit.canAttack(unit.target!!)) {
-            unit.target = enemyTeamOf(unit).find { unit.canAttack(it) }
+        if (unit.target == null || (!unit.withinAttackRange(unit.target!!) && unit.canChangeTarget)) {
+            enemyTeamOf(unit).find { unit.withinAttackRange(it) }?.let { unit.changeTarget(it) }
         }
 
         unit.body.rotateTo(Angle.Companion.between(unit.gridPos, unit.target!!.gridPos), time = 150.milliseconds)
@@ -67,11 +67,10 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
         if (unit.target != null) return
 
         if (unit.isWithinRange(enemyTeamOf(unit), unit.aggroRange)) {
-            unit.target = enemyTeamOf(unit).find { unit.isWithinRange(it, unit.aggroRange) }
-            println("[${unit.name}]: Acquired target [${unit.target?.name}]")
+            enemyTeamOf(unit).find { unit.isWithinRange(it, unit.aggroRange) }?.let { unit.changeTarget(it) }
+            unit.aggroRange = unit.unit.attackRange
         } else {
             unit.aggroRange++
-            println("[${unit.name}]: Aggro range increased")
         }
     }
 
@@ -147,12 +146,12 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
                 target?.let { t ->
                     performAttack(this@startAttacking, t)
                     checkForKills()
-                } ?: cancelAttacking(this)
+                } ?: cancelAttacking()
             }
         }
     }
 
-    suspend fun checkForKills() {
+    private suspend fun checkForKills() {
         allUnits.filter { it.currentHp <= 0 }.forEach { unitKilled(it) }
     }
 
@@ -170,22 +169,24 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
         // TODO: Turn print statements into combat log
         val defenderEvasion = defender.unit.secondaryAttrs.evasion.value.toIntRound()
         val attackRoll = attackService.attackRoll(AttackRollRequest(defenderEvasion))
-        print("[${attacker.name} -> ${defender.name}]: Rolled [${attackRoll.rawRoll}] against [$defenderEvasion] evasion: ")
+        val combatStr = StringBuilder()
+        combatStr.append("[${attacker.name} -> ${defender.name}]: Rolled [${attackRoll.rawRoll}] against [$defenderEvasion] evasion: ")
         if (attackRoll.finalRoll < 0) {
-            println("Attack missed!")
+            combatStr.append("Attack missed!")
+            println(combatStr)
             return
         }
 
-        print("Attack hits! ")
+        combatStr.append("Attack hits! ")
         val critThreshold = attacker.unit.secondaryAttrs.critThreshold.value.toIntRound()
         val critMulti = attacker.unit.secondaryAttrs.critBonus.value
         val critResult = attackService.critCheck(CritCheckRequest(attackRoll, critThreshold, critMulti))
-        print("Crit check: [${attackRoll.finalRoll}] vs [$critThreshold]: ")
+        combatStr.append("Crit check: [${attackRoll.finalRoll}] vs [$critThreshold]: ")
 
         if (critResult.isCrit) {
-            print("CRITICAL HIT! Unit bonus: [${critMulti.roundDecimalPlaces(2)}] Roll bonus: [${critResult.rollMulti.roundDecimalPlaces(2)}] ")
+            combatStr.append("CRITICAL HIT! Unit bonus: [${critMulti.roundDecimalPlaces(2)}] Roll bonus: [${critResult.rollMulti.roundDecimalPlaces(2)}] ")
         } else {
-            print("No crit. ")
+            combatStr.append("No crit. ")
         }
 
         val baseDamage = attacker.unit.secondaryAttrs.baseDamage.value
@@ -193,16 +194,18 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
         val damage = attackService.damageCalc(DamageCalcRequest(baseDamage.toIntRound(), critResult, defenderDefense, damageMultipliers = damageMultipliers))
 
         defender.takeDamage(damage.finalDamage)
-        println("Raw Damage: [${damage.rawDamage}] against [${defenderDefense.toIntRound()}%] defense | Damage dealt: [${damage.finalDamage}] Defender HP: [${defender.currentHp.toIntRound()} / ${defender.unit.secondaryAttrs.maxHp.value.toIntRound()}]")
+        attacker.dispatch(OnHitEvent(attacker, defender, attackRoll, critResult, damage))
+        defender.dispatch(WhenHitEvent(attacker, defender, attackRoll, critResult, damage))
+        combatStr.append("Raw Damage: [${damage.rawDamage}] against [${defenderDefense.toIntRound()}%] defense | Damage dealt: [${damage.finalDamage}] Defender HP: [${defender.currentHp.toIntRound()} / ${defender.unit.secondaryAttrs.maxHp.value.toIntRound()}]")
+        println(combatStr)
     }
 
     private suspend fun unitKilled(unit: BattleUnit) {
         unit.states.clear()
-        cancelAttacking(unit)
+        unit.cancelAttacking()
         gridService.unblock(unit.gridPos)
         allUnits.filter { it.target == unit }.forEach {
-            it.target = null
-            cancelAttacking(it)
+            it.removeTarget()
         }
 
         if (unit.team == Team.PLAYER) {
@@ -213,14 +216,6 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
 
         unit.hide()
         unit.removeFromParent()
-    }
-
-    fun cancelAttacking(unit: BattleUnit) {
-        unit.run {
-            attackJob?.cancel()
-            attackJob = null
-            states.remove(BattleUnitState.ATTACKING)
-        }
     }
 
     fun initSkills() {

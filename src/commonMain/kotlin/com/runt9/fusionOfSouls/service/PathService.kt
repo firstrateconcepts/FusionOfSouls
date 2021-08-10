@@ -1,7 +1,5 @@
 package com.runt9.fusionOfSouls.service
 
-import com.runt9.fusionOfSouls.extension.isAdjacentTo
-import com.runt9.fusionOfSouls.extension.isWithinRange
 import com.runt9.fusionOfSouls.gridHeight
 import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.GridPoint
@@ -20,7 +18,7 @@ class PathService(private val gridService: GridService, private val unitManager:
 
         if (nextPoint == null) {
             println("[${unit.name}]: Path to target blocked, resetting")
-            unit.target = null
+            unit.removeTarget()
             nextPoint = nextForward(unit)
         }
 
@@ -102,7 +100,7 @@ class PathService(private val gridService: GridService, private val unitManager:
                     // If the tile is adjacent to a non-target enemy, change target to that enemy and return the point
                     val possibleNewTargets = getPossibleNewTargets(unitManager.enemyTeamOf(unit), testPoint, attackRange)
                     if (possibleNewTargets.isNotEmpty()) {
-                        unit.target = possibleNewTargets.first()
+                        unit.changeTarget(possibleNewTargets.first())
                         return testPoint
                     }
 

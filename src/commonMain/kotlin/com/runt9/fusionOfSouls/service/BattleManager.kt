@@ -1,9 +1,12 @@
 package com.runt9.fusionOfSouls.service
 
+import com.runt9.fusionOfSouls.model.event.EndTurnEvent
+import com.runt9.fusionOfSouls.model.event.StartTurnEvent
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
+import com.soywiz.korev.dispatch
 import com.soywiz.korge.view.Container
 import com.soywiz.korio.async.launchImmediately
 import kotlin.coroutines.CoroutineContext
@@ -77,12 +80,15 @@ class BattleManager(
     }
 
     private suspend fun handleNextTurnForUnit(unit: BattleUnit) {
+        unit.dispatch(StartTurnEvent(unit))
+
         // If in attack range, start attacking
         if (unitManager.checkAttackRange(unit)) {
+            unit.dispatch(EndTurnEvent(unit))
             return
         }
 
-        unitManager.cancelAttacking(unit)
+        unit.cancelAttacking()
         unit.states.add(BattleUnitState.MOVING)
 
         unitManager.checkAggroRange(unit)
@@ -94,6 +100,8 @@ class BattleManager(
         if (nextPoint != unit.gridPos) {
             unitManager.handleUnitMovement(unit, nextPoint)
         }
+
+        unit.dispatch(EndTurnEvent(unit))
     }
 
     private suspend fun battleComplete(team: Team) {
