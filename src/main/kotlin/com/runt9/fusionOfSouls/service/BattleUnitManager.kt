@@ -1,0 +1,214 @@
+package com.runt9.fusionOfSouls.service
+
+import com.runt9.fusionOfSouls.model.GridPoint
+import com.runt9.fusionOfSouls.model.event.BeforeDamageEvent
+import com.runt9.fusionOfSouls.model.event.OnHitEvent
+import com.runt9.fusionOfSouls.model.event.WhenHitEvent
+import com.runt9.fusionOfSouls.model.unit.Team
+import com.runt9.fusionOfSouls.model.unit.attack.AttackRollRequest
+import com.runt9.fusionOfSouls.model.unit.attack.CritCheckRequest
+import com.runt9.fusionOfSouls.model.unit.attack.DamageCalcRequest
+import com.runt9.fusionOfSouls.view.BattleUnit
+import com.runt9.fusionOfSouls.view.BattleUnitState
+import com.soywiz.korev.dispatch
+import com.soywiz.korma.geom.Angle
+import com.soywiz.korma.math.roundDecimalPlaces
+import kotlin.math.roundToInt
+
+class BattleUnitManager(private val runState: RunState, private val gridService: GridService, private val attackService: AttackService) {
+    val playerTeam = mutableListOf<BattleUnit>()
+    val enemyTeam = mutableListOf<BattleUnit>()
+    val allUnits
+        get() = playerTeam + enemyTeam
+
+    fun clear() {
+//        playerTeam.forEach(BattleUnit::removeFromParent)
+        playerTeam.clear()
+//        enemyTeam.forEach(BattleUnit::removeFromParent)
+        enemyTeam.clear()
+    }
+
+    fun enemyTeamOf(unit: BattleUnit) = if (unit.team == Team.PLAYER) enemyTeam else playerTeam
+
+    fun unitMoveComplete(unit: BattleUnit) {
+        unit.previousGridPos = unit.gridPos
+        unit.gridPos = unit.movingToGridPos!!
+        unit.movingToGridPos = null
+    }
+
+    suspend fun checkAttackRange(unit: BattleUnit): Boolean {
+        if (!unit.withinAttackRange(enemyTeamOf(unit))) {
+            return false
+        }
+
+        if (unit.target == null || (!unit.withinAttackRange(unit.target!!) && unit.canChangeTarget)) {
+            enemyTeamOf(unit).find { unit.withinAttackRange(it) }?.let { unit.changeTarget(it) }
+        }
+
+//        unit.body.rotateTo(Angle.Companion.between(unit.gridPos, unit.target!!.gridPos), time = 150.milliseconds)
+        unit.startAttacking()
+        return true
+    }
+
+    fun checkAggroRange(unit: BattleUnit) {
+        if (unit.target != null) return
+
+        if (unit.isWithinRange(enemyTeamOf(unit), unit.aggroRange)) {
+            enemyTeamOf(unit).find { unit.isWithinRange(it, unit.aggroRange) }?.let { unit.changeTarget(it) }
+            unit.aggroRange = unit.unit.attackRange
+        } else {
+            unit.aggroRange++
+        }
+    }
+
+    suspend fun handleUnitMovement(unit: BattleUnit, nextPoint: GridPoint) {
+        println("[${unit.name}]: Moving from [${unit.gridPos}] to [${nextPoint}]")
+        unit.movingToGridPos = nextPoint
+        gridService.unblock(unit.gridPos)
+        gridService.block(nextPoint)
+        val newAngle = Angle.between(unit.gridPos, nextPoint)
+        val distance = unit.gridPos.manhattanDistance(nextPoint)
+
+//        KtxAsync.launch {
+//            unit.body.rotateTo(newAngle, time = 150.milliseconds)
+//        }
+//
+//        KtxAsync.launch {
+//            unit.moveTo(
+//                nextPoint.worldX,
+//                nextPoint.worldY,
+//                time = 1.seconds - (200.milliseconds / distance),
+//                easing = Easing.LINEAR
+//            )
+//        }
+    }
+
+    private fun BattleUnit.initSkill() {
+//        skillJob = addFixedUpdater(4.timesPerSecond) {
+//            unit.skill.run {
+//                if (cooldownElapsed >= modifiedCooldown) {
+//                    return@run
+//                }
+//
+//                updateRemaining(0.25)
+//                updateCooldown()
+//            }
+//        }
+    }
+
+    private suspend fun BattleUnit.startAttacking() {
+        if (attackJob != null) {
+            return
+        }
+
+        if (diagonalTo(target!!)) {
+//            KtxAsync.launch {
+//                moveBy(body.rotation.cosine * 3, body.rotation.sine * 3, time = 150.milliseconds)
+//            }
+        }
+
+        previousGridPos = null
+        states.add(BattleUnitState.ATTACKING)
+        states.remove(BattleUnitState.MOVING)
+
+//        attackJob = addFixedUpdater(unit.secondaryAttrs.attackSpeed.value.timesPerSecond) {
+//            if (!states.contains(BattleUnitState.ATTACKING)) {
+//                return@addFixedUpdater
+//            }
+//
+//            KtxAsync.launch {
+//                // Use skill if we can
+//                unit.skill.run {
+//                    val skillUseContext = SkillUseContext(this@addFixedUpdater, runState, this@BattleUnitManager)
+//                    if (canUseSkill(skillUseContext)) {
+//                        useSkill(skillUseContext)
+//                        updateCooldown()
+//                        checkForKills()
+//                        return@launch
+//                    }
+//                }
+//
+//                unitAttackAnimation(this)
+//
+//                target?.let { t ->
+//                    performAttack(this@startAttacking, t)
+//                    checkForKills()
+//                } ?: cancelAttacking()
+//            }
+//        }
+    }
+
+    private suspend fun checkForKills() {
+        allUnits.filter { it.currentHp <= 0 }.forEach { unitKilled(it) }
+    }
+
+    suspend fun unitAttackAnimation(unit: BattleUnit) {
+        unit.run {
+//            val currentX = pos.x
+//            val currentY = pos.y
+//
+//            moveBy(body.rotation.cosine * 3, body.rotation.sine * 3, time = 25.milliseconds)
+//            moveTo(currentX, currentY, time = 150.milliseconds)
+        }
+    }
+
+    fun performAttack(attacker: BattleUnit, defender: BattleUnit, damageMultipliers: Collection<Double> = emptyList()) {
+        // TODO: Turn print statements into combat log
+        val defenderEvasion = defender.unit.secondaryAttrs.evasion.value.roundToInt()
+        val attackRoll = attackService.attackRoll(AttackRollRequest(defenderEvasion))
+        val combatStr = StringBuilder()
+        combatStr.append("[${attacker.name} -> ${defender.name}]: Rolled [${attackRoll.rawRoll}] against [$defenderEvasion] evasion: ")
+        if (attackRoll.finalRoll < 0) {
+            combatStr.append("Attack missed!")
+            println(combatStr)
+            return
+        }
+
+        combatStr.append("Attack hits! ")
+        val critThreshold = attacker.unit.secondaryAttrs.critThreshold.value.roundToInt()
+        val critMulti = attacker.unit.secondaryAttrs.critBonus.value
+        val critResult = attackService.critCheck(CritCheckRequest(attackRoll, critThreshold, critMulti))
+        combatStr.append("Crit check: [${attackRoll.finalRoll}] vs [$critThreshold]: ")
+
+        if (critResult.isCrit) {
+            combatStr.append("CRITICAL HIT! Unit bonus: [${critMulti.roundDecimalPlaces(2)}] Roll bonus: [${critResult.rollMulti.roundDecimalPlaces(2)}] ")
+        } else {
+            combatStr.append("No crit. ")
+        }
+
+        val baseDamage = attacker.unit.secondaryAttrs.baseDamage.value
+        val defenderDefense = defender.unit.secondaryAttrs.defense.value
+        val damageCalcRequest = DamageCalcRequest(baseDamage.roundToInt(), critResult, defenderDefense, damageMultipliers = damageMultipliers)
+        attacker.dispatch(BeforeDamageEvent(attacker, defender, attackRoll, critResult, damageCalcRequest))
+        val damage = attackService.damageCalc(damageCalcRequest)
+
+        defender.takeDamage(damage.finalDamage)
+        attacker.dispatch(OnHitEvent(attacker, defender, attackRoll, critResult, damage))
+        defender.dispatch(WhenHitEvent(attacker, defender, attackRoll, critResult, damage))
+        combatStr.append("Raw Damage: [${damage.rawDamage}] against [${defenderDefense.roundToInt()}%] defense | Damage dealt: [${damage.finalDamage}] Defender HP: [${defender.currentHp.roundToInt()} / ${defender.unit.secondaryAttrs.maxHp.value.roundToInt()}]")
+        println(combatStr)
+    }
+
+    private suspend fun unitKilled(unit: BattleUnit) {
+        unit.states.clear()
+        unit.cancelAttacking()
+        gridService.unblock(unit.gridPos)
+        allUnits.filter { it.target == unit }.forEach {
+            it.removeTarget()
+        }
+
+        if (unit.team == Team.PLAYER) {
+            playerTeam.remove(unit)
+        } else {
+            enemyTeam.remove(unit)
+        }
+
+//        unit.hide()
+//        unit.removeFromParent()
+    }
+
+    fun initSkills() {
+        playerTeam.forEach { it.initSkill() }
+        enemyTeam.forEach { it.initSkill() }
+    }
+}
