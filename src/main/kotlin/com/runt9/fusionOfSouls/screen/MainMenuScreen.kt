@@ -1,20 +1,54 @@
 package com.runt9.fusionOfSouls.screen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.Align
+import com.runt9.fusionOfSouls.FosGame
 import com.runt9.fusionOfSouls.model.Settings
-import ktx.app.KtxScreen
+import ktx.actors.onClick
 import ktx.scene2d.actors
 import ktx.scene2d.vis.visLabel
+import ktx.scene2d.vis.visTable
+import ktx.scene2d.vis.visTextButton
 
-class MainMenuScreen(private val settings: Settings, private val stage: Stage) : KtxScreen {
+class MainMenuScreen(private val game: FosGame, private val settings: Settings, override val stage: Stage) : FosScreen {
     override fun show() {
         stage.clear()
-        stage.actors { visLabel("Fusion of Souls") }
-    }
+        stage.actors {
+            visTable(true) {
+//                centerPosition()
+                defaults()
 
-    override fun render(delta: Float) {
-        stage.viewport.apply()
-        stage.act(delta)
-        stage.draw()
+                setFillParent(true)
+
+                visLabel("Fusion of Souls") {
+                    setAlignment(Align.center)
+                }
+
+                row()
+
+                visTextButton("New Run") {
+                    onClick {
+                        game.setScreen<RunStartScreen>()
+                    }
+                }
+
+                row()
+
+                visTextButton("Settings") {
+                    onClick {
+                        game.setScreen<SettingsScreen>()
+                    }
+                }
+
+                row()
+
+                visTextButton("Quit") {
+                    onClick {
+                        Gdx.app.exit()
+                    }
+                }
+            }
+        }
     }
 }

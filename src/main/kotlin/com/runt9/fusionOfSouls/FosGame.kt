@@ -2,17 +2,18 @@ package com.runt9.fusionOfSouls
 
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.Settings
-import com.runt9.fusionOfSouls.screen.DuringRunScene
+import com.runt9.fusionOfSouls.screen.DuringRunScreen
 import com.runt9.fusionOfSouls.screen.LoadingScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
-import com.runt9.fusionOfSouls.screen.RunStartScene
-import com.runt9.fusionOfSouls.screen.SettingsScene
+import com.runt9.fusionOfSouls.screen.RunStartScreen
+import com.runt9.fusionOfSouls.screen.SettingsScreen
 import com.runt9.fusionOfSouls.service.AttackService
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.BattleUnitManager
@@ -31,20 +32,24 @@ import ktx.scene2d.Scene2DSkin
 
 class FosGame : KtxGame<KtxScreen>() {
     private val profiler by lazy { GLProfiler(Gdx.graphics).apply { enable() } }
+    private val stage by lazy {
+        val stage = stage(viewport = FitViewport(viewportWidth.toFloat(), viewportHeight.toFloat()))
+        Gdx.input.inputProcessor = stage
+        stage
+    }
 
     override fun create() {
         KtxAsync.initiate()
+        // TODO: Use real skin
+//        VisUI.load(Gdx.files.classpath("ui/uiskin.json"))
         VisUI.load()
         Scene2DSkin.defaultSkin = VisUI.getSkin()
-        val stage = stage(viewport = FitViewport(viewportWidth.toFloat(), viewportHeight.toFloat()))
-        Gdx.input.inputProcessor = stage
 
         injector.register {
-            bindSingleton { Gdx.app.getPreferences("FusionOfSouls") }
             bindSingleton { PooledEngine() }
             bindSingleton { stage }
             bindSingleton { AssetManager() }
-            bindSingleton { Settings(inject()) }
+            bindSingleton { initSettings(Gdx.app.getPreferences("FusionOfSouls")) }
             bindSingleton { GridService() }
             bindSingleton { EnemyGenerator(inject()) }
 
@@ -55,14 +60,25 @@ class FosGame : KtxGame<KtxScreen>() {
             bindSingleton { BattleManager(inject(), inject(), inject(), inject(), inject()) }
 
             addScreen(LoadingScreen(this@FosGame, inject(), inject()))
-            addScreen(MainMenuScreen(inject(), inject()))
-            addScreen(RunStartScene(inject()))
-            addScreen(DuringRunScene(inject(), inject()))
-            addScreen(SettingsScene(inject()))
+            addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
+            addScreen(RunStartScreen(this@FosGame, inject(), inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject()))
+            addScreen(SettingsScreen(this@FosGame, inject(), inject()))
         }
 
         setScreen<LoadingScreen>()
         super.create()
+    }
+
+    private fun initSettings(prefs: Preferences): Settings {
+        val settings = Settings(prefs)
+        Gdx.graphics.setVSync(settings.vsync)
+
+        if (settings.fullscreen) {
+            setFullscreen()
+        }
+
+        return settings
     }
 
     override fun render() {
@@ -76,6 +92,21 @@ class FosGame : KtxGame<KtxScreen>() {
         debug { "Sprites in batch: ${injector.inject<SpriteBatch>().maxSpritesInBatch}" }
 
         injector.dispose()
+        VisUI.dispose()
         super.dispose()
+    }
+
+    fun setFullscreen() {
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+        updateViewport()
+    }
+
+    fun setWindowed() {
+        Gdx.graphics.setWindowedMode(defaultWindowWidth, defaultWindowHeight)
+        updateViewport()
+    }
+
+    private fun updateViewport() {
+        stage.viewport.update(Gdx.graphics.width, Gdx.graphics.height)
     }
 }
