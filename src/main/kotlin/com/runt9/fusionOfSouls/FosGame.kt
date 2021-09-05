@@ -22,6 +22,7 @@ import com.runt9.fusionOfSouls.service.GridService
 import com.runt9.fusionOfSouls.service.PathService
 import com.runt9.fusionOfSouls.service.RunState
 import com.runt9.fusionOfSouls.service.injector
+import com.runt9.fusionOfSouls.service.runState
 import ktx.actors.stage
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -53,16 +54,15 @@ class FosGame : KtxGame<KtxScreen>() {
             bindSingleton { GridService() }
             bindSingleton { EnemyGenerator(inject()) }
 
-            bindSingleton { RunState() }
-            bindSingleton { AttackService(inject()) }
-            bind { BattleUnitManager(inject(), inject(), inject()) }
+            bindSingleton { AttackService() }
+            bind { BattleUnitManager(inject(), inject()) }
             bind { PathService(inject(), inject()) }
-            bindSingleton { BattleManager(inject(), inject(), inject(), inject(), inject()) }
+            bindSingleton { BattleManager(inject(), inject(), inject(), inject()) }
 
             addScreen(LoadingScreen(this@FosGame, inject(), inject()))
             addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
-            addScreen(RunStartScreen(this@FosGame, inject(), inject()))
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject()))
+            addScreen(RunStartScreen(this@FosGame, inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject()))
             addScreen(SettingsScreen(this@FosGame, inject(), inject()))
         }
 
@@ -108,5 +108,9 @@ class FosGame : KtxGame<KtxScreen>() {
 
     private fun updateViewport() {
         stage.viewport.update(Gdx.graphics.width, Gdx.graphics.height)
+    }
+
+    fun reset() {
+        runState = RunState()
     }
 }

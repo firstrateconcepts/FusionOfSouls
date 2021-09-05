@@ -20,7 +20,7 @@ import ktx.async.interval
 import ktx.log.info
 import kotlin.math.roundToInt
 
-class BattleUnitManager(private val runState: RunState, private val gridService: GridService, private val attackService: AttackService) {
+class BattleUnitManager(private val gridService: GridService, private val attackService: AttackService) {
     val playerTeam = mutableListOf<BattleUnit>()
     val enemyTeam = mutableListOf<BattleUnit>()
     val allUnits

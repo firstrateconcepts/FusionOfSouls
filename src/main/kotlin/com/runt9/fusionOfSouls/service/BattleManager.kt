@@ -16,7 +16,6 @@ enum class BattleStatus {
 
 // TODO: Detach view logic (container + unit drawing) from service logic
 class BattleManager(
-    private val runState: RunState,
     private val gridService: GridService,
     private val pathService: PathService,
     private val unitManager: BattleUnitManager,

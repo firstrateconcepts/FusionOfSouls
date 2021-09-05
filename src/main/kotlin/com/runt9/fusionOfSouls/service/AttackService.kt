@@ -11,7 +11,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class AttackService(val runState: RunState) {
+class AttackService {
     private fun rawRoll() = runState.rng.nextInt(0, 100)
 
     fun attackRoll(request: AttackRollRequest): AttackRollResult {
