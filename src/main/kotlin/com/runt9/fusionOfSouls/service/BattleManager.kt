@@ -99,7 +99,7 @@ class BattleManager(
             unitManager.handleUnitMovement(unit, nextPoint)
         }
 
-//        unit.dispatch(EndTurnEvent(unit))
+        unit.dispatch(EndTurnEvent(unit))
     }
 
     private suspend fun battleComplete(team: Team) {

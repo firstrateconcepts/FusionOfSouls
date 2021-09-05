@@ -8,11 +8,16 @@ import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.attack.AttackRollRequest
 import com.runt9.fusionOfSouls.model.unit.attack.CritCheckRequest
 import com.runt9.fusionOfSouls.model.unit.attack.DamageCalcRequest
+import com.runt9.fusionOfSouls.model.unit.skill.SkillUseContext
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
 import com.soywiz.korev.dispatch
 import com.soywiz.korma.geom.Angle
 import com.soywiz.korma.math.roundDecimalPlaces
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
+import ktx.async.interval
+import ktx.log.info
 import kotlin.math.roundToInt
 
 class BattleUnitManager(private val runState: RunState, private val gridService: GridService, private val attackService: AttackService) {
@@ -62,7 +67,7 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
     }
 
     suspend fun handleUnitMovement(unit: BattleUnit, nextPoint: GridPoint) {
-        println("[${unit.name}]: Moving from [${unit.gridPos}] to [${nextPoint}]")
+        info("[${unit.name}]") { "Moving from [${unit.gridPos}] to [${nextPoint}]" }
         unit.movingToGridPos = nextPoint
         gridService.unblock(unit.gridPos)
         gridService.block(nextPoint)
@@ -84,16 +89,16 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
     }
 
     private fun BattleUnit.initSkill() {
-//        skillJob = addFixedUpdater(4.timesPerSecond) {
-//            unit.skill.run {
-//                if (cooldownElapsed >= modifiedCooldown) {
-//                    return@run
-//                }
-//
-//                updateRemaining(0.25)
-//                updateCooldown()
-//            }
-//        }
+        skillJob = interval(0.25f) {
+            unit.skill.run {
+                if (cooldownElapsed >= modifiedCooldown) {
+                    return@run
+                }
+
+                updateRemaining(0.25)
+                updateCooldown()
+            }
+        }
     }
 
     private suspend fun BattleUnit.startAttacking() {
@@ -111,31 +116,31 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
         states.add(BattleUnitState.ATTACKING)
         states.remove(BattleUnitState.MOVING)
 
-//        attackJob = addFixedUpdater(unit.secondaryAttrs.attackSpeed.value.timesPerSecond) {
-//            if (!states.contains(BattleUnitState.ATTACKING)) {
-//                return@addFixedUpdater
-//            }
-//
-//            KtxAsync.launch {
-//                // Use skill if we can
-//                unit.skill.run {
-//                    val skillUseContext = SkillUseContext(this@addFixedUpdater, runState, this@BattleUnitManager)
-//                    if (canUseSkill(skillUseContext)) {
-//                        useSkill(skillUseContext)
-//                        updateCooldown()
-//                        checkForKills()
-//                        return@launch
-//                    }
-//                }
-//
-//                unitAttackAnimation(this)
-//
-//                target?.let { t ->
-//                    performAttack(this@startAttacking, t)
-//                    checkForKills()
-//                } ?: cancelAttacking()
-//            }
-//        }
+        attackJob = interval((1 / unit.secondaryAttrs.attackSpeed.value).toFloat()) {
+            if (!states.contains(BattleUnitState.ATTACKING)) {
+                return@interval
+            }
+
+            KtxAsync.launch {
+                // Use skill if we can
+                unit.skill.run {
+                    val skillUseContext = SkillUseContext(this@startAttacking, runState, this@BattleUnitManager)
+                    if (canUseSkill(skillUseContext)) {
+                        useSkill(skillUseContext)
+                        updateCooldown()
+                        checkForKills()
+                        return@launch
+                    }
+                }
+
+                unitAttackAnimation(this@startAttacking)
+
+                target?.let { t ->
+                    performAttack(this@startAttacking, t)
+                    checkForKills()
+                } ?: cancelAttacking()
+            }
+        }
     }
 
     private suspend fun checkForKills() {
@@ -156,11 +161,12 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
         // TODO: Turn print statements into combat log
         val defenderEvasion = defender.unit.secondaryAttrs.evasion.value.roundToInt()
         val attackRoll = attackService.attackRoll(AttackRollRequest(defenderEvasion))
+        val tag = "[${attacker.name} -> ${defender.name}]"
         val combatStr = StringBuilder()
-        combatStr.append("[${attacker.name} -> ${defender.name}]: Rolled [${attackRoll.rawRoll}] against [$defenderEvasion] evasion: ")
+        combatStr.append("Rolled [${attackRoll.rawRoll}] against [$defenderEvasion] evasion: ")
         if (attackRoll.finalRoll < 0) {
             combatStr.append("Attack missed!")
-            println(combatStr)
+            info(tag) { combatStr.toString() }
             return
         }
 
@@ -186,7 +192,7 @@ class BattleUnitManager(private val runState: RunState, private val gridService:
         attacker.dispatch(OnHitEvent(attacker, defender, attackRoll, critResult, damage))
         defender.dispatch(WhenHitEvent(attacker, defender, attackRoll, critResult, damage))
         combatStr.append("Raw Damage: [${damage.rawDamage}] against [${defenderDefense.roundToInt()}%] defense | Damage dealt: [${damage.finalDamage}] Defender HP: [${defender.currentHp.roundToInt()} / ${defender.unit.secondaryAttrs.maxHp.value.roundToInt()}]")
-        println(combatStr)
+        info(tag) { combatStr.toString() }
     }
 
     private suspend fun unitKilled(unit: BattleUnit) {

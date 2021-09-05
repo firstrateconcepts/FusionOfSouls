@@ -2,6 +2,8 @@ package com.runt9.fusionOfSouls.model.attribute
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifierEffect
@@ -9,11 +11,10 @@ import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttributeType
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType
 import com.runt9.fusionOfSouls.model.unit.skill.DefaultSkill
 import com.runt9.fusionOfSouls.model.unit.unitClass.TankClass
-import com.soywiz.korio.file.std.tempVfs
 import org.junit.jupiter.api.Test
 
 class AttributeModifierEffectTest {
-    private fun testUnit() = GameUnit("test", tempVfs, DefaultSkill(), listOf(TankClass()))
+    private fun testUnit() = GameUnit("test", Texture(Gdx.files.internal("blueArrow-tp.png")), DefaultSkill(), listOf(TankClass()))
     private fun testModifier() = AttributeModifier(flatModifier = 5.0)
 
     @Test

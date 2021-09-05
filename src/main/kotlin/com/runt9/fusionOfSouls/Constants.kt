@@ -7,6 +7,8 @@ const val gameTitle = "Fusion of Souls"
 val primaryBgColor = Color.valueOf("#2b2b2b")
 
 // Sizes
+const val defaultWindowWidth = 1280
+const val defaultWindowHeight = 720
 const val viewportWidth = 640
 const val viewportHeight = 360
 const val cellSize = 40

@@ -1,5 +1,6 @@
 package com.runt9.fusionOfSouls.view
 
+import com.badlogic.gdx.utils.Timer.Task
 import com.runt9.fusionOfSouls.model.GridPoint
 import com.runt9.fusionOfSouls.model.event.TargetChangedEvent
 import com.runt9.fusionOfSouls.model.event.TargetRemovedEvent
@@ -11,8 +12,8 @@ import com.soywiz.klock.TimeSpan
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
 import com.soywiz.korev.dispatch
-import com.soywiz.korio.lang.Cancellable
-import com.soywiz.korio.lang.cancel
+import ktx.async.schedule
+import ktx.log.info
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -33,9 +34,9 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
     var movingToGridPos: GridPoint? = null
     var target: BattleUnit? = null
         private set
-    var attackJob: Cancellable? = null
-    var skillJob: Cancellable? = null
-    var statusEffects = mutableMapOf<StatusEffect, Cancellable>()
+    var attackJob: Task? = null
+    var skillJob: Task? = null
+    var statusEffects = mutableMapOf<StatusEffect, Task>()
     var canMove = true
     var canAttack = true
     var canUseSkill = true
@@ -84,7 +85,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
         currentHp += amount
 //        healthBar.current = currentHp
         val hpText = if (amount >= 0) "Healed" else "Damaged"
-        println("[${this.name}]: $hpText for [${abs(amount)}] | From [${previousHp.roundToInt()}] to [${currentHp.roundToInt()}] of [${unit.secondaryAttrs.maxHp.value.roundToInt()}]")
+        info("[${this.name}]") { "$hpText for [${abs(amount)}] | From [${previousHp.roundToInt()}] to [${currentHp.roundToInt()}] of [${unit.secondaryAttrs.maxHp.value.roundToInt()}]" }
     }
 
     fun updateCooldown() {
@@ -100,8 +101,8 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
         if (shouldRefresh) {
             existingEffects.forEach { (eff, c) ->
                 c.cancel()
-//                statusEffects[eff] = addFixedUpdater(duration, false) { removeStatusEffect(effect) }
-                println("[${this.name}]: Refreshed [${effect.name}] for another [$duration]")
+                statusEffects[eff] = schedule(duration.seconds.toFloat()) { removeStatusEffect(effect) }
+                info("[${this.name}]") { "Refreshed [${effect.name}] for another [$duration]" }
             }
         }
 
@@ -109,10 +110,10 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
             return
         }
 
-//        statusEffects[effect] = addFixedUpdater(duration, false) { removeStatusEffect(effect) }
+        statusEffects[effect] = schedule(duration.seconds.toFloat()) { removeStatusEffect(effect) }
 
         effect.applyToUnit(this)
-        println("[${this.name}]: Added status [${effect.name}] for [$duration]")
+        info("[${this.name}]") { "Added status [${effect.name}] for [$duration]" }
     }
 
     fun removeStatusEffect(effect: StatusEffect, removeAllStacks: Boolean = false) {
@@ -123,7 +124,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
             statusEffects.filterKeys { it::class == effect::class }.forEach { (key, _) -> removeStatusEffect(key) }
         }
 
-        println("[${this.name}]: Removed status [${effect.name}]")
+        info("[${this.name}]") { "Removed status [${effect.name}]" }
     }
 
     fun changeTarget(target: BattleUnit) {
@@ -140,7 +141,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
 
         dispatcher.dispatch(TargetChangedEvent(this, oldTarget, target))
 
-        println("[${this.name}]: Target changed to [${target.name}]")
+        info("[${this.name}]") { "Target changed to [${target.name}]" }
     }
 
     fun removeTarget() {
@@ -154,7 +155,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
         cancelAttacking()
         dispatcher.dispatch(TargetRemovedEvent(this, oldTarget))
 
-        println("[${this.name}]: Target removed")
+        info("[${this.name}]") { "Target removed" }
     }
 
     fun cancelAttacking() {
@@ -165,7 +166,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
         attackJob?.cancel()
         attackJob = null
         states.remove(BattleUnitState.ATTACKING)
-        println("[${this.name}]: Attacking cancelled")
+        info("[${this.name}]") { "Attacking cancelled" }
     }
 
     fun withinAttackRange(other: Collection<BattleUnit>) = other.any { withinAttackRange(it) }

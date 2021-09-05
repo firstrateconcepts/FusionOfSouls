@@ -5,6 +5,7 @@ import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.GridPoint
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.soywiz.kds.intArrayListOf
+import ktx.log.info
 import kotlin.math.abs
 
 // TODO: This probably needs some refactoring and some code cleanup, mostly copy/pasted from proof-of-concept
@@ -17,7 +18,7 @@ class PathService(private val gridService: GridService, private val unitManager:
         }
 
         if (nextPoint == null) {
-//            println("[${unit.name}]: Path to target blocked, resetting")
+            info("[${unit.name}]") { "Path to target blocked, resetting" }
             unit.removeTarget()
             nextPoint = nextForward(unit)
         }
