@@ -20,5 +20,5 @@ const val basicMargin = 5
 const val bigMargin = basicMargin * 2
 const val resourceBarHeight = 20
 const val gridXStart = ((viewportWidth - battleWidth) / 2)
-const val gridYStart = resourceBarHeight + bigMargin
+const val gridYStart = cellSize + bigMargin
 

@@ -14,7 +14,7 @@ class RunState {
 
     // TODO: Not hard-coded
     var unitCap = 2
-    var itemCap = 1
+    var runeCap = 1
     var fusionCap = 3
     var rng = Random(Random.nextBytes(32).hashCode())
 
