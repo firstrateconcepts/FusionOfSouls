@@ -22,7 +22,7 @@ class AttackServiceTest {
     @BeforeEach
     fun setup() {
         runState.overrideSeed(seed)
-        attackService = AttackService(runState)
+        attackService = AttackService()
     }
 
     @Test

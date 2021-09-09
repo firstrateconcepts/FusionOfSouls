@@ -1,5 +1,6 @@
 package com.runt9.fusionOfSouls.service
 
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.runt9.fusionOfSouls.model.event.EndTurnEvent
 import com.runt9.fusionOfSouls.model.event.StartTurnEvent
 import com.runt9.fusionOfSouls.model.unit.GameUnit
@@ -8,6 +9,7 @@ import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
 import com.soywiz.korev.dispatch
 import kotlinx.coroutines.launch
+import ktx.actors.plusAssign
 import ktx.async.KtxAsync
 
 enum class BattleStatus {
@@ -24,24 +26,27 @@ class BattleManager(
     private var battleStatus = BattleStatus.BEFORE
     lateinit var onBattleComplete: suspend (Team) -> Unit
 
-    suspend fun newBattle() {
+    suspend fun newBattle(gridContainer: Group) {
         runState.units.filter { it.savedGridPos != null }.forEach {
             val playerUnit = BattleUnit(it, Team.PLAYER)
-//            playerUnit.draw(gridContainer)
-            unitManager.playerTeam.add(playerUnit)
+            gridContainer += playerUnit
+            playerUnit.setInitialPosition()
+            unitManager.playerTeam += playerUnit
         }
         gridService.blockAll(unitManager.playerTeam.map(BattleUnit::gridPos))
 
         val hero = BattleUnit(runState.hero, Team.PLAYER)
-//        hero.draw(gridContainer)
-        unitManager.playerTeam.add(hero)
+        gridContainer += hero
+        hero.setInitialPosition()
+        unitManager.playerTeam += hero
         gridService.block(hero.gridPos)
 
         // TODO: Algorithm for floor/room changes # and strength of enemies
 
         enemyGenerator.generateEnemies(1, -25.0).forEach {
-//            it.draw(gridContainer)
-            unitManager.enemyTeam.add(it)
+            gridContainer += (it)
+            it.setInitialPosition()
+            unitManager.enemyTeam += it
         }
     }
 

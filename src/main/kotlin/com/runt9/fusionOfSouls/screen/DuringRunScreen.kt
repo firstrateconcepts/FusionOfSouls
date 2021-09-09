@@ -3,6 +3,7 @@ package com.runt9.fusionOfSouls.screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.kotcrab.vis.ui.widget.VisDialog
 import com.kotcrab.vis.ui.widget.VisLabel
@@ -12,6 +13,7 @@ import com.runt9.fusionOfSouls.FosGame
 import com.runt9.fusionOfSouls.basicMargin
 import com.runt9.fusionOfSouls.battleHeight
 import com.runt9.fusionOfSouls.battleWidth
+import com.runt9.fusionOfSouls.bigMargin
 import com.runt9.fusionOfSouls.cellSize
 import com.runt9.fusionOfSouls.gridHeight
 import com.runt9.fusionOfSouls.gridWidth
@@ -35,6 +37,7 @@ import ktx.async.KtxAsync
 import ktx.async.interval
 import ktx.scene2d.StageWidget
 import ktx.scene2d.actors
+import ktx.scene2d.vis.floatingGroup
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visTable
@@ -57,35 +60,36 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
 
     override fun show() {
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
-        KtxAsync.launch { newBattle() }
         stage.actors {
             drawGrid()
             drawTopBar()
             drawUnitBar()
         }
+        KtxAsync.launch { newBattle() }
     }
 
     private fun StageWidget.drawTopBar() {
-        visTable {
-            defaults().space(0f).expand().left().padLeft(basicMargin.toFloat()).maxHeight(resourceBarHeight.toFloat() - 5f)
-            y = viewportHeight - resourceBarHeight.toFloat() - 10
+        visTable(true) {
+            defaults().expand().left().padLeft(basicMargin.toFloat())
+            y = viewportHeight - resourceBarHeight.toFloat()
             setSize(viewportWidth.toFloat(), resourceBarHeight.toFloat())
             background(rectPixmapTexture(viewportWidth, resourceBarHeight, Color.SLATE).toDrawable())
 
-            visTable {
-                height = resourceBarHeight.toFloat() - 5f
-                defaults().space(0f).pad(0f).expand().center()
+            visTable(true) {
+                defaults().expand().center()
                 goldDisplay = visLabel("Gold: ${runState.gold}")
                 unitCapDisplay = visLabel("Units: ${runState.units.size} / ${runState.unitCap}")
                 runeCapDisplay = visLabel("Runes: ${runState.hero.runes.size} / ${runState.runeCap}")
                 fusionCapDisplay = visLabel("Fusions: ${runState.hero.fusions.size} / ${runState.fusionCap}")
             }
 
-            defaults().space(0f).pad(0f).expand().right().padRight(basicMargin.toFloat()).maxHeight(resourceBarHeight.toFloat() - 5f)
-            visTable {
-                height = resourceBarHeight.toFloat() - 5f
-                defaults().space(0f).pad(0f).expand().center()
+            defaults().expand().right().padRight(basicMargin.toFloat())
+            visTable(true) {
+                defaults().expand().center()
                 inventoryButton = visTextButton("Inventory") {
+                    setOrigin(Align.center)
+                    scaleBy(-0.33f)
+                    isTransform = true
                     onClick {
                         // TODO: Inventory modal
                     }
@@ -96,13 +100,17 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     }
 
     private fun StageWidget.drawGrid() {
-        gridContainer = flowGroup(spacing = 10f) {
+        gridContainer = floatingGroup {
             toBack()
             setPosition(gridXStart, gridYStart)
-            width = battleWidth.toFloat()
-            height = battleHeight.toFloat()
+            width = battleWidth.toFloat() - bigMargin
+            height = battleHeight.toFloat() - bigMargin
+            flowGroup(spacing = 10f) {
+                width = battleWidth.toFloat() - bigMargin
+                height = battleHeight.toFloat() - bigMargin
 
-            repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
+                repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
+            }
         }
     }
 
@@ -148,7 +156,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             runState.room++
         }
 
-//        floorRoomDisplay.setText("Room ${runState.floor}:${runState.room}")
+        floorRoomDisplay.setText("Room ${runState.floor}:${runState.room}")
 
         println("Now on Floor ${runState.floor} Room ${runState.room}")
     }
@@ -185,7 +193,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
 
     private suspend fun newBattle() {
         drawStartButton()
-        battleManager.newBattle()
+        battleManager.newBattle(gridContainer)
     }
 
     private suspend fun startBattle() {

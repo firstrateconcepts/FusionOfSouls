@@ -1,6 +1,10 @@
 package com.runt9.fusionOfSouls.view
 
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.actions.Actions.moveToAligned
+import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer.Task
+import com.kotcrab.vis.ui.widget.VisImage
 import com.runt9.fusionOfSouls.model.GridPoint
 import com.runt9.fusionOfSouls.model.event.TargetChangedEvent
 import com.runt9.fusionOfSouls.model.event.TargetRemovedEvent
@@ -12,6 +16,7 @@ import com.soywiz.klock.TimeSpan
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
 import com.soywiz.korev.dispatch
+import ktx.actors.plusAssign
 import ktx.async.schedule
 import ktx.log.info
 import kotlin.math.abs
@@ -23,10 +28,10 @@ enum class BattleUnitState {
     ALIVE, MOVING, ATTACKING
 }
 
-class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
+class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group() {
     private val dispatcher = LocalDispatcher()
 
-//    lateinit var body: View
+    val body: VisImage
     var gridPos = unit.savedGridPos!!
     val states = mutableSetOf<BattleUnitState>()
     var aggroRange = unit.attackRange
@@ -42,7 +47,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
     var canUseSkill = true
     var canChangeTarget = true
     val isAlive get() = states.contains(BattleUnitState.ALIVE)
-    val name = unit.name
+
 
     var currentHp: Double
 
@@ -50,11 +55,14 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
 //    private lateinit var cooldownBar: UIProgressBar
 
     init {
-//        xy(gridPos.worldX, gridPos.worldY)
+        name = unit.name
         currentHp = unit.secondaryAttrs.maxHp.value
         unit.secondaryAttrs.maxHp.addListener {
             currentHp = min(currentHp, it)
         }
+        body = VisImage(unit.unitImage)
+        body.setOrigin(Align.center)
+        addActor(body)
     }
 
 //    suspend fun draw(container: Container) {
@@ -174,6 +182,10 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher {
 
     override fun <T : Event> addEventListener(clazz: KClass<T>, handler: (T) -> Unit) = dispatcher.addEventListener(clazz, handler)
     override fun <T : Event> dispatch(clazz: KClass<T>, event: T) = dispatcher.dispatch(clazz, event)
+
+    fun setInitialPosition() {
+        this += moveToAligned(gridPos.worldX.toFloat(), gridPos.worldY.toFloat(), Align.center)
+    }
 
     inner class LocalDispatcher : EventDispatcher.Mixin() {
         // Dispatches event both to this view and the underlying GameUnit itself
