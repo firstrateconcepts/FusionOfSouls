@@ -6,7 +6,7 @@ fun Stage.render(delta: Float) {
     this.run {
         viewport.apply()
         act(delta)
-        isDebugAll = true
+//        isDebugAll = true
 
         draw()
     }

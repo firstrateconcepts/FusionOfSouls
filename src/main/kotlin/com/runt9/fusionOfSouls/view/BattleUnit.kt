@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions.moveToAligned
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer.Task
 import com.kotcrab.vis.ui.widget.VisImage
+import com.kotcrab.vis.ui.widget.VisProgressBar
+import com.runt9.fusionOfSouls.cellSize
 import com.runt9.fusionOfSouls.model.GridPoint
 import com.runt9.fusionOfSouls.model.event.TargetChangedEvent
 import com.runt9.fusionOfSouls.model.event.TargetRemovedEvent
@@ -16,9 +18,13 @@ import com.soywiz.klock.TimeSpan
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
 import com.soywiz.korev.dispatch
+import com.soywiz.korma.geom.degrees
 import ktx.actors.plusAssign
 import ktx.async.schedule
 import ktx.log.info
+import ktx.scene2d.KGroup
+import ktx.scene2d.vis.visImage
+import ktx.scene2d.vis.visProgressBar
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -28,7 +34,7 @@ enum class BattleUnitState {
     ALIVE, MOVING, ATTACKING
 }
 
-class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group() {
+class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(), KGroup {
     private val dispatcher = LocalDispatcher()
 
     val body: VisImage
@@ -51,38 +57,44 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group() 
 
     var currentHp: Double
 
-//    private lateinit var healthBar: UIProgressBar
-//    private lateinit var cooldownBar: UIProgressBar
+    private val healthBar: VisProgressBar
+    private val cooldownBar: VisProgressBar
 
     init {
         name = unit.name
         currentHp = unit.secondaryAttrs.maxHp.value
+
         unit.secondaryAttrs.maxHp.addListener {
             currentHp = min(currentHp, it)
         }
-        body = VisImage(unit.unitImage)
-        body.setOrigin(Align.center)
-        addActor(body)
-    }
 
-//    suspend fun draw(container: Container) {
-//        body = image(unit.unitImage.readBitmap()).center().rotation(team.initialRotation)
-//
-//        healthBar = uiProgressBar(cellSize.toDouble() * 0.75, 2.0, current = currentHp, maximum = unit.secondaryAttrs.maxHp.value) {
-//            // TODO: Not hard-coded
-//            xy(-15.0, -20.0)
-//            buttonBackColor = RGBA(0, 0, 0, 100)
-//        }
-//
-//        cooldownBar = uiProgressBar(cellSize.toDouble() * 0.75, 2.0, current = 0.0, maximum = unit.skill.modifiedCooldown) {
-//            // TODO: Not hard-coded
-//            alignTopToBottomOf(healthBar)
-//            x = -15.0
-//            buttonBackColor = RGBA(0, 0, 200, 100)
-//        }
-//
-//        addTo(container)
-//    }
+        body = visImage(unit.unitImage) {
+            setOrigin(Align.center)
+            rotation = this@BattleUnit.team.initialRotation.degrees.toFloat()
+        }
+
+        // TODO: Common stuff between bars refactored
+        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat()) {
+            value = this@BattleUnit.currentHp.toFloat()
+            setAnimateDuration(0.1f)
+            width = (cellSize * 0.75).toFloat()
+            height = 2f
+            style.knob.minHeight = 2f
+            style.background.minHeight = 2f
+            setOrigin(Align.center)
+            y = cellSize.toFloat() - 5f
+        }
+
+        cooldownBar = visProgressBar(0f, unit.skill.modifiedCooldown.toFloat()) {
+            setAnimateDuration(0.25f)
+            width = (cellSize * 0.75).toFloat()
+            height = 2f
+            style.knob.minHeight = 2f
+            style.background.minHeight = 2f
+            setOrigin(Align.center)
+            y = cellSize.toFloat() - 7f
+        }
+    }
 
     fun takeDamage(damage: Int) {
         updateHp(-damage)
@@ -91,15 +103,15 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group() 
     fun updateHp(amount: Int) {
         val previousHp = currentHp
         currentHp += amount
-//        healthBar.current = currentHp
+        healthBar.value = currentHp.toFloat()
         val hpText = if (amount >= 0) "Healed" else "Damaged"
         info("[${this.name}]") { "$hpText for [${abs(amount)}] | From [${previousHp.roundToInt()}] to [${currentHp.roundToInt()}] of [${unit.secondaryAttrs.maxHp.value.roundToInt()}]" }
     }
 
     fun updateCooldown() {
         unit.skill.run {
-//            cooldownBar.current = cooldownElapsed
-//            cooldownBar.maximum = modifiedCooldown
+            cooldownBar.value = cooldownElapsed.toFloat()
+            cooldownBar.setRange(0f, modifiedCooldown.toFloat())
         }
     }
 
@@ -175,6 +187,13 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group() 
         attackJob = null
         states.remove(BattleUnitState.ATTACKING)
         info("[${this.name}]") { "Attacking cancelled" }
+    }
+
+    override fun remove(): Boolean {
+        attackJob?.cancel()
+        skillJob?.cancel()
+        unit.reset()
+        return super.remove()
     }
 
     fun withinAttackRange(other: Collection<BattleUnit>) = other.any { withinAttackRange(it) }

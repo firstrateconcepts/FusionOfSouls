@@ -76,7 +76,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
         }
     }
 
-    suspend fun handleUnitMovement(unit: BattleUnit, nextPoint: GridPoint) {
+    fun handleUnitMovement(unit: BattleUnit, nextPoint: GridPoint) {
         info("[${unit.name}]") { "Moving from [${unit.gridPos}] to [${nextPoint}]" }
         unit.movingToGridPos = nextPoint
         gridService.unblock(unit.gridPos)
@@ -94,6 +94,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
     }
 
     private fun BattleUnit.initSkill() {
+        unit.skill.resetCooldown()
         skillJob = interval(0.25f) {
             unit.skill.run {
                 if (cooldownElapsed >= modifiedCooldown) {
@@ -151,6 +152,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
             val currentX = x
             val currentY = y
 
+            // TODO: This isn't properly using rotation, will need to figure it out
             unit += moveBy(cos(body.rotation) * 3, sin(body.rotation * 3), 0.025f) then moveTo(currentX, currentY, 0.15f)
         }
     }
@@ -208,6 +210,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
         }
 
         unit += fadeOut(0.25f) then removeActor()
+        unit.unit.reset()
     }
 
     fun initSkills() {
