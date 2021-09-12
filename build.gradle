@@ -1,0 +1,110 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		google()
+		gradlePluginPortal()
+		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	}
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+	}
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'application'
+sourceCompatibility = 8.0
+compileJava {
+	options.incremental = true
+}
+
+version = '0.0.1'
+ext.appName = 'fusion-of-souls'
+repositories {
+	mavenLocal()
+	mavenCentral()
+	gradlePluginPortal()
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+	maven { url 'https://jitpack.io' }
+}
+
+sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
+mainClassName = 'com.runt9.fusionofsouls.lwjgl3.Lwjgl3Launcher'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+dependencies {
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1-native-mt'
+
+	implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+	implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+	implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+	implementation "com.soywiz.korlibs.korma:korma-jvm:$korlibsVersion"
+	implementation "com.soywiz.korlibs.korgw:korgw-jvm:$korlibsVersion"
+	implementation "com.soywiz.korlibs.klock:klock-jvm:$korlibsVersion"
+
+	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+	implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+	implementation "com.badlogicgames.gdx:gdx-ai:$aiVersion"
+	implementation "com.badlogicgames.ashley:ashley:$ashleyVersion"
+	implementation "com.github.tommyettinger:anim8-gdx:$anim8Version"
+	implementation "com.github.tommyettinger:regexodus:$regExodusVersion"
+	implementation "com.strongjoshua:libgdx-inGameConsole:$inGameConsoleVersion"
+	implementation "com.github.tommyettinger:libgdx-utils:$utilsVersion"
+
+	implementation "com.squidpony:squidlib:$squidLibVersion"
+	implementation "com.squidpony:squidlib-extra:$squidLibVersion"
+	implementation "com.squidpony:squidlib-util:$squidLibVersion"
+
+	implementation "io.github.libktx:ktx-app:$ktxVersion"
+	implementation "io.github.libktx:ktx-actors:$ktxVersion"
+	implementation "io.github.libktx:ktx-ashley:$ktxVersion"
+	implementation "io.github.libktx:ktx-assets:$ktxVersion"
+	implementation "io.github.libktx:ktx-async:$ktxVersion"
+	implementation "io.github.libktx:ktx-collections:$ktxVersion"
+	implementation "io.github.libktx:ktx-freetype:$ktxVersion"
+	implementation "io.github.libktx:ktx-graphics:$ktxVersion"
+	implementation "io.github.libktx:ktx-inject:$ktxVersion"
+	implementation "io.github.libktx:ktx-json:$ktxVersion"
+	implementation "io.github.libktx:ktx-log:$ktxVersion"
+	implementation "io.github.libktx:ktx-math:$ktxVersion"
+	implementation "io.github.libktx:ktx-preferences:$ktxVersion"
+	implementation "io.github.libktx:ktx-vis:$ktxVersion"
+	implementation "io.github.libktx:ktx-vis-style:$ktxVersion"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+	testImplementation "com.willowtreeapps.assertk:assertk-jvm:$assertkVersion"
+	testImplementation "io.mockk:mockk:$mockkVersion"
+}
+
+def os = System.properties['os.name'].toLowerCase()
+
+run {
+	workingDir = rootProject.file('assets').path
+	setIgnoreExitValue(true)
+
+	if (os.contains('mac')) {
+		// Required to run LWJGL3 Java apps on MacOS
+		jvmArgs += "-XstartOnFirstThread"
+	}
+}
+
+jar {
+	archiveBaseName.set(appName)
+	duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+	dependsOn configurations.runtimeClasspath
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+
+	dependencies {
+		exclude('META-INF/INDEX.LIST', 'META-INF/maven/**')
+	}
+
+	manifest {
+		attributes 'Main-Class': project.mainClassName
+	}
+
+	doLast {
+		file(archiveFile).setExecutable(true, false)
+	}
+}
