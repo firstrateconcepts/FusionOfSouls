@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions.moveToAligned
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer.Task
+import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisImage
 import com.kotcrab.vis.ui.widget.VisProgressBar
 import com.runt9.fusionOfSouls.cellSize
@@ -25,6 +26,7 @@ import ktx.log.info
 import ktx.scene2d.KGroup
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visProgressBar
+import ktx.style.progressBar
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -74,23 +76,25 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
         }
 
         // TODO: Common stuff between bars refactored
-        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat()) {
+        // TODO Somehow getting broken when opening hero dialog
+        VisUI.getSkin().progressBar("unitBar", "default-horizontal") {
+            background.minHeight = 2f
+            knob.minHeight = 2f
+        }
+
+        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat(), style = "unitBar") {
             value = this@BattleUnit.currentHp.toFloat()
             setAnimateDuration(0.1f)
             width = (cellSize * 0.75).toFloat()
             height = 2f
-            style.knob.minHeight = 2f
-            style.background.minHeight = 2f
             setOrigin(Align.center)
             y = cellSize.toFloat() - 5f
         }
 
-        cooldownBar = visProgressBar(0f, unit.skill.modifiedCooldown.toFloat()) {
+        cooldownBar = visProgressBar(0f, unit.skill.modifiedCooldown.toFloat(), style = "unitBar") {
             setAnimateDuration(0.25f)
             width = (cellSize * 0.75).toFloat()
             height = 2f
-            style.knob.minHeight = 2f
-            style.background.minHeight = 2f
             setOrigin(Align.center)
             y = cellSize.toFloat() - 7f
         }

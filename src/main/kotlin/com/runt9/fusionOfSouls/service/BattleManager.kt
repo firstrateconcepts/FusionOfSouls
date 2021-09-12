@@ -26,7 +26,7 @@ class BattleManager(
     private var battleStatus = BattleStatus.BEFORE
     lateinit var onBattleComplete: suspend (Team) -> Unit
 
-    suspend fun newBattle(gridContainer: Group) {
+    fun newBattle(gridContainer: Group) {
         runState.units.filter { it.savedGridPos != null }.forEach {
             val playerUnit = BattleUnit(it, Team.PLAYER)
             gridContainer += playerUnit

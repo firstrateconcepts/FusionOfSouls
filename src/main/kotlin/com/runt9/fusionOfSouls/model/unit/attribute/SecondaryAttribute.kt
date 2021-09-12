@@ -10,18 +10,28 @@ import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType.DEFEN
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType.EVASION
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType.MAX_HP
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType.SKILL_MULTI
+import com.soywiz.kmem.toIntRound
+import com.soywiz.korma.math.roundDecimalPlaces
 import kotlin.math.sqrt
 
-enum class SecondaryAttributeType(override val attrsAttrSelection: SecondaryAttributes.() -> SecondaryAttribute, override val attrRandomizer: AttributeModifierRandomizer) : AttributeType<SecondaryAttribute, SecondaryAttributes> {
-    MAX_HP(SecondaryAttributes::maxHp, randomMaxHp),
-    BASE_DAMAGE(SecondaryAttributes::baseDamage, randomBaseDamage),
-    SKILL_MULTI(SecondaryAttributes::skillMulti, randomSkillMulti),
-    DEFENSE(SecondaryAttributes::defense, randomDefense),
-    EVASION(SecondaryAttributes::evasion, randomEvasion),
-    CRIT_THRESHOLD(SecondaryAttributes::critThreshold, randomCritThreshold),
-    CRIT_BONUS(SecondaryAttributes::critBonus, randomCritMulti),
-    ATTACK_SPEED(SecondaryAttributes::attackSpeed, randomAttackSpeed),
-    COOLDOWN_REDUCTION(SecondaryAttributes::cooldownReduction, randomCdr);
+private val intDisplayer = { d: Double -> d.toIntRound().toString() }
+private val multiDisplayer = { d: Double -> "${d.roundDecimalPlaces(2)}x" }
+
+enum class SecondaryAttributeType(
+    override val displayName: String,
+    override val attrsAttrSelection: SecondaryAttributes.() -> SecondaryAttribute,
+    override val attrRandomizer: AttributeModifierRandomizer,
+    override val valueDisplayer: (Double) -> String
+) : AttributeType<SecondaryAttribute, SecondaryAttributes> {
+    MAX_HP("Max HP", SecondaryAttributes::maxHp, randomMaxHp, intDisplayer),
+    BASE_DAMAGE("Base Damage", SecondaryAttributes::baseDamage, randomBaseDamage, intDisplayer),
+    SKILL_MULTI("Skill Multiplier", SecondaryAttributes::skillMulti, randomSkillMulti, multiDisplayer),
+    DEFENSE("Defense", SecondaryAttributes::defense, randomDefense, {d: Double -> "${d.toIntRound()}%"}),
+    EVASION("Evasion", SecondaryAttributes::evasion, randomEvasion, intDisplayer),
+    CRIT_THRESHOLD("Crit Threshold", SecondaryAttributes::critThreshold, randomCritThreshold, intDisplayer),
+    CRIT_BONUS("Crit Multiplier", SecondaryAttributes::critBonus, randomCritMulti, multiDisplayer),
+    ATTACK_SPEED("Attacks per Second", SecondaryAttributes::attackSpeed, randomAttackSpeed, { d: Double -> d.roundDecimalPlaces(2).toString() }),
+    COOLDOWN_REDUCTION("Cooldown Reduction", SecondaryAttributes::cooldownReduction, randomCdr, multiDisplayer);
 
     override val unitAttrSelection = GameUnit::secondaryAttrs
 }
@@ -50,7 +60,7 @@ class SecondaryAttributes(primary: PrimaryAttributes) : Attributes<SecondaryAttr
     val critBonus = SecondaryAttribute(CRIT_BONUS, primary, primary.body, primary.luck) { sqrt((body * 0.5) + (luck * 1.5)) / 10 }
     val attackSpeed = SecondaryAttribute(ATTACK_SPEED, primary, primary.body, primary.mind) { ((body * 0.25) + (mind * 0.25)) / 100 }
     val cooldownReduction = SecondaryAttribute(COOLDOWN_REDUCTION, primary, primary.mind, primary.instinct) { sqrt((mind * 0.6) + (instinct * 0.4)) / 10 }
-    override val all = setOf(maxHp, baseDamage, skillMulti, defense, evasion, critThreshold, critBonus, attackSpeed, cooldownReduction)
+    override val all = listOf(maxHp, baseDamage, skillMulti, defense, evasion, critThreshold, critBonus, attackSpeed, cooldownReduction)
 
     init {
         all.forEach(Attribute::recalculate)

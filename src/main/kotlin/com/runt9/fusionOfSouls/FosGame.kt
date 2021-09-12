@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.Settings
-import com.runt9.fusionOfSouls.screen.DuringRunScreen
+import com.runt9.fusionOfSouls.screen.duringRun.DuringRunScreen
 import com.runt9.fusionOfSouls.screen.LoadingScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.RunStartScreen

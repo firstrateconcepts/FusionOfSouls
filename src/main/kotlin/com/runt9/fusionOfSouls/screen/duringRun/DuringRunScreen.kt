@@ -1,4 +1,4 @@
-package com.runt9.fusionOfSouls.screen
+package com.runt9.fusionOfSouls.screen.duringRun
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -20,6 +20,9 @@ import com.runt9.fusionOfSouls.gridXStart
 import com.runt9.fusionOfSouls.gridYStart
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.resourceBarHeight
+import com.runt9.fusionOfSouls.screen.FosScreen
+import com.runt9.fusionOfSouls.screen.MainMenuScreen
+import com.runt9.fusionOfSouls.screen.duringRun.charDialog.CharacterDialog
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.fosVisTable
@@ -43,6 +46,7 @@ import ktx.scene2d.vis.visTable
 import ktx.scene2d.vis.visTextButton
 
 
+// TODO: Ensure all user actions are disabled during battle
 class DuringRunScreen(private val game: FosGame, private val battleManager: BattleManager, override val stage: Stage) : FosScreen {
     private val benchBarHeight = cellSize
     private lateinit var updater: Timer.Task
@@ -54,10 +58,9 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     private lateinit var floorRoomDisplay: VisLabel
     private lateinit var heroButton: VisTextButton
     private lateinit var gridContainer: Group
-    private lateinit var heroDialog: CharacterDialog
+    private val heroDialog by lazy { CharacterDialog(runState.hero.name) }
 
     override fun show() {
-        heroDialog = CharacterDialog(runState.hero.name)
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
         stage.actors {
             drawGrid()

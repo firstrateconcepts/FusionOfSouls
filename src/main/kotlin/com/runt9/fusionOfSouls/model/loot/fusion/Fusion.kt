@@ -3,7 +3,18 @@ package com.runt9.fusionOfSouls.model.loot.fusion
 import com.runt9.fusionOfSouls.model.GameUnitEffect
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 
-class Fusion(val effect: GameUnitEffect) : GameUnitEffect {
+enum class FusionType {
+    PASSIVE, ATTR_MODIFICATION, ABILITY_AUGMENT
+}
+
+interface FusableEffect : GameUnitEffect {
+    val fusionType: FusionType
+}
+
+class Fusion(val effect: FusableEffect) : GameUnitEffect {
+    override val description = effect.description
+    // TODO: Check synergy
+
     override fun applyToUnit(unit: GameUnit) {
         effect.applyToUnit(unit)
     }

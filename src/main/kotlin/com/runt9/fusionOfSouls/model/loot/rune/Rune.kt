@@ -6,7 +6,6 @@ import com.runt9.fusionOfSouls.model.loot.Rarity.COMMON
 import com.runt9.fusionOfSouls.model.loot.Rarity.LEGENDARY
 import com.runt9.fusionOfSouls.model.loot.Rarity.RARE
 import com.runt9.fusionOfSouls.model.loot.Rarity.UNCOMMON
-import com.runt9.fusionOfSouls.model.loot.fusion.Fusion
 import com.runt9.fusionOfSouls.model.loot.passive.DefaultPassive
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifierEffect
@@ -22,10 +21,10 @@ private val Rarity.numRuneAttrs: Int
         RARE, LEGENDARY -> 3
     }
 
-class Rune(val rarity: Rarity) : GameUnitEffect {
-    val modifiers = generateModifiers(rarity)
-    val passives = if (rarity == LEGENDARY) listOf(randomLegendaryPassive()) else emptyList()
-    val fusion = Fusion((modifiers + passives).random())
+class Rune(rarity: Rarity) : GameUnitEffect {
+    override val description by lazy { generateDescription() }
+    private val modifiers = generateModifiers(rarity)
+    private val passives = if (rarity == LEGENDARY) listOf(randomLegendaryPassive()) else emptyList()
 
     override fun applyToUnit(unit: GameUnit) {
         modifiers.forEach { it.applyToUnit(unit) }
@@ -35,6 +34,17 @@ class Rune(val rarity: Rarity) : GameUnitEffect {
     override fun removeFromUnit(unit: GameUnit) {
         modifiers.forEach { it.removeFromUnit(unit) }
         passives.forEach { it.removeFromUnit(unit) }
+    }
+
+    private fun generateDescription(): String {
+        val sb = StringBuilder()
+        modifiers.forEach {
+            sb.append("${it.description}\n")
+        }
+        passives.forEach {
+            sb.append("${it.description}\n")
+        }
+        return sb.toString()
     }
 }
 
