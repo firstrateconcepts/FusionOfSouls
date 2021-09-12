@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
-import com.kotcrab.vis.ui.widget.VisDialog
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
@@ -46,7 +45,6 @@ import ktx.scene2d.vis.visTextButton
 
 class DuringRunScreen(private val game: FosGame, private val battleManager: BattleManager, override val stage: Stage) : FosScreen {
     private val benchBarHeight = cellSize
-    private val debugMode = false
     private lateinit var updater: Timer.Task
     private lateinit var resourceBar: VisTable
     private lateinit var goldDisplay: VisLabel
@@ -54,11 +52,12 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     private lateinit var runeCapDisplay: VisLabel
     private lateinit var fusionCapDisplay: VisLabel
     private lateinit var floorRoomDisplay: VisLabel
-    private lateinit var inventoryButton: VisTextButton
+    private lateinit var heroButton: VisTextButton
     private lateinit var gridContainer: Group
-    private lateinit var inventoryModal: VisDialog
+    private lateinit var heroDialog: CharacterDialog
 
     override fun show() {
+        heroDialog = CharacterDialog(runState.hero.name)
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
         stage.actors {
             drawGrid()
@@ -69,7 +68,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     }
 
     private fun StageWidget.drawTopBar() {
-        visTable(true) {
+        resourceBar = visTable(true) {
             defaults().expand().left().padLeft(basicMargin.toFloat())
             y = viewportHeight - resourceBarHeight.toFloat()
             setSize(viewportWidth.toFloat(), resourceBarHeight.toFloat())
@@ -86,12 +85,12 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             defaults().expand().right().padRight(basicMargin.toFloat())
             visTable(true) {
                 defaults().expand().center()
-                inventoryButton = visTextButton("Inventory") {
+                heroButton = visTextButton("Hero") {
                     setOrigin(Align.center)
                     scaleBy(-0.33f)
                     isTransform = true
                     onClick {
-                        // TODO: Inventory modal
+                        heroDialog.show(this@DuringRunScreen.stage)
                     }
                 }
                 floorRoomDisplay = visLabel("Room ${runState.floor}:${runState.room}")
