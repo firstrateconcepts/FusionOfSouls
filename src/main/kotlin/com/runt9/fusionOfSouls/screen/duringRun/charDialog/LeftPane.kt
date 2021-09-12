@@ -3,15 +3,14 @@ package com.runt9.fusionOfSouls.screen.duringRun.charDialog
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Align
-import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.AbilityTab
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.AttrsTab
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.RuneTab
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.util.progressBarStyleHeight
 import ktx.scene2d.KTable
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
-import ktx.scene2d.defaultHorizontalStyle
 import ktx.scene2d.scene2d
 import ktx.scene2d.stack
 import ktx.scene2d.vis.addTabContentsTo
@@ -21,7 +20,6 @@ import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visProgressBar
 import ktx.scene2d.vis.visTable
 import ktx.style.get
-import ktx.style.progressBar
 import ktx.style.tabbedPane
 import ktx.style.visTextButton
 
@@ -49,18 +47,16 @@ fun leftPane() = scene2d.visTable {
     }.cell(grow = true, padRight = 5f)
 }
 
+private val xpBarStyleName = "charDialogXpBar"
 private fun KTable.buildCharInfo() = visTable {
     visTable {
         visImage(Texture(Gdx.files.internal("blueArrow-tp.png"))).cell(row = true)
 
-        VisUI.getSkin().progressBar("charDialogXpBar", defaultHorizontalStyle) {
-            background.minHeight = 10f
-            knob.minHeight = 10f
-        }
+        progressBarStyleHeight(xpBarStyleName, 10f)
 
         // TODO: From XP/level system
         stack {
-            visProgressBar(0f, 10f, style = "charDialogXpBar") {
+            visProgressBar(0f, 10f, style = xpBarStyleName) {
                 value = 4f
                 height = 10f
             }

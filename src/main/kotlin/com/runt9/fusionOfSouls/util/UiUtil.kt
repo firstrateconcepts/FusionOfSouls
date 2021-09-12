@@ -4,11 +4,14 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
+import com.kotcrab.vis.ui.VisUI
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.actor
+import ktx.scene2d.defaultHorizontalStyle
 import ktx.scene2d.vis.KVisTable
 import ktx.scene2d.vis.visImage
+import ktx.style.progressBar
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -37,3 +40,14 @@ fun rectPixmapTexture(width: Int, height: Int, color: Color): Texture {
 fun Texture.toDrawable() = TextureRegionDrawable(this)
 fun <S> KWidget<S>.rectPixmap(width: Int, height: Int, color: Color) = visImage(rectPixmapTexture(width, height, color))
 fun <S> KWidget<S>.squarePixmap(size: Int, color: Color) = rectPixmap(size, size, color)
+
+fun progressBarStyleHeight(styleName: String, height: Float) {
+    VisUI.getSkin().progressBar(styleName, defaultHorizontalStyle) {
+        background = TextureRegionDrawable((background as TextureRegionDrawable).region)
+        background.minHeight = height
+        knob = TextureRegionDrawable((knob as TextureRegionDrawable).region)
+        knob.minHeight = height
+        knobBefore = TextureRegionDrawable((knobBefore as TextureRegionDrawable).region)
+        knobBefore.minHeight = height
+    }
+}
