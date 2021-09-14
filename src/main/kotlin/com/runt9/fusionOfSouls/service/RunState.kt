@@ -10,7 +10,8 @@ class RunState {
     var room = 1
 
     lateinit var hero: Hero
-    val units = mutableListOf<GameUnit>()
+    val activeUnits = mutableListOf<GameUnit>()
+    val inactiveUnits = mutableListOf<GameUnit>()
     val unequippedRunes = mutableListOf<Rune>()
     var gold = 0
 

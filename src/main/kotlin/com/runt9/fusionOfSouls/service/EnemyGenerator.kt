@@ -5,11 +5,12 @@ import com.badlogic.gdx.graphics.Texture
 import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
-import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.ability.DefaultAbility
+import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.unitClass.TankClass
 import com.runt9.fusionOfSouls.view.BattleUnit
 
+// TODO: Convert to unit generator
 class EnemyGenerator(private val gridService: GridService) {
     fun generateEnemies(count: Int, strength: Double): List<BattleUnit> {
         return (0 until count).map { generateEnemy(strength) }

@@ -38,7 +38,10 @@ import ktx.actors.setPosition
 import ktx.async.KtxAsync
 import ktx.async.interval
 import ktx.scene2d.StageWidget
+import ktx.scene2d.actor
 import ktx.scene2d.actors
+import ktx.scene2d.image
+import ktx.scene2d.stack
 import ktx.scene2d.vis.floatingGroup
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
@@ -48,6 +51,8 @@ import ktx.scene2d.vis.visTextButton
 
 // TODO: Ensure all user actions are disabled during battle
 class DuringRunScreen(private val game: FosGame, private val battleManager: BattleManager, override val stage: Stage) : FosScreen {
+    private val debug = false
+
     private val benchBarHeight = cellSize
     private lateinit var updater: Timer.Task
     private lateinit var resourceBar: VisTable
@@ -80,7 +85,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             visTable(true) {
                 defaults().expand().center()
                 goldDisplay = visLabel("Gold: ${runState.gold}")
-                unitCapDisplay = visLabel("Units: ${runState.units.size} / ${runState.unitCap}")
+                unitCapDisplay = visLabel("Units: ${runState.activeUnits.size} / ${runState.unitCap}")
                 runeCapDisplay = visLabel("Runes: ${runState.hero.runes.size} / ${runState.runeCap}")
                 fusionCapDisplay = visLabel("Fusions: ${runState.hero.fusions.size} / ${runState.fusionCap}")
             }
@@ -107,11 +112,13 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             setPosition(gridXStart, gridYStart)
             width = battleWidth.toFloat() - bigMargin
             height = battleHeight.toFloat() - bigMargin
-            flowGroup(spacing = 10f) {
-                width = battleWidth.toFloat() - bigMargin
-                height = battleHeight.toFloat() - bigMargin
+            if (this@DuringRunScreen.debug) {
+                flowGroup(spacing = 10f) {
+                    width = battleWidth.toFloat() - bigMargin
+                    height = battleHeight.toFloat() - bigMargin
 
-                repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
+                    repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
+                }
             }
         }
     }
@@ -120,7 +127,19 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
         visTable {
             setSize(viewportWidth.toFloat(), benchBarHeight.toFloat())
             background(rectPixmapTexture(viewportWidth, benchBarHeight, Color.SLATE).toDrawable())
-            add("Unit bench goes here")
+            stack {
+                flowGroup(spacing = 2f) {
+                    repeat(15) {
+                        actor(squarePixmap(benchBarHeight, Color.LIGHT_GRAY))
+                    }
+                }
+                visTable {
+                    align(Align.left)
+                    runState.inactiveUnits.map { it.unitImage }.forEach {
+                        image(it).cell(align = Align.center, padLeft = 5f, padRight = 7f)
+                    }
+                }
+            }
         }
     }
 
