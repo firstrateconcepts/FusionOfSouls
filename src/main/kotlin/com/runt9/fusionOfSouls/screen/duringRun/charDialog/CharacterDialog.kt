@@ -1,7 +1,6 @@
 package com.runt9.fusionOfSouls.screen.duringRun.charDialog
 
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.widget.VisDialog
 import com.runt9.fusionOfSouls.battleWidth
@@ -13,10 +12,6 @@ import ktx.scene2d.splitPane
 
 class CharacterDialog(title: String) : VisDialog(title, "dialog"), KTable {
     init {
-        TooltipManager.getInstance().apply {
-            instant()
-            animations = false
-        }
         setOrigin(Align.center)
         centerWindow()
         isMovable = false

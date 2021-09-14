@@ -2,6 +2,8 @@ package com.runt9.fusionOfSouls.screen
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.runt9.fusionOfSouls.FosGame
+import com.runt9.fusionOfSouls.model.loot.Rarity
+import com.runt9.fusionOfSouls.model.loot.rune.Rune
 import com.runt9.fusionOfSouls.model.unit.hero.defaultHero
 import com.runt9.fusionOfSouls.screen.duringRun.DuringRunScreen
 import com.runt9.fusionOfSouls.service.runState
@@ -23,6 +25,7 @@ class RunStartScreen(private val game: FosGame, override val stage: Stage) : Fos
                     onClick {
                         // TODO: Hero selection
                         runState.hero = defaultHero
+                        runState.unequippedRunes.add(Rune(Rarity.LEGENDARY))
                         game.setScreen<DuringRunScreen>()
                     }
                 }

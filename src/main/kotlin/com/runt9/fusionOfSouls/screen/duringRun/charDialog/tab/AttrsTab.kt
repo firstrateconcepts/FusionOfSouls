@@ -10,7 +10,11 @@ class AttrsTab : CharDialogTab("Attributes") {
         (contentTable as KVisTable).apply {
             runState.hero.secondaryAttrs.all.forEach { attr ->
                 scaledLabel(attr.type.displayName).cell(align = Align.left, growX = true)
-                scaledLabel(attr.displayValue()).cell(align = Align.center)
+                scaledLabel(attr.displayValue()) {
+                    attr.addListener {
+                        setText(attr.displayValue())
+                    }
+                }.cell(align = Align.center)
                 row()
             }
         }

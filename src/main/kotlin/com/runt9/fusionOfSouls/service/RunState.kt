@@ -1,5 +1,6 @@
 package com.runt9.fusionOfSouls.service
 
+import com.runt9.fusionOfSouls.model.loot.rune.Rune
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.hero.Hero
 import kotlin.random.Random
@@ -10,6 +11,7 @@ class RunState {
 
     lateinit var hero: Hero
     val units = mutableListOf<GameUnit>()
+    val unequippedRunes = mutableListOf<Rune>()
     var gold = 0
 
     // TODO: Not hard-coded

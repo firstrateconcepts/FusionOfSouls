@@ -3,7 +3,7 @@ package com.runt9.fusionOfSouls.screen.duringRun.charDialog
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Align
-import com.kotcrab.vis.ui.VisUI
+import com.kotcrab.vis.ui.widget.VisLabel
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.AbilityTab
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.AttrsTab
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.RuneTab
@@ -14,17 +14,14 @@ import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.scene2d
 import ktx.scene2d.stack
-import ktx.scene2d.textTooltip
 import ktx.scene2d.vis.addTabContentsTo
 import ktx.scene2d.vis.tabbedPane
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visProgressBar
 import ktx.scene2d.vis.visTable
-import ktx.style.defaultStyle
 import ktx.style.get
 import ktx.style.tabbedPane
-import ktx.style.textTooltip
 import ktx.style.visTextButton
 
 fun leftPane() = scene2d.visTable {
@@ -35,6 +32,7 @@ fun leftPane() = scene2d.visTable {
     }
     skin.tabbedPane("smallText", "default") {
         buttonStyle = skin["smallText"]
+        draggable = false
     }
 
     visTable {
@@ -77,20 +75,18 @@ private fun KTable.buildCharInfo() = visTable {
 
     visTable {
         runState.hero.primaryAttrs.all.forEach { attr ->
-            visLabel(attr.type.displayName) {
-                textTooltip("Hello, I am a tooltip!") { tt ->
-                    tt.setInstant(true)
-                    tt.setStyle(VisUI.getSkin().textTooltip("smallerTooltip", extend = defaultStyle) {
-                        label = VisUI.getSkin()["small"]
-                    })
+            visLabel(attr.type.displayName).cell(align = Align.left, expandX = true)
+            visLabel(attr.displayValue()) {
+                attr.addListener {
+                    setText(attr.displayValue())
                 }
-            }.cell(align = Align.left, expandX = true)
-            visLabel(attr.displayValue()).cell(align = Align.center, row = true)
+            }.cell(align = Align.center, row = true)
         }
     }.cell(grow = true)
 }
 
 @Scene2dDsl
-fun KWidget<*>.scaledLabel(text: String) = visLabel(text, "small") {
+fun <S> KWidget<S>.scaledLabel(text: String, init: (@Scene2dDsl VisLabel).(S) -> Unit = {}) = visLabel(text, "small") {
     setFontScale(0.75f)
+    init(it)
 }

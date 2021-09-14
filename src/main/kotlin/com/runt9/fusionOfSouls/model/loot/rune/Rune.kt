@@ -1,5 +1,9 @@
 package com.runt9.fusionOfSouls.model.loot.rune
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.GameUnitEffect
 import com.runt9.fusionOfSouls.model.loot.Rarity
 import com.runt9.fusionOfSouls.model.loot.Rarity.COMMON
@@ -12,6 +16,12 @@ import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifierEffect
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeType
 import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttributeType
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType
+import com.runt9.fusionOfSouls.util.rectPixmapTexture
+import ktx.scene2d.KGroup
+import ktx.scene2d.textTooltip
+import ktx.style.defaultStyle
+import ktx.style.get
+import ktx.style.textTooltip
 import kotlin.random.Random
 
 private val Rarity.numRuneAttrs: Int
@@ -21,10 +31,23 @@ private val Rarity.numRuneAttrs: Int
         RARE, LEGENDARY -> 3
     }
 
-class Rune(rarity: Rarity) : GameUnitEffect {
+class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup {
     override val description by lazy { generateDescription() }
     private val modifiers = generateModifiers(rarity)
     private val passives = if (rarity == LEGENDARY) listOf(randomLegendaryPassive()) else emptyList()
+
+    init {
+        actor = Image(rectPixmapTexture(25, 25, Color.BLUE))
+        textTooltip(description) { tt ->
+            wrap = true
+
+            tt.setInstant(true)
+            tt.setStyle(VisUI.getSkin().textTooltip("smallerTooltip", extend = defaultStyle) {
+                label = VisUI.getSkin()["small"]
+                setFontScale(0.75f)
+            })
+        }
+    }
 
     override fun applyToUnit(unit: GameUnit) {
         modifiers.forEach { it.applyToUnit(unit) }
@@ -63,6 +86,7 @@ fun generateModifiers(rarity: Rarity): List<AttributeModifierEffect<*, *>> {
         }
 
         output += AttributeModifierEffect(randomAttr, randomAttr.attrRandomizer.getRandom(rarity))
+        generatedSoFar += randomAttr
     }
 
     return output

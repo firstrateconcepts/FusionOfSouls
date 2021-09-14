@@ -20,7 +20,7 @@ class Hero(name: String, unitImage: Texture, skill: Skill, classes: List<UnitCla
     init {
         // Hero cannot be removed so must start on the grid
         savedGridPos = GridPoint(0.0, 0.0)
-        addRune(Rune(Rarity.COMMON))
+        addRune(Rune(Rarity.LEGENDARY))
         fusions.add(Fusion(DefaultPassive()))
         fusions.add(Fusion(TestPassive()))
     }
