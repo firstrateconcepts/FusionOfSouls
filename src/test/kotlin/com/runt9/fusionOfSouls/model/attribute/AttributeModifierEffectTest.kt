@@ -9,13 +9,13 @@ import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifierEffect
 import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttributeType
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType
-import com.runt9.fusionOfSouls.model.unit.skill.DefaultSkill
+import com.runt9.fusionOfSouls.model.unit.ability.DefaultAbility
 import com.runt9.fusionOfSouls.model.unit.unitClass.TankClass
 import org.junit.jupiter.api.Test
 
 // TODO: Test generated description
 class AttributeModifierEffectTest {
-    private fun testUnit() = GameUnit("test", Texture(Gdx.files.internal("blueArrow-tp.png")), DefaultSkill(), listOf(TankClass()))
+    private fun testUnit() = GameUnit("test", Texture(Gdx.files.internal("blueArrow-tp.png")), DefaultAbility(), listOf(TankClass()))
     private fun testModifier() = AttributeModifier(flatModifier = 5.0)
 
     @Test

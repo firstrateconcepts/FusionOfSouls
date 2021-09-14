@@ -35,10 +35,10 @@ class RuneTab : CharDialogTab("Runes") {
 
     @Scene2dDsl
     private fun drawRunePanePortion(dragPane: DragPane, header: () -> String) = scene2d.visTable {
-        visLabel(header.invoke(), "small") {
+        visLabel(header(), "small") {
             val listener = { event: Event ->
                 if (event is RuneCountUpdateEvent) {
-                    setText(header.invoke())
+                    setText(header())
                 }
 
                 false

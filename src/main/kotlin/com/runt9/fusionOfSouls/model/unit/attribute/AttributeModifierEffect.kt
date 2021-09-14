@@ -28,7 +28,7 @@ class AttributeModifierEffect<A : Attribute, T : Attributes<A>>(private val type
         val hasFlat = modifier.flatModifier != 0.0
         if (hasFlat) {
             val incRed = if (modifier.flatModifier > 0.0) "Increased" else "Reduced"
-            sb.append("$incRed by ${type.valueDisplayer.invoke(modifier.flatModifier)}")
+            sb.append("$incRed by ${type.valueDisplayer(modifier.flatModifier)}")
         }
         if (modifier.percentModifier != 0.0) {
             val incRed = if (modifier.percentModifier > 0.0) "Increased" else "Reduced"

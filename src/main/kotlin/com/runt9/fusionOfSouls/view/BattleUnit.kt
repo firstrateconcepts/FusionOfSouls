@@ -90,7 +90,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
             barDefaults(5f)
         }
 
-        cooldownBar = visProgressBar(0f, unit.skill.modifiedCooldown.toFloat(), style = unitBarStyle) {
+        cooldownBar = visProgressBar(0f, unit.ability.modifiedCooldown.toFloat(), style = unitBarStyle) {
             barDefaults(7f)
         }
     }
@@ -108,7 +108,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
     }
 
     fun updateCooldown() {
-        unit.skill.run {
+        unit.ability.run {
             cooldownBar.value = cooldownElapsed.toFloat()
             cooldownBar.setRange(0f, modifiedCooldown.toFloat())
         }

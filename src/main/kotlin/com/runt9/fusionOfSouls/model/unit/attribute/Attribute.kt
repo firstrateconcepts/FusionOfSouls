@@ -39,13 +39,13 @@ abstract class Attribute(val type: AttributeType<*, *>) {
     }
 
     private fun valueChanged() {
-        valueListeners.forEach { it.invoke(value) }
+        valueListeners.forEach { it(value) }
     }
 
     fun addListener(applyImmediately: Boolean = true, listener: ValueChangeListener) {
         valueListeners.add(listener)
         if (applyImmediately) {
-            listener.invoke(value)
+            listener(value)
         }
     }
 
@@ -68,7 +68,7 @@ abstract class Attribute(val type: AttributeType<*, *>) {
         modifiers.removeAll { it.isTemporary }
     }
 
-    fun displayValue() = type.valueDisplayer.invoke(value)
+    fun displayValue() = type.valueDisplayer(value)
 }
 
 data class AttributeModifier(val flatModifier: Double = 0.0, val percentModifier: Double = 0.0, val isTemporary: Boolean = false)

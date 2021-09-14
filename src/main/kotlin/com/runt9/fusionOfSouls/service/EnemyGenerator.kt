@@ -6,7 +6,7 @@ import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
-import com.runt9.fusionOfSouls.model.unit.skill.DefaultSkill
+import com.runt9.fusionOfSouls.model.unit.ability.DefaultAbility
 import com.runt9.fusionOfSouls.model.unit.unitClass.TankClass
 import com.runt9.fusionOfSouls.view.BattleUnit
 
@@ -17,7 +17,7 @@ class EnemyGenerator(private val gridService: GridService) {
 
     fun generateEnemy(strength: Double): BattleUnit {
         val randomEnemyPoint = gridService.addRandomlyToGrid(gridWidth - 5, gridWidth - 1)
-        val enemyUnit = GameUnit("enemy", Texture(Gdx.files.internal("redArrow-tp.png")), DefaultSkill(), listOf(TankClass()))
+        val enemyUnit = GameUnit("enemy", Texture(Gdx.files.internal("redArrow-tp.png")), DefaultAbility(), listOf(TankClass()))
         enemyUnit.savedGridPos = randomEnemyPoint
         val enemyUnitView = BattleUnit(enemyUnit, Team.ENEMY)
         enemyUnit.primaryAttrs.all.forEach {

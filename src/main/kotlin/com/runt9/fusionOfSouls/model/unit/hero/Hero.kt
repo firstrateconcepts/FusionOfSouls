@@ -9,10 +9,10 @@ import com.runt9.fusionOfSouls.model.loot.passive.Passive
 import com.runt9.fusionOfSouls.model.loot.passive.TestPassive
 import com.runt9.fusionOfSouls.model.loot.rune.Rune
 import com.runt9.fusionOfSouls.model.unit.GameUnit
-import com.runt9.fusionOfSouls.model.unit.skill.Skill
+import com.runt9.fusionOfSouls.model.unit.ability.Ability
 import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
 
-class Hero(name: String, unitImage: Texture, skill: Skill, classes: List<UnitClass>) : GameUnit(name, unitImage, skill, classes) {
+class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<UnitClass>) : GameUnit(name, unitImage, ability, classes) {
     val passives = mutableListOf<Passive>()
     val runes = mutableListOf<Rune>()
     val fusions = mutableListOf<Fusion>()

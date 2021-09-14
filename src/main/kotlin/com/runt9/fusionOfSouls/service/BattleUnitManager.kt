@@ -10,10 +10,10 @@ import com.runt9.fusionOfSouls.model.event.BeforeDamageEvent
 import com.runt9.fusionOfSouls.model.event.OnHitEvent
 import com.runt9.fusionOfSouls.model.event.WhenHitEvent
 import com.runt9.fusionOfSouls.model.unit.Team
+import com.runt9.fusionOfSouls.model.unit.ability.AbilityUseContext
 import com.runt9.fusionOfSouls.model.unit.attack.AttackRollRequest
 import com.runt9.fusionOfSouls.model.unit.attack.CritCheckRequest
 import com.runt9.fusionOfSouls.model.unit.attack.DamageCalcRequest
-import com.runt9.fusionOfSouls.model.unit.skill.SkillUseContext
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
 import com.soywiz.korev.dispatch
@@ -94,9 +94,9 @@ class BattleUnitManager(private val gridService: GridService, private val attack
     }
 
     private fun BattleUnit.initSkill() {
-        unit.skill.resetCooldown()
+        unit.ability.resetCooldown()
         skillJob = interval(0.25f) {
-            unit.skill.run {
+            unit.ability.run {
                 if (cooldownElapsed >= modifiedCooldown) {
                     return@run
                 }
@@ -123,10 +123,10 @@ class BattleUnitManager(private val gridService: GridService, private val attack
 
             KtxAsync.launch {
                 // Use skill if we can
-                unit.skill.run {
-                    val skillUseContext = SkillUseContext(this@startAttacking, runState, this@BattleUnitManager)
-                    if (canUseSkill(skillUseContext)) {
-                        useSkill(skillUseContext)
+                unit.ability.run {
+                    val abilityUseContext = AbilityUseContext(this@startAttacking, runState, this@BattleUnitManager)
+                    if (canUseSkill(abilityUseContext)) {
+                        useSkill(abilityUseContext)
                         updateCooldown()
                         checkForKills()
                         return@launch
