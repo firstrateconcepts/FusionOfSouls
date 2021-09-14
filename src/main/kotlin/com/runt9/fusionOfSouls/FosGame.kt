@@ -6,14 +6,15 @@ import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.profiling.GLProfiler
+import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.Settings
-import com.runt9.fusionOfSouls.screen.DuringRunScreen
 import com.runt9.fusionOfSouls.screen.LoadingScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.RunStartScreen
 import com.runt9.fusionOfSouls.screen.SettingsScreen
+import com.runt9.fusionOfSouls.screen.duringRun.DuringRunScreen
 import com.runt9.fusionOfSouls.service.AttackService
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.BattleUnitManager
@@ -45,6 +46,10 @@ class FosGame : KtxGame<KtxScreen>() {
 //        VisUI.load(Gdx.files.classpath("ui/uiskin.json"))
         VisUI.load()
         Scene2DSkin.defaultSkin = VisUI.getSkin()
+        TooltipManager.getInstance().apply {
+            instant()
+            animations = false
+        }
 
         injector.register {
             bindSingleton { PooledEngine() }

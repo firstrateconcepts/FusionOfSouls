@@ -1,11 +1,10 @@
-package com.runt9.fusionOfSouls.screen
+package com.runt9.fusionOfSouls.screen.duringRun
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
-import com.kotcrab.vis.ui.widget.VisDialog
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
@@ -21,6 +20,9 @@ import com.runt9.fusionOfSouls.gridXStart
 import com.runt9.fusionOfSouls.gridYStart
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.resourceBarHeight
+import com.runt9.fusionOfSouls.screen.FosScreen
+import com.runt9.fusionOfSouls.screen.MainMenuScreen
+import com.runt9.fusionOfSouls.screen.duringRun.charDialog.CharacterDialog
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.fosVisTable
@@ -36,7 +38,10 @@ import ktx.actors.setPosition
 import ktx.async.KtxAsync
 import ktx.async.interval
 import ktx.scene2d.StageWidget
+import ktx.scene2d.actor
 import ktx.scene2d.actors
+import ktx.scene2d.image
+import ktx.scene2d.stack
 import ktx.scene2d.vis.floatingGroup
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
@@ -44,9 +49,11 @@ import ktx.scene2d.vis.visTable
 import ktx.scene2d.vis.visTextButton
 
 
+// TODO: Ensure all user actions are disabled during battle
 class DuringRunScreen(private val game: FosGame, private val battleManager: BattleManager, override val stage: Stage) : FosScreen {
+    private val debug = false
+
     private val benchBarHeight = cellSize
-    private val debugMode = false
     private lateinit var updater: Timer.Task
     private lateinit var resourceBar: VisTable
     private lateinit var goldDisplay: VisLabel
@@ -54,9 +61,9 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     private lateinit var runeCapDisplay: VisLabel
     private lateinit var fusionCapDisplay: VisLabel
     private lateinit var floorRoomDisplay: VisLabel
-    private lateinit var inventoryButton: VisTextButton
+    private lateinit var heroButton: VisTextButton
     private lateinit var gridContainer: Group
-    private lateinit var inventoryModal: VisDialog
+    private val heroDialog by lazy { CharacterDialog(runState.hero.name) }
 
     override fun show() {
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
@@ -69,7 +76,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     }
 
     private fun StageWidget.drawTopBar() {
-        visTable(true) {
+        resourceBar = visTable(true) {
             defaults().expand().left().padLeft(basicMargin.toFloat())
             y = viewportHeight - resourceBarHeight.toFloat()
             setSize(viewportWidth.toFloat(), resourceBarHeight.toFloat())
@@ -78,7 +85,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             visTable(true) {
                 defaults().expand().center()
                 goldDisplay = visLabel("Gold: ${runState.gold}")
-                unitCapDisplay = visLabel("Units: ${runState.units.size} / ${runState.unitCap}")
+                unitCapDisplay = visLabel("Units: ${runState.activeUnits.size} / ${runState.unitCap}")
                 runeCapDisplay = visLabel("Runes: ${runState.hero.runes.size} / ${runState.runeCap}")
                 fusionCapDisplay = visLabel("Fusions: ${runState.hero.fusions.size} / ${runState.fusionCap}")
             }
@@ -86,12 +93,12 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             defaults().expand().right().padRight(basicMargin.toFloat())
             visTable(true) {
                 defaults().expand().center()
-                inventoryButton = visTextButton("Inventory") {
+                heroButton = visTextButton("Hero") {
                     setOrigin(Align.center)
                     scaleBy(-0.33f)
                     isTransform = true
                     onClick {
-                        // TODO: Inventory modal
+                        heroDialog.show(this@DuringRunScreen.stage)
                     }
                 }
                 floorRoomDisplay = visLabel("Room ${runState.floor}:${runState.room}")
@@ -105,11 +112,13 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             setPosition(gridXStart, gridYStart)
             width = battleWidth.toFloat() - bigMargin
             height = battleHeight.toFloat() - bigMargin
-            flowGroup(spacing = 10f) {
-                width = battleWidth.toFloat() - bigMargin
-                height = battleHeight.toFloat() - bigMargin
+            if (this@DuringRunScreen.debug) {
+                flowGroup(spacing = 10f) {
+                    width = battleWidth.toFloat() - bigMargin
+                    height = battleHeight.toFloat() - bigMargin
 
-                repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
+                    repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
+                }
             }
         }
     }
@@ -118,7 +127,19 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
         visTable {
             setSize(viewportWidth.toFloat(), benchBarHeight.toFloat())
             background(rectPixmapTexture(viewportWidth, benchBarHeight, Color.SLATE).toDrawable())
-            add("Unit bench goes here")
+            stack {
+                flowGroup(spacing = 2f) {
+                    repeat(15) {
+                        actor(squarePixmap(benchBarHeight, Color.LIGHT_GRAY))
+                    }
+                }
+                visTable {
+                    align(Align.left)
+                    runState.inactiveUnits.map { it.unitImage }.forEach {
+                        image(it).cell(align = Align.center, padLeft = 5f, padRight = 7f)
+                    }
+                }
+            }
         }
     }
 

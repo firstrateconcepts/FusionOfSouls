@@ -11,8 +11,10 @@ typealias ValueChangeListener = (Double) -> Unit
 
 interface AttributeType<A : Attribute, T : Attributes<A>> {
     val unitAttrSelection: GameUnit.() -> T
+    val displayName: String
     val attrsAttrSelection: T.() -> A
     val attrRandomizer: AttributeModifierRandomizer
+    val valueDisplayer: (Double) -> String
 }
 
 abstract class Attribute(val type: AttributeType<*, *>) {
@@ -37,13 +39,13 @@ abstract class Attribute(val type: AttributeType<*, *>) {
     }
 
     private fun valueChanged() {
-        valueListeners.forEach { it.invoke(value) }
+        valueListeners.forEach { it(value) }
     }
 
     fun addListener(applyImmediately: Boolean = true, listener: ValueChangeListener) {
         valueListeners.add(listener)
         if (applyImmediately) {
-            listener.invoke(value)
+            listener(value)
         }
     }
 
@@ -65,6 +67,8 @@ abstract class Attribute(val type: AttributeType<*, *>) {
     fun purgeTemporaryModifiers() {
         modifiers.removeAll { it.isTemporary }
     }
+
+    fun displayValue() = type.valueDisplayer(value)
 }
 
 data class AttributeModifier(val flatModifier: Double = 0.0, val percentModifier: Double = 0.0, val isTemporary: Boolean = false)

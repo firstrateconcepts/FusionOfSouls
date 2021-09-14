@@ -8,7 +8,9 @@ import com.soywiz.korio.lang.Closeable
 
 // TODO: This can be unit tested
 class Taunt(private val tauntTarget: BattleUnit) : StatusEffect("Taunt") {
-    private val defenseModifier = AttributeModifier(percentModifier = -0.25, isTemporary = true)
+    private val defenseReductionValue = -25.0
+    override val description = "Taunted unit must target the unit that taunted it and has ${defenseReductionValue}% reduced Defense for the duration of the Taunt."
+    private val defenseModifier = AttributeModifier(percentModifier = defenseReductionValue, isTemporary = true)
     private var originalTarget: BattleUnit? = null
     private lateinit var targetRemovedCloser: Closeable
 

@@ -14,6 +14,7 @@ import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.status.StatusEffect
 import com.runt9.fusionOfSouls.service.isWithinRange
+import com.runt9.fusionOfSouls.util.progressBarStyleHeight
 import com.soywiz.klock.TimeSpan
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
@@ -36,6 +37,7 @@ enum class BattleUnitState {
 
 class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(), KGroup {
     private val dispatcher = LocalDispatcher()
+    private val unitBarStyle = "unitBar"
 
     val body: VisImage
     var gridPos = unit.savedGridPos!!
@@ -73,26 +75,23 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
             rotation = this@BattleUnit.team.initialRotation.degrees.toFloat()
         }
 
-        // TODO: Common stuff between bars refactored
-        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat()) {
-            value = this@BattleUnit.currentHp.toFloat()
-            setAnimateDuration(0.1f)
-            width = (cellSize * 0.75).toFloat()
-            height = 2f
-            style.knob.minHeight = 2f
-            style.background.minHeight = 2f
-            setOrigin(Align.center)
-            y = cellSize.toFloat() - 5f
-        }
+        progressBarStyleHeight(unitBarStyle, 2f)
 
-        cooldownBar = visProgressBar(0f, unit.skill.modifiedCooldown.toFloat()) {
+        val barDefaults: VisProgressBar.(Float) -> Unit = { yOffset ->
             setAnimateDuration(0.25f)
             width = (cellSize * 0.75).toFloat()
             height = 2f
-            style.knob.minHeight = 2f
-            style.background.minHeight = 2f
             setOrigin(Align.center)
-            y = cellSize.toFloat() - 7f
+            y = cellSize.toFloat() - yOffset
+        }
+
+        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat(), style = unitBarStyle) {
+            value = this@BattleUnit.currentHp.toFloat()
+            barDefaults(5f)
+        }
+
+        cooldownBar = visProgressBar(0f, unit.ability.modifiedCooldown.toFloat(), style = unitBarStyle) {
+            barDefaults(7f)
         }
     }
 
@@ -109,7 +108,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
     }
 
     fun updateCooldown() {
-        unit.skill.run {
+        unit.ability.run {
             cooldownBar.value = cooldownElapsed.toFloat()
             cooldownBar.setRange(0f, modifiedCooldown.toFloat())
         }
