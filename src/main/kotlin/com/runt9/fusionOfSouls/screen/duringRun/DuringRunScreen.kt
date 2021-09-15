@@ -64,7 +64,6 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     private lateinit var floorRoomDisplay: VisLabel
     private lateinit var heroButton: VisTextButton
     private lateinit var gridContainer: Group
-    private val heroDialog by lazy { CharacterDialog(runState.hero.name) }
 
     override fun show() {
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
@@ -102,6 +101,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
                     scaleBy(-0.33f)
                     isTransform = true
                     onClick {
+                        val heroDialog = CharacterDialog(runState.hero.name)
                         heroDialog.show(this@DuringRunScreen.stage)
                     }
                 }

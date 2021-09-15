@@ -14,6 +14,7 @@ import com.runt9.fusionOfSouls.model.unit.ability.AbilityUseContext
 import com.runt9.fusionOfSouls.model.unit.attack.AttackRollRequest
 import com.runt9.fusionOfSouls.model.unit.attack.CritCheckRequest
 import com.runt9.fusionOfSouls.model.unit.attack.DamageCalcRequest
+import com.runt9.fusionOfSouls.model.unit.hero.Hero
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
 import com.soywiz.korev.dispatch
@@ -206,6 +207,9 @@ class BattleUnitManager(private val gridService: GridService, private val attack
         if (unit.team == Team.PLAYER) {
             playerTeam.remove(unit)
             runState.battleContext.flawless = false
+            if (unit.unit is Hero) {
+                runState.battleContext.heroLived = false
+            }
         } else {
             enemyTeam.remove(unit)
         }

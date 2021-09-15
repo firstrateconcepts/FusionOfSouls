@@ -16,6 +16,9 @@ class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<Uni
     val passives = mutableListOf<Passive>()
     val runes = mutableListOf<Rune>()
     val fusions = mutableListOf<Fusion>()
+    var xp = 8
+    var xpToLevel = 10
+    var level = 1
 
     init {
         // Hero cannot be removed so must start on the grid
@@ -42,5 +45,26 @@ class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<Uni
         selectedFusion.applyToUnit(this)
         fusions += selectedFusion
         // TODO: Check synergy
+    }
+
+    fun addXp(xp: Int): Boolean {
+        this.xp += xp
+        if (this.xp >= xpToLevel) {
+            level++
+            this.xp -= xpToLevel
+            recalculateXpToLevel()
+            return true
+        }
+        return false
+    }
+
+    private fun recalculateXpToLevel() {
+        // TODO: There's a formula for this, probably
+        xpToLevel = when(level) {
+            1 -> 10
+            2 -> 20
+            3 -> 50
+            else -> 120
+        }
     }
 }

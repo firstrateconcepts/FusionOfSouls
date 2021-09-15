@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.widget.VisDialog
 import com.kotcrab.vis.ui.widget.VisTextButton
 import com.runt9.fusionOfSouls.battleWidth
+import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.viewportHeight
 import com.soywiz.kmem.toIntFloor
@@ -33,6 +34,7 @@ class PostBattleDialog(private val listener: () -> Unit) : VisDialog("Rewards", 
         }
 
         val gold = generateGold()
+        val xp = calculateXp()
         contentTable.apply {
             val group = scene2d.visTable(defaultSpacing = true) {
                 val table = this
@@ -42,15 +44,27 @@ class PostBattleDialog(private val listener: () -> Unit) : VisDialog("Rewards", 
                         buttonHandler(table)
                     }
                 }.cell(growX = true, row = true)
-                visTextButton("5 Hero XP") {
-                    onClick { buttonHandler(table) }
+                visTextButton("$xp Hero XP") {
+                    onClick {
+                        if (runState.hero.addXp(xp)) {
+                            table.visTextButton("Hero level up!") {
+                                onClick {
+                                    runState.hero.primaryAttrs.all.forEach {
+                                        it.addModifier(AttributeModifier(percentModifier = 10.0))
+                                    }
+                                    buttonHandler(table)
+                                }
+                            }.cell(growX = true, row = true)
+                        }
+                        buttonHandler(table)
+                    }
                 }.cell(growX = true, row = true)
                 visTextButton("Unit or Rune") {
                     onClick { buttonHandler(table) }
                 }.cell(growX = true, row = true)
             }
             add(group).growX().expandY().pad(10f).align(Align.top)
-            debugAll()
+//            debugAll()
         }
     }
 
@@ -61,6 +75,7 @@ class PostBattleDialog(private val listener: () -> Unit) : VisDialog("Rewards", 
         listener()
     }
 
+    // TODO: This is not where these functions go
     private fun generateGold(): Int {
         var gold = runState.floor
         gold += runState.battleContext.enemyCount
@@ -69,5 +84,15 @@ class PostBattleDialog(private val listener: () -> Unit) : VisDialog("Rewards", 
         }
         gold += ((runState.gold + gold) / 10.0).toIntFloor()
         return gold
+    }
+
+    private fun calculateXp(): Int {
+        if (!runState.battleContext.heroLived) {
+            return 0
+        }
+
+        var xp = runState.floor
+        xp += runState.battleContext.enemyCount
+        return xp
     }
 }

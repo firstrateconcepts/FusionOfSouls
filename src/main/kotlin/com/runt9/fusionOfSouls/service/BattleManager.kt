@@ -18,7 +18,7 @@ enum class BattleStatus {
     BEFORE, DURING, AFTER
 }
 
-data class BattleContext(val enemyCount: Int, var flawless: Boolean = true)
+data class BattleContext(val enemyCount: Int, var flawless: Boolean = true, var heroLived: Boolean = true)
 
 // TODO: Detach view logic (container + unit drawing) from service logic
 class BattleManager(
@@ -47,7 +47,7 @@ class BattleManager(
 
         // TODO: Algorithm for floor/room changes # and strength of enemies
 
-        val enemyCount = max(((runState.floor - 1) * 10.0) + runState.room / 3.0, 1.0).toIntFloor()
+        val enemyCount = max((((runState.floor - 1) * 10.0) + runState.room) / 3.0, 1.0).toIntFloor()
         enemyGenerator.generateEnemies(enemyCount, -25.0).forEach {
             gridContainer += (it)
             it.setInitialPosition()
