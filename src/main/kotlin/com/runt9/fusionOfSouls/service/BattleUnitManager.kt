@@ -205,6 +205,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
 
         if (unit.team == Team.PLAYER) {
             playerTeam.remove(unit)
+            runState.battleContext.flawless = false
         } else {
             enemyTeam.remove(unit)
         }

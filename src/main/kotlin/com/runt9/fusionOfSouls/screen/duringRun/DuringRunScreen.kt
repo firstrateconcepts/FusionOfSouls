@@ -23,6 +23,7 @@ import com.runt9.fusionOfSouls.resourceBarHeight
 import com.runt9.fusionOfSouls.screen.FosScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.CharacterDialog
+import com.runt9.fusionOfSouls.screen.duringRun.postBattle.PostBattleDialog
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.fosVisTable
@@ -72,7 +73,9 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             drawTopBar()
             drawUnitBar()
         }
-        KtxAsync.launch { newBattle() }
+        newBattle()
+        // TODO: Temporary to get here faster
+        drawPostBattle()
     }
 
     private fun StageWidget.drawTopBar() {
@@ -84,10 +87,11 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
 
             visTable(true) {
                 defaults().expand().center()
-                goldDisplay = visLabel("Gold: ${runState.gold}")
+                val goldText = { "Gold: ${runState.gold}" }
+                goldDisplay = visLabel(goldText()) {
+                    runState.goldListeners.add { setText(goldText()) }
+                }
                 unitCapDisplay = visLabel("Units: ${runState.activeUnits.size} / ${runState.unitCap}")
-                runeCapDisplay = visLabel("Runes: ${runState.hero.runes.size} / ${runState.runeCap}")
-                fusionCapDisplay = visLabel("Fusions: ${runState.hero.fusions.size} / ${runState.fusionCap}")
             }
 
             defaults().expand().right().padRight(basicMargin.toFloat())
@@ -198,21 +202,11 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     }
 
     private fun drawPostBattle() {
-        stage.actors {
-            fosVisTable {
-                visLabel("You Won!")
-                row()
-                visTextButton("Next Battle") {
-                    onClick {
-                        this@fosVisTable.remove()
-                        KtxAsync.launch { newBattle() }
-                    }
-                }
-            }
-        }
+        val dialog = PostBattleDialog { newBattle() }
+        dialog.show(this@DuringRunScreen.stage)
     }
 
-    private suspend fun newBattle() {
+    private fun newBattle() {
         drawStartButton()
         battleManager.newBattle(gridContainer)
     }

@@ -7,14 +7,18 @@ import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
+import com.soywiz.kmem.toIntFloor
 import com.soywiz.korev.dispatch
 import kotlinx.coroutines.launch
 import ktx.actors.plusAssign
 import ktx.async.KtxAsync
+import kotlin.math.max
 
 enum class BattleStatus {
     BEFORE, DURING, AFTER
 }
+
+data class BattleContext(val enemyCount: Int, var flawless: Boolean = true)
 
 // TODO: Detach view logic (container + unit drawing) from service logic
 class BattleManager(
@@ -24,7 +28,7 @@ class BattleManager(
     private val enemyGenerator: EnemyGenerator
 ) {
     private var battleStatus = BattleStatus.BEFORE
-    lateinit var onBattleComplete: suspend (Team) -> Unit
+    lateinit var onBattleComplete: (Team) -> Unit
 
     fun newBattle(gridContainer: Group) {
         runState.activeUnits.filter { it.savedGridPos != null }.forEach {
@@ -43,11 +47,13 @@ class BattleManager(
 
         // TODO: Algorithm for floor/room changes # and strength of enemies
 
-        enemyGenerator.generateEnemies(1, -25.0).forEach {
+        val enemyCount = max(((runState.floor - 1) * 10.0) + runState.room / 3.0, 1.0).toIntFloor()
+        enemyGenerator.generateEnemies(enemyCount, -25.0).forEach {
             gridContainer += (it)
             it.setInitialPosition()
             unitManager.enemyTeam += it
         }
+        runState.battleContext = BattleContext(enemyCount)
     }
 
     fun start() {
@@ -106,7 +112,7 @@ class BattleManager(
         unit.dispatch(EndTurnEvent(unit))
     }
 
-    private suspend fun battleComplete(team: Team) {
+    private fun battleComplete(team: Team) {
         runState.activeUnits.forEach(GameUnit::reset)
         runState.hero.reset()
         unitManager.clear()

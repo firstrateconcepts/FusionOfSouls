@@ -3,9 +3,12 @@ package com.runt9.fusionOfSouls.service
 import com.runt9.fusionOfSouls.model.loot.rune.Rune
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.hero.Hero
+import kotlin.properties.Delegates
 import kotlin.random.Random
 
 class RunState {
+    val goldListeners = mutableListOf<(Int) -> Unit>()
+
     var floor = 1
     var room = 1
 
@@ -13,7 +16,9 @@ class RunState {
     val activeUnits = mutableListOf<GameUnit>()
     val inactiveUnits = mutableListOf<GameUnit>()
     val unequippedRunes = mutableListOf<Rune>()
-    var gold = 0
+    var gold by Delegates.observable(0) { _, _, newValue -> goldListeners.forEach { it(newValue) } }
+
+    lateinit var battleContext: BattleContext
 
     // TODO: Not hard-coded
     var unitCap = 2
