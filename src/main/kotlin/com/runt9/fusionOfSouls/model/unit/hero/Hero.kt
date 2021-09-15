@@ -2,12 +2,12 @@ package com.runt9.fusionOfSouls.model.unit.hero
 
 import com.badlogic.gdx.graphics.Texture
 import com.runt9.fusionOfSouls.model.GridPoint
+import com.runt9.fusionOfSouls.model.loot.DefaultPassive
+import com.runt9.fusionOfSouls.model.loot.Fusion
+import com.runt9.fusionOfSouls.model.loot.Passive
 import com.runt9.fusionOfSouls.model.loot.Rarity
-import com.runt9.fusionOfSouls.model.loot.fusion.Fusion
-import com.runt9.fusionOfSouls.model.loot.passive.DefaultPassive
-import com.runt9.fusionOfSouls.model.loot.passive.Passive
-import com.runt9.fusionOfSouls.model.loot.passive.TestPassive
-import com.runt9.fusionOfSouls.model.loot.rune.Rune
+import com.runt9.fusionOfSouls.model.loot.Rune
+import com.runt9.fusionOfSouls.model.loot.TestPassive
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.ability.Ability
 import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
@@ -16,7 +16,7 @@ class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<Uni
     val passives = mutableListOf<Passive>()
     val runes = mutableListOf<Rune>()
     val fusions = mutableListOf<Fusion>()
-    var xp = 8
+    var xp = 0
     var xpToLevel = 10
     var level = 1
 

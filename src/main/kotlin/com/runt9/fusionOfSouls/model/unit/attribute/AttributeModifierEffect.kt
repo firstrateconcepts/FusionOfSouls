@@ -1,11 +1,12 @@
 package com.runt9.fusionOfSouls.model.unit.attribute
 
-import com.runt9.fusionOfSouls.model.loot.fusion.FusableEffect
-import com.runt9.fusionOfSouls.model.loot.fusion.FusionType
+import com.runt9.fusionOfSouls.model.loot.FusableEffect
+import com.runt9.fusionOfSouls.model.loot.FusionType
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 
 // TODO: Bunch of random stuff in here, needs to be from run seed
-class AttributeModifierEffect<A : Attribute, T : Attributes<A>>(private val type: AttributeType<A, T>, private val modifier: AttributeModifier) : FusableEffect {
+class AttributeModifierEffect<A : Attribute, T : Attributes<A>>(private val type: AttributeType<A, T>, private val modifier: AttributeModifier) :
+    FusableEffect {
     override val fusionType = FusionType.ATTR_MODIFICATION
     override val description by lazy { generateDescription() }
 

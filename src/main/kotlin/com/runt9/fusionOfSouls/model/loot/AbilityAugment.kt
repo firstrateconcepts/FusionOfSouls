@@ -1,7 +1,5 @@
 package com.runt9.fusionOfSouls.model.loot
 
-import com.runt9.fusionOfSouls.model.loot.fusion.FusableEffect
-import com.runt9.fusionOfSouls.model.loot.fusion.FusionType
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 
 class AbilityAugment(override val description: String) : FusableEffect {

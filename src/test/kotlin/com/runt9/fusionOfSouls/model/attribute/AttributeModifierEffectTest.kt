@@ -4,18 +4,18 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.runt9.fusionOfSouls.model.unit.GameUnit
+import com.runt9.fusionOfSouls.model.unit.BasicUnit
+import com.runt9.fusionOfSouls.model.unit.ability.DefaultAbility
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifierEffect
 import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttributeType
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType
-import com.runt9.fusionOfSouls.model.unit.ability.DefaultAbility
 import com.runt9.fusionOfSouls.model.unit.unitClass.TankClass
 import org.junit.jupiter.api.Test
 
 // TODO: Test generated description
 class AttributeModifierEffectTest {
-    private fun testUnit() = GameUnit("test", Texture(Gdx.files.internal("blueArrow-tp.png")), DefaultAbility(), listOf(TankClass()))
+    private fun testUnit() = BasicUnit("test", Texture(Gdx.files.internal("blueArrow-tp.png")), DefaultAbility(), listOf(TankClass()))
     private fun testModifier() = AttributeModifier(flatModifier = 5.0)
 
     @Test

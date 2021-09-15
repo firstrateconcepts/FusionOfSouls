@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.layout.DragPane
 import com.kotcrab.vis.ui.layout.FlowGroup
 import com.kotcrab.vis.ui.widget.Draggable
-import com.runt9.fusionOfSouls.model.loot.rune.Rune
+import com.runt9.fusionOfSouls.model.loot.Rune
 import com.runt9.fusionOfSouls.service.runState
 import ktx.scene2d.KGroup
 import ktx.scene2d.Scene2dDsl

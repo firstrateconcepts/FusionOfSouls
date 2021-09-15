@@ -1,7 +1,7 @@
 package com.runt9.fusionOfSouls.screen.duringRun.charDialog
 
 import com.badlogic.gdx.utils.Align
-import com.runt9.fusionOfSouls.model.loot.fusion.FusionType
+import com.runt9.fusionOfSouls.model.loot.FusionType
 import com.runt9.fusionOfSouls.service.runState
 import ktx.scene2d.KTable
 import ktx.scene2d.scene2d

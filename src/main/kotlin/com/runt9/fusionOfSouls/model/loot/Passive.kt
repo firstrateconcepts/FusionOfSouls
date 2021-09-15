@@ -1,9 +1,6 @@
-package com.runt9.fusionOfSouls.model.loot.passive
+package com.runt9.fusionOfSouls.model.loot
 
 import com.runt9.fusionOfSouls.model.event.BeforeDamageEvent
-import com.runt9.fusionOfSouls.model.loot.Rarity
-import com.runt9.fusionOfSouls.model.loot.fusion.FusableEffect
-import com.runt9.fusionOfSouls.model.loot.fusion.FusionType
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.attribute.times
 import com.soywiz.korio.lang.Closeable

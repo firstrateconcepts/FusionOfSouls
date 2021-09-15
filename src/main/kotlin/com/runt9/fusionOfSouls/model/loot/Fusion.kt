@@ -1,4 +1,4 @@
-package com.runt9.fusionOfSouls.model.loot.fusion
+package com.runt9.fusionOfSouls.model.loot
 
 import com.runt9.fusionOfSouls.model.GameUnitEffect
 import com.runt9.fusionOfSouls.model.unit.GameUnit
