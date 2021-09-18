@@ -22,6 +22,7 @@ import com.runt9.fusionOfSouls.service.EnemyGenerator
 import com.runt9.fusionOfSouls.service.GridService
 import com.runt9.fusionOfSouls.service.PathService
 import com.runt9.fusionOfSouls.service.RunState
+import com.runt9.fusionOfSouls.service.UnitGenerator
 import com.runt9.fusionOfSouls.service.injector
 import com.runt9.fusionOfSouls.service.runState
 import ktx.actors.stage
@@ -57,7 +58,8 @@ class FosGame : KtxGame<KtxScreen>() {
             bindSingleton { AssetManager() }
             bindSingleton { initSettings(Gdx.app.getPreferences("FusionOfSouls")) }
             bindSingleton { GridService() }
-            bindSingleton { EnemyGenerator(inject()) }
+            bindSingleton { UnitGenerator() }
+            bindSingleton { EnemyGenerator(inject(), inject()) }
 
             bindSingleton { AttackService() }
             bind { BattleUnitManager(inject(), inject()) }
@@ -67,7 +69,7 @@ class FosGame : KtxGame<KtxScreen>() {
             addScreen(LoadingScreen(this@FosGame, inject(), inject()))
             addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
             addScreen(RunStartScreen(this@FosGame, inject()))
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject()))
             addScreen(SettingsScreen(this@FosGame, inject(), inject()))
         }
 

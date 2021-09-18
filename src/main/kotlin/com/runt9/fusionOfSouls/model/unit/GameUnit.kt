@@ -8,7 +8,7 @@ import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributes
 import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
 import com.soywiz.korev.EventDispatcher
 
-open class GameUnit(val name: String, val unitImage: Texture, val ability: Ability, startingClasses: List<UnitClass>) : EventDispatcher.Mixin() {
+abstract class GameUnit(val name: String, val unitImage: Texture, val ability: Ability, startingClasses: List<UnitClass>) : EventDispatcher.Mixin() {
     val primaryAttrs = PrimaryAttributes()
     val secondaryAttrs = SecondaryAttributes(primaryAttrs)
     val attackRange: Int

@@ -56,13 +56,15 @@ private fun KTable.buildCharInfo() = visTable {
 
         progressBarStyleHeight(xpBarStyleName, 10f)
 
-        // TODO: From XP/level system
+        val xpToLevel = runState.hero.xpToLevel
+        val currentXp = runState.hero.xp
+
         stack {
-            visProgressBar(0f, 10f, style = xpBarStyleName) {
-                value = 4f
+            visProgressBar(0f, xpToLevel.toFloat(), style = xpBarStyleName) {
+                value = currentXp.toFloat()
                 height = 10f
             }
-            visLabel("XP: 4/10", "small") {
+            visLabel("XP: ${currentXp}/${xpToLevel}", "small") {
                 setFontScale(0.5f)
                 setAlignment(Align.center)
             }

@@ -23,7 +23,9 @@ import com.runt9.fusionOfSouls.resourceBarHeight
 import com.runt9.fusionOfSouls.screen.FosScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.duringRun.charDialog.CharacterDialog
+import com.runt9.fusionOfSouls.screen.duringRun.postBattle.PostBattleDialog
 import com.runt9.fusionOfSouls.service.BattleManager
+import com.runt9.fusionOfSouls.service.UnitGenerator
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.fosVisTable
 import com.runt9.fusionOfSouls.util.rectPixmapTexture
@@ -42,6 +44,7 @@ import ktx.scene2d.actor
 import ktx.scene2d.actors
 import ktx.scene2d.image
 import ktx.scene2d.stack
+import ktx.scene2d.vis.KVisTable
 import ktx.scene2d.vis.floatingGroup
 import ktx.scene2d.vis.flowGroup
 import ktx.scene2d.vis.visLabel
@@ -50,7 +53,7 @@ import ktx.scene2d.vis.visTextButton
 
 
 // TODO: Ensure all user actions are disabled during battle
-class DuringRunScreen(private val game: FosGame, private val battleManager: BattleManager, override val stage: Stage) : FosScreen {
+class DuringRunScreen(private val game: FosGame, private val battleManager: BattleManager, private val unitGenerator: UnitGenerator, override val stage: Stage) : FosScreen {
     private val debug = false
 
     private val benchBarHeight = cellSize
@@ -58,12 +61,9 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     private lateinit var resourceBar: VisTable
     private lateinit var goldDisplay: VisLabel
     private lateinit var unitCapDisplay: VisLabel
-    private lateinit var runeCapDisplay: VisLabel
-    private lateinit var fusionCapDisplay: VisLabel
     private lateinit var floorRoomDisplay: VisLabel
     private lateinit var heroButton: VisTextButton
     private lateinit var gridContainer: Group
-    private val heroDialog by lazy { CharacterDialog(runState.hero.name) }
 
     override fun show() {
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
@@ -72,7 +72,9 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             drawTopBar()
             drawUnitBar()
         }
-        KtxAsync.launch { newBattle() }
+        newBattle()
+        // TODO: Temporary to get here faster
+//        drawPostBattle()
     }
 
     private fun StageWidget.drawTopBar() {
@@ -84,10 +86,11 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
 
             visTable(true) {
                 defaults().expand().center()
-                goldDisplay = visLabel("Gold: ${runState.gold}")
+                val goldText = { "Gold: ${runState.gold}" }
+                goldDisplay = visLabel(goldText()) {
+                    runState.goldListeners.add { setText(goldText()) }
+                }
                 unitCapDisplay = visLabel("Units: ${runState.activeUnits.size} / ${runState.unitCap}")
-                runeCapDisplay = visLabel("Runes: ${runState.hero.runes.size} / ${runState.runeCap}")
-                fusionCapDisplay = visLabel("Fusions: ${runState.hero.fusions.size} / ${runState.fusionCap}")
             }
 
             defaults().expand().right().padRight(basicMargin.toFloat())
@@ -98,6 +101,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
                     scaleBy(-0.33f)
                     isTransform = true
                     onClick {
+                        val heroDialog = CharacterDialog(runState.hero.name)
                         heroDialog.show(this@DuringRunScreen.stage)
                     }
                 }
@@ -124,6 +128,13 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     }
 
     private fun StageWidget.drawUnitBar() {
+        val drawUnits: KVisTable.() -> Unit = {
+            clearChildren()
+            runState.inactiveUnits.map { it.unitImage }.forEach {
+                image(it).cell(align = Align.center, padLeft = 5f, padRight = 7f)
+            }
+        }
+
         visTable {
             setSize(viewportWidth.toFloat(), benchBarHeight.toFloat())
             background(rectPixmapTexture(viewportWidth, benchBarHeight, Color.SLATE).toDrawable())
@@ -135,8 +146,10 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
                 }
                 visTable {
                     align(Align.left)
-                    runState.inactiveUnits.map { it.unitImage }.forEach {
-                        image(it).cell(align = Align.center, padLeft = 5f, padRight = 7f)
+                    drawUnits()
+
+                    runState.unitListeners.add {
+                        drawUnits()
                     }
                 }
             }
@@ -198,21 +211,11 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     }
 
     private fun drawPostBattle() {
-        stage.actors {
-            fosVisTable {
-                visLabel("You Won!")
-                row()
-                visTextButton("Next Battle") {
-                    onClick {
-                        this@fosVisTable.remove()
-                        KtxAsync.launch { newBattle() }
-                    }
-                }
-            }
-        }
+        val dialog = PostBattleDialog(unitGenerator) { newBattle() }
+        dialog.show(this@DuringRunScreen.stage)
     }
 
-    private suspend fun newBattle() {
+    private fun newBattle() {
         drawStartButton()
         battleManager.newBattle(gridContainer)
     }
