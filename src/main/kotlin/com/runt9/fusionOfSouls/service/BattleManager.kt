@@ -1,6 +1,7 @@
 package com.runt9.fusionOfSouls.service
 
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.kotcrab.vis.ui.widget.Draggable
 import com.runt9.fusionOfSouls.model.event.EndTurnEvent
 import com.runt9.fusionOfSouls.model.event.StartTurnEvent
 import com.runt9.fusionOfSouls.model.unit.GameUnit
@@ -12,6 +13,8 @@ import com.soywiz.korev.dispatch
 import kotlinx.coroutines.launch
 import ktx.actors.plusAssign
 import ktx.async.KtxAsync
+import ktx.scene2d.KStack
+import ktx.scene2d.vis.KVisTable
 import kotlin.math.max
 
 enum class BattleStatus {
@@ -30,20 +33,23 @@ class BattleManager(
     private var battleStatus = BattleStatus.BEFORE
     lateinit var onBattleComplete: (Team) -> Unit
 
-    fun newBattle(gridContainer: Group) {
+    fun newBattle(gridContainer: Group, playerUnitGrid: KVisTable) {
         runState.activeUnits.filter { it.savedGridPos != null }.forEach {
             val playerUnit = BattleUnit(it, Team.PLAYER)
-            gridContainer += playerUnit
+//            playerUnitGrid += playerUnit
             playerUnit.setInitialPosition()
             unitManager.playerTeam += playerUnit
         }
         gridService.blockAll(unitManager.playerTeam.map(BattleUnit::gridPos))
 
         val hero = BattleUnit(runState.hero, Team.PLAYER)
-        gridContainer += hero
-        hero.setInitialPosition()
+        val drag = Draggable()
+        drag.attachTo(hero)
+        playerUnitGrid.cells[24].actor as KStack += hero
+//        hero.setInitialPosition()
         unitManager.playerTeam += hero
         gridService.block(hero.gridPos)
+//        playerUnitGrid.initialized = true
 
         // TODO: Algorithm for floor/room changes # and strength of enemies
 

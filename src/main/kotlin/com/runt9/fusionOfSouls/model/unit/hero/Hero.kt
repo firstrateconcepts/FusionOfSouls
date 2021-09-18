@@ -7,7 +7,6 @@ import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.model.loot.Passive
 import com.runt9.fusionOfSouls.model.loot.Rarity
 import com.runt9.fusionOfSouls.model.loot.Rune
-import com.runt9.fusionOfSouls.model.loot.TestPassive
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.ability.Ability
 import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
@@ -23,9 +22,8 @@ class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<Uni
     init {
         // Hero cannot be removed so must start on the grid
         savedGridPos = GridPoint(0.0, 0.0)
-        addRune(Rune(Rarity.LEGENDARY))
+        addRune(Rune(Rarity.COMMON))
         fusions.add(Fusion(DefaultPassive()))
-        fusions.add(Fusion(TestPassive()))
     }
 
     fun addRune(rune: Rune) {

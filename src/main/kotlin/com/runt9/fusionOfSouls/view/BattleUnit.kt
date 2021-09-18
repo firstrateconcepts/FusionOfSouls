@@ -24,6 +24,7 @@ import ktx.actors.plusAssign
 import ktx.async.schedule
 import ktx.log.info
 import ktx.scene2d.KGroup
+import ktx.scene2d.scene2d
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visProgressBar
 import kotlin.math.abs
@@ -85,14 +86,16 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
             y = cellSize.toFloat() - yOffset
         }
 
-        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat(), style = unitBarStyle) {
+        healthBar = scene2d.visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat(), style = unitBarStyle) {
             value = this@BattleUnit.currentHp.toFloat()
             barDefaults(5f)
         }
 
-        cooldownBar = visProgressBar(0f, unit.ability.modifiedCooldown.toFloat(), style = unitBarStyle) {
+        cooldownBar = scene2d.visProgressBar(0f, unit.ability.modifiedCooldown.toFloat(), style = unitBarStyle) {
             barDefaults(7f)
         }
+
+        debugAll()
     }
 
     fun takeDamage(damage: Int) {

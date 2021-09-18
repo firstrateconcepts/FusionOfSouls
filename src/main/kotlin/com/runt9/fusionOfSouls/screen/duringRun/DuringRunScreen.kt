@@ -1,10 +1,14 @@
 package com.runt9.fusionOfSouls.screen.duringRun
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
+import com.kotcrab.vis.ui.layout.DragPane
+import com.kotcrab.vis.ui.widget.Draggable
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
@@ -18,7 +22,9 @@ import com.runt9.fusionOfSouls.gridHeight
 import com.runt9.fusionOfSouls.gridWidth
 import com.runt9.fusionOfSouls.gridXStart
 import com.runt9.fusionOfSouls.gridYStart
+import com.runt9.fusionOfSouls.model.unit.BasicUnit
 import com.runt9.fusionOfSouls.model.unit.Team
+import com.runt9.fusionOfSouls.model.unit.hero.Hero
 import com.runt9.fusionOfSouls.resourceBarHeight
 import com.runt9.fusionOfSouls.screen.FosScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
@@ -31,6 +37,7 @@ import com.runt9.fusionOfSouls.util.fosVisTable
 import com.runt9.fusionOfSouls.util.rectPixmapTexture
 import com.runt9.fusionOfSouls.util.squarePixmap
 import com.runt9.fusionOfSouls.util.toDrawable
+import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.viewportHeight
 import com.runt9.fusionOfSouls.viewportWidth
 import com.soywiz.korio.async.launch
@@ -39,6 +46,7 @@ import ktx.actors.onClick
 import ktx.actors.setPosition
 import ktx.async.KtxAsync
 import ktx.async.interval
+import ktx.scene2d.KStack
 import ktx.scene2d.StageWidget
 import ktx.scene2d.actor
 import ktx.scene2d.actors
@@ -64,6 +72,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
     private lateinit var floorRoomDisplay: VisLabel
     private lateinit var heroButton: VisTextButton
     private lateinit var gridContainer: Group
+    private lateinit var playerUnitGrid: KVisTable
 
     override fun show() {
         battleManager.onBattleComplete = { team -> onBattleComplete(team) }
@@ -73,8 +82,6 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
             drawUnitBar()
         }
         newBattle()
-        // TODO: Temporary to get here faster
-//        drawPostBattle()
     }
 
     private fun StageWidget.drawTopBar() {
@@ -124,6 +131,24 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
                     repeat(gridWidth * gridHeight) { addActor(squarePixmap(cellSize - 10, Color.DARK_GRAY)) }
                 }
             }
+
+            playerUnitGrid = visTable {
+                align(Align.left)
+                width = (battleWidth.toFloat() - bigMargin) * (4f / 14f)
+                height = battleHeight.toFloat() - bigMargin
+
+                repeat(gridHeight) {
+                    row()
+                    repeat(4) {
+                        stack {
+                            squarePixmap(cellSize - 10, Color.CLEAR)
+                        }.cell(space = 10f)
+                    }
+                }
+            }
+
+//            playerUnitGrid = UnitGridDragPane(paneTable)
+//            actor(playerUnitGrid)
         }
     }
 
@@ -175,6 +200,7 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
         // After post-battle rewards, start new battle
         println("$team won!")
         updater.cancel()
+//        playerUnitGrid.initialized = false
 
         if (team == Team.ENEMY) {
             drawLost()
@@ -217,13 +243,84 @@ class DuringRunScreen(private val game: FosGame, private val battleManager: Batt
 
     private fun newBattle() {
         drawStartButton()
-        battleManager.newBattle(gridContainer)
+        battleManager.newBattle(gridContainer, playerUnitGrid)
     }
 
     private suspend fun startBattle() {
         battleManager.start()
         updater = interval(1f) {
             KtxAsync.launch { battleManager.handleTurn() }
+        }
+    }
+
+    class UnitGridDragPane(paneTable: KVisTable) : DragPane(paneTable) {
+        var initialized = false
+
+        init {
+            width = (battleWidth.toFloat() - bigMargin) * (4f / 14f)
+            height = battleHeight.toFloat() - bigMargin
+//            align(Align.bottomLeft)
+            draggable = Draggable()
+//            draggable.isInvisibleWhenDragged = true
+
+//            runState.activeUnits.map { BattleUnit(it, Team.PLAYER) }.forEach(this::addActor)
+        }
+
+        override fun addActor(actor: Actor) {
+            println("Add actor")
+            ((this.actor as KVisTable).cells[24].actor as KStack).add(actor)
+            doOnAdd(actor)
+        }
+
+        override fun addActorAt(index: Int, actor: Actor) {
+            println("Add actor at $index")
+//            super.addActorAt(index, actor)
+            doOnAdd(actor)
+        }
+
+        override fun addActorBefore(actorBefore: Actor, actor: Actor) {
+            println("Add actor before ${actorBefore}")
+            if (actorBefore is KStack) {
+                actorBefore.add(actor)
+                doOnAdd(actor)
+            }
+        }
+
+        override fun addActorAfter(actorAfter: Actor, actor: Actor) {
+            println("Add actor before ${actorAfter}")
+            if (actorAfter is KStack) {
+                actorAfter.add(actor)
+                doOnAdd(actor)
+            }
+        }
+
+        override fun accept(actor: Actor) = if (!(actor is BattleUnit && actor.unit is Hero) && runState.activeUnits.size >= runState.unitCap) {
+            false
+        } else {
+            super.accept(actor)
+        }
+
+        override fun doOnAdd(actor: Actor) {
+            super.doOnAdd(actor)
+            if (initialized) {
+                val unit = actor as BattleUnit
+                if (unit.unit is Hero) {
+                    return
+                }
+
+                runState.apply {
+                    inactiveUnits.remove(unit.unit)
+                    activeUnits.add(unit.unit as BasicUnit)
+                }
+                notify(UnitCountUpdateEvent(this), false)
+            }
+        }
+    }
+
+    class UnitCountUpdateEvent(target: Actor) : Event() {
+        init {
+            bubbles = true
+            setTarget(target)
         }
     }
 }
