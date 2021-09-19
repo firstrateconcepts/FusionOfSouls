@@ -9,7 +9,8 @@ class GridPoint(
     override val y: Double,
     var isBlocked: Boolean = false,
     val worldX: Double = x * cellSize,
-    val worldY: Double = y * cellSize
+    val worldY: Double = y * cellSize,
+    val userGridCellIndex: Int = (((x + 1) * (y + 1)) - 1).toInt()
 ): IPoint {
     fun manhattanDistance(other: GridPoint) = abs(x - other.x) + abs(y - other.y)
 

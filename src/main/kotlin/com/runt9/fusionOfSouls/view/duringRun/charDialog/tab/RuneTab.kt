@@ -1,4 +1,4 @@
-package com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab
+package com.runt9.fusionOfSouls.view.duringRun.charDialog.tab
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Event

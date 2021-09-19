@@ -1,10 +1,10 @@
 package com.runt9.fusionOfSouls.view
 
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions.moveToAligned
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
+import com.badlogic.gdx.scenes.scene2d.utils.Disableable
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer.Task
-import com.kotcrab.vis.ui.widget.VisImage
 import com.kotcrab.vis.ui.widget.VisProgressBar
 import com.runt9.fusionOfSouls.cellSize
 import com.runt9.fusionOfSouls.model.GridPoint
@@ -13,7 +13,9 @@ import com.runt9.fusionOfSouls.model.event.TargetRemovedEvent
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.status.StatusEffect
+import com.runt9.fusionOfSouls.service.BattleStatus
 import com.runt9.fusionOfSouls.service.isWithinRange
+import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.progressBarStyleHeight
 import com.soywiz.klock.TimeSpan
 import com.soywiz.korev.Event
@@ -24,8 +26,7 @@ import ktx.actors.plusAssign
 import ktx.async.schedule
 import ktx.log.info
 import ktx.scene2d.KGroup
-import ktx.scene2d.scene2d
-import ktx.scene2d.vis.visImage
+import ktx.scene2d.actor
 import ktx.scene2d.vis.visProgressBar
 import kotlin.math.abs
 import kotlin.math.min
@@ -36,11 +37,10 @@ enum class BattleUnitState {
     ALIVE, MOVING, ATTACKING
 }
 
-class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(), KGroup {
+class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, WidgetGroup(), KGroup, Disableable {
     private val dispatcher = LocalDispatcher()
     private val unitBarStyle = "unitBar"
 
-    val body: VisImage
     var gridPos = unit.savedGridPos!!
     val states = mutableSetOf<BattleUnitState>()
     var aggroRange = unit.attackRange
@@ -56,7 +56,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
     var canUseSkill = true
     var canChangeTarget = true
     val isAlive get() = states.contains(BattleUnitState.ALIVE)
-
+    private var isDisabled = false
 
     var currentHp: Double
 
@@ -64,6 +64,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
     private val cooldownBar: VisProgressBar
 
     init {
+        isTransform = false
         name = unit.name
         currentHp = unit.secondaryAttrs.maxHp.value
 
@@ -71,10 +72,10 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
             currentHp = min(currentHp, it)
         }
 
-        body = visImage(unit.unitImage) {
-            setOrigin(Align.center)
-            rotation = this@BattleUnit.team.initialRotation.degrees.toFloat()
-        }
+        actor(unit)
+        setOrigin(Align.center)
+        unit.setOrigin(Align.center)
+        unit.rotation = team.initialRotation.degrees.toFloat()
 
         progressBarStyleHeight(unitBarStyle, 2f)
 
@@ -86,16 +87,16 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
             y = cellSize.toFloat() - yOffset
         }
 
-        healthBar = scene2d.visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat(), style = unitBarStyle) {
+        healthBar = visProgressBar(0f, unit.secondaryAttrs.maxHp.value.toFloat(), style = unitBarStyle) {
             value = this@BattleUnit.currentHp.toFloat()
             barDefaults(5f)
         }
 
-        cooldownBar = scene2d.visProgressBar(0f, unit.ability.modifiedCooldown.toFloat(), style = unitBarStyle) {
+        cooldownBar = visProgressBar(0f, unit.ability.modifiedCooldown.toFloat(), style = unitBarStyle) {
             barDefaults(7f)
         }
 
-        debugAll()
+        runState.statusListeners.add { setDisabled(it == BattleStatus.DURING) }
     }
 
     fun takeDamage(damage: Int) {
@@ -197,6 +198,12 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, Group(),
         unit.reset()
         return super.remove()
     }
+
+    override fun setDisabled(isDisabled: Boolean) {
+        this.isDisabled = isDisabled
+    }
+
+    override fun isDisabled() = this.isDisabled
 
     fun withinAttackRange(other: Collection<BattleUnit>) = other.any { withinAttackRange(it) }
     fun withinAttackRange(other: BattleUnit) = isWithinRange(other, unit.attackRange)

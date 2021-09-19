@@ -10,11 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.Settings
+import com.runt9.fusionOfSouls.screen.DuringRunScreen
 import com.runt9.fusionOfSouls.screen.LoadingScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.RunStartScreen
 import com.runt9.fusionOfSouls.screen.SettingsScreen
-import com.runt9.fusionOfSouls.screen.duringRun.DuringRunScreen
 import com.runt9.fusionOfSouls.service.AttackService
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.BattleUnitManager
@@ -25,6 +25,11 @@ import com.runt9.fusionOfSouls.service.RunState
 import com.runt9.fusionOfSouls.service.UnitGenerator
 import com.runt9.fusionOfSouls.service.injector
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.view.duringRun.TopBar
+import com.runt9.fusionOfSouls.view.duringRun.battleArea.BattleArea
+import com.runt9.fusionOfSouls.view.duringRun.battleArea.UnitGridDragPane
+import com.runt9.fusionOfSouls.view.duringRun.unitBench.UnitBench
+import com.runt9.fusionOfSouls.view.duringRun.unitBench.UnitBenchDragPane
 import ktx.actors.stage
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
@@ -63,13 +68,21 @@ class FosGame : KtxGame<KtxScreen>() {
 
             bindSingleton { AttackService() }
             bind { BattleUnitManager(inject(), inject()) }
-            bind { PathService(inject(), inject()) }
+            bindSingleton { PathService(inject(), inject()) }
             bindSingleton { BattleManager(inject(), inject(), inject(), inject()) }
+
+            bind { UnitGridDragPane(inject(), inject()) }
+            bind { BattleArea(inject()) }
+
+            bind { UnitBenchDragPane(inject()) }
+            bind { UnitBench(inject()) }
+
+            bind { TopBar() }
 
             addScreen(LoadingScreen(this@FosGame, inject(), inject()))
             addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
-            addScreen(RunStartScreen(this@FosGame, inject()))
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject()))
+            addScreen(RunStartScreen(this@FosGame, inject(), inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject()))
             addScreen(SettingsScreen(this@FosGame, inject(), inject()))
         }
 

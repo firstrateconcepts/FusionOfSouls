@@ -1,4 +1,4 @@
-package com.runt9.fusionOfSouls.screen.duringRun.postBattle
+package com.runt9.fusionOfSouls.view.duringRun
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
@@ -132,7 +132,7 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
                         container { image(this@UnitRuneSelectionDialog.unit.unitImage) }
 
                         onClick {
-                            runState.addUnit(this@UnitRuneSelectionDialog.unit)
+                            runState.addNewUnit(this@UnitRuneSelectionDialog.unit)
                             this@UnitRuneSelectionDialog.listener()
                             this@UnitRuneSelectionDialog.hide()
                         }

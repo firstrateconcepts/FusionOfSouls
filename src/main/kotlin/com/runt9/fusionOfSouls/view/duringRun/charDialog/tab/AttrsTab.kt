@@ -1,7 +1,7 @@
-package com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab
+package com.runt9.fusionOfSouls.view.duringRun.charDialog.tab
 
 import com.badlogic.gdx.utils.Align
-import com.runt9.fusionOfSouls.screen.duringRun.charDialog.scaledLabel
+import com.runt9.fusionOfSouls.view.duringRun.charDialog.scaledLabel
 import com.runt9.fusionOfSouls.service.runState
 import ktx.scene2d.vis.KVisTable
 

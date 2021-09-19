@@ -1,4 +1,4 @@
-package com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab
+package com.runt9.fusionOfSouls.view.duringRun.charDialog.tab
 
 import com.runt9.fusionOfSouls.service.runState
 import com.soywiz.korma.math.roundDecimalPlaces

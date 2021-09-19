@@ -1,4 +1,4 @@
-package com.runt9.fusionOfSouls.screen.duringRun.charDialog
+package com.runt9.fusionOfSouls.view.duringRun.charDialog
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.utils.Align

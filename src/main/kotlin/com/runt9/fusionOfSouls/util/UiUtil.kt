@@ -11,10 +11,12 @@ import ktx.scene2d.actor
 import ktx.scene2d.defaultHorizontalStyle
 import ktx.scene2d.vis.KVisTable
 import ktx.scene2d.vis.visImage
+import ktx.scene2d.vis.visLabel
 import ktx.style.progressBar
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.properties.Delegates
 
 @Scene2dDsl
 @OptIn(ExperimentalContracts::class)
@@ -51,3 +53,12 @@ fun progressBarStyleHeight(styleName: String, height: Float) {
         knobBefore.minHeight = height
     }
 }
+
+@Scene2dDsl
+fun <S, T> KWidget<S>.observableLabel(listenerList: MutableList<(T) -> Unit>, stringSupplier: () -> String) = visLabel(stringSupplier()) {
+    listenerList += {
+        setText(stringSupplier())
+    }
+}
+
+fun <T> simpleObservable(initialValue: T, listeners: List<(T) -> Unit>) = Delegates.observable(initialValue) { _, _, newValue -> listeners.forEach { it(newValue) } }

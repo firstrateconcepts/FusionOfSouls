@@ -1,14 +1,15 @@
-package com.runt9.fusionOfSouls.screen.duringRun.charDialog
+package com.runt9.fusionOfSouls.view.duringRun.charDialog
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.widget.VisLabel
-import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.AbilityTab
-import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.AttrsTab
-import com.runt9.fusionOfSouls.screen.duringRun.charDialog.tab.RuneTab
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.util.observableLabel
 import com.runt9.fusionOfSouls.util.progressBarStyleHeight
+import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.AbilityTab
+import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.AttrsTab
+import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.RuneTab
 import ktx.scene2d.KTable
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl

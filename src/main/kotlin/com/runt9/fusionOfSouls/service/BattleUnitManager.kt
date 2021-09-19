@@ -61,7 +61,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
             enemyTeamOf(unit).find { unit.withinAttackRange(it) }?.let { unit.changeTarget(it) }
         }
 
-        unit.body.addAction(rotateTo(Angle.between(unit.gridPos, unit.target!!.gridPos).degrees.toFloat(), 0.15f))
+        unit.unit.addAction(rotateTo(Angle.between(unit.gridPos, unit.target!!.gridPos).degrees.toFloat(), 0.15f))
         unit.startAttacking()
         return true
     }
@@ -86,7 +86,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
         val distance = unit.gridPos.manhattanDistance(nextPoint)
 
         KtxAsync.launch {
-            unit.body.addAction(rotateTo(newAngle.degrees.toFloat(), 0.15f))
+            unit.unit.addAction(rotateTo(newAngle.degrees.toFloat(), 0.15f))
         }
 
         KtxAsync.launch {
@@ -154,7 +154,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
             val currentY = y
 
             // TODO: This isn't properly using rotation, will need to figure it out
-            unit += moveBy(cos(body.rotation) * 3, sin(body.rotation * 3), 0.025f) then moveTo(currentX, currentY, 0.15f)
+            unit += moveBy(cos(this.unit.rotation) * 3, sin(this.unit.rotation * 3), 0.025f) then moveTo(currentX, currentY, 0.15f)
         }
     }
 
