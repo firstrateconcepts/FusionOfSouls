@@ -1,6 +1,7 @@
 package com.runt9.fusionOfSouls.model.attribute
 
 import assertk.assertThat
+import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttribute
@@ -61,7 +62,7 @@ class PrimaryAttributeTest {
     fun `Test Percent Modifier - Positive`() {
         val attr = PrimaryAttribute(PrimaryAttributeType.BODY)
         attr.addModifier(AttributeModifier(percentModifier = 10.0))
-        assertThat(attr.value).isEqualTo(110.0)
+        assertThat(attr.value).isCloseTo(110.0, 0.01)
     }
 
     @Test
@@ -99,7 +100,7 @@ class PrimaryAttributeTest {
     fun `Test Both Modifiers - Both Positive`() {
         val attr = PrimaryAttribute(PrimaryAttributeType.BODY)
         attr.addModifier(AttributeModifier(flatModifier = 10.0, percentModifier = 10.0))
-        assertThat(attr.value).isEqualTo(121.0)
+        assertThat(attr.value).isCloseTo(121.0, 0.01)
     }
 
     @Test

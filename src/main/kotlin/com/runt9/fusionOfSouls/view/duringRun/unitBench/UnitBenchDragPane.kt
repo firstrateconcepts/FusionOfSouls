@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.utils.SnapshotArray
 import com.kotcrab.vis.ui.widget.Draggable
+import com.kotcrab.vis.ui.widget.VisImage
 import com.runt9.fusionOfSouls.benchBarHeight
 import com.runt9.fusionOfSouls.maxInactiveUnits
 import com.runt9.fusionOfSouls.model.unit.BasicUnit
@@ -14,25 +15,40 @@ import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.squarePixmap
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.duringRun.UnitDraggingDragPane
+import com.runt9.fusionOfSouls.view.duringRun.UnitGridTable
 import ktx.scene2d.KStack
-import ktx.scene2d.scene2d
 import ktx.scene2d.stack
-import ktx.scene2d.vis.visTable
 
-private val table = scene2d.visTable {
-    repeat(maxInactiveUnits) {
-        stack {
-            squarePixmap(benchBarHeight, Color.LIGHT_GRAY)
-        }.cell(space = 2f)
+class UnitBenchGridTable : UnitGridTable() {
+    override val gridSquares: List<VisImage>
+
+    init {
+        val grid = mutableListOf<VisImage>()
+
+        repeat(maxInactiveUnits) {
+            stack {
+                grid += squarePixmap(benchBarHeight, Color.LIGHT_GRAY)
+            }.cell(space = 2f)
+        }
+
+        gridSquares = grid.toList()
     }
-    debugCell()
 }
+class UnitBenchDragPane(private val battleManager: BattleManager) : UnitDraggingDragPane(UnitBenchGridTable()) {
+    override fun accept(actor: Actor): Boolean {
+        if (actor is GameUnit) {
+            return true
+        }
 
-class UnitBenchDragPane(private val battleManager: BattleManager) : UnitDraggingDragPane(table) {
-    override fun accept(actor: Actor) = if ((actor is BattleUnit && actor.unit is Hero) || runState.inactiveUnits.size >= maxInactiveUnits) {
-        false
-    } else {
-        super.accept(actor)
+        if (actor is BattleUnit) {
+            if (actor.unit is Hero) {
+                return false
+            }
+
+            return runState.inactiveUnits.size < maxInactiveUnits
+        }
+
+        return super.accept(actor)
     }
 
     override fun getChildren(): SnapshotArray<Actor> =
@@ -50,8 +66,8 @@ class UnitBenchDragPane(private val battleManager: BattleManager) : UnitDragging
         val gameUnit = unit.unit as BasicUnit
 
         runState.apply {
-            activeUnits -= (unit)
-            inactiveUnits += (gameUnit)
+            activeUnits -= gameUnit
+            inactiveUnits += gameUnit
         }
 
         battleManager.unitRemovedFromBattle(unit)

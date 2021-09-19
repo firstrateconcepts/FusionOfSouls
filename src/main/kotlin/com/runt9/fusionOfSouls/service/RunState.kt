@@ -11,6 +11,15 @@ data class BattleContext(val enemies: List<BattleUnit>, val hero: BattleUnit) {
     val enemyCount = enemies.size
     var flawless: Boolean = true
     var heroLived: Boolean = true
+    val playerTeam = mutableListOf<BattleUnit>()
+    val enemyTeam = mutableListOf<BattleUnit>()
+    val allUnits
+        get() = playerTeam + enemyTeam
+
+    fun clear() {
+        playerTeam.forEach(BattleUnit::remove)
+        enemyTeam.forEach(BattleUnit::remove)
+    }
 }
 
 enum class BattleStatus {
@@ -19,7 +28,7 @@ enum class BattleStatus {
 
 class RunState {
     val goldListeners = mutableListOf<(Int) -> Unit>()
-    val activeUnitListeners = mutableListOf<(List<BattleUnit>) -> Unit>()
+    val activeUnitListeners = mutableListOf<(List<BasicUnit>) -> Unit>()
     val inactiveUnitAddedListeners = mutableListOf<(BasicUnit) -> Unit>()
     val roomNumberListeners = mutableListOf<(Int) -> Unit>()
     val statusListeners = mutableListOf<(BattleStatus) -> Unit>()

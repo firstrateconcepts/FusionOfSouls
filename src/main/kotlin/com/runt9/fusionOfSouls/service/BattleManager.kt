@@ -21,28 +21,30 @@ class BattleManager(
 
     fun newBattle() {
         runState.battleStatus = BattleStatus.BEFORE
-        runState.activeUnits.forEach { unitManager.playerTeam += it }
-        gridService.blockAll(unitManager.playerTeam.map(BattleUnit::gridPos))
 
         val hero = BattleUnit(runState.hero, Team.PLAYER)
-        unitManager.playerTeam += hero
         gridService.block(hero.gridPos)
 
         // TODO: Algorithm for floor/room changes # and strength of enemies
 
         val enemyCount = max((((runState.floor - 1) * 10.0) + runState.room) / 3.0, 1.0).toIntFloor()
         val enemies = enemyGenerator.generateEnemies(enemyCount, -25.0)
-        enemies.forEach { unitManager.enemyTeam += it }
-        runState.battleContext = BattleContext(enemies, hero)
+
+        runState.battleContext = BattleContext(enemies, hero).apply {
+            runState.activeUnits.forEach { playerTeam += BattleUnit(it, Team.PLAYER) }
+            gridService.blockAll(playerTeam.map(BattleUnit::gridPos))
+            enemies.forEach { enemyTeam += it }
+            playerTeam += hero
+        }
     }
 
     fun unitAddedToBattle(unit: BattleUnit) {
-        unitManager.playerTeam += unit
+        runState.battleContext.playerTeam += unit
         gridService.block(unit.gridPos)
     }
 
     fun unitRemovedFromBattle(unit: BattleUnit) {
-        unitManager.playerTeam -= unit
+        runState.battleContext.playerTeam -= unit
         gridService.unblock(unit.gridPos)
     }
 
@@ -56,21 +58,23 @@ class BattleManager(
             return
         }
 
-        if (unitManager.playerTeam.isEmpty()) {
+        if (runState.battleContext.playerTeam.isEmpty()) {
             battleComplete(Team.ENEMY)
-        } else if (unitManager.enemyTeam.isEmpty()) {
+            return
+        } else if (runState.battleContext.enemyTeam.isEmpty()) {
             battleComplete(Team.PLAYER)
+            return
         }
 
-        unitManager.allUnits.filter { it.movingToGridPos != null }.forEach(unitManager::unitMoveComplete)
+        runState.battleContext.allUnits.filter { it.movingToGridPos != null }.forEach(unitManager::unitMoveComplete)
 
-        unitManager.playerTeam.sortedBy { it.gridPos.x }.reversed().forEach { gu ->
+        runState.battleContext.playerTeam.sortedBy { it.gridPos.x }.reversed().forEach { gu ->
             KtxAsync.launch {
                 handleNextTurnForUnit(gu)
             }
         }
 
-        unitManager.enemyTeam.sortedBy { it.gridPos.x }.forEach { gu ->
+        runState.battleContext.enemyTeam.sortedBy { it.gridPos.x }.forEach { gu ->
             KtxAsync.launch {
                 handleNextTurnForUnit(gu)
             }
@@ -103,9 +107,9 @@ class BattleManager(
     }
 
     private fun battleComplete(team: Team) {
-        runState.activeUnits.forEach { it.unit.reset() }
+        runState.activeUnits.forEach { it.reset() }
         runState.hero.reset()
-        unitManager.clear()
+        runState.battleContext.clear()
         runState.battleStatus = BattleStatus.AFTER
         onBattleComplete(team)
         gridService.reset()

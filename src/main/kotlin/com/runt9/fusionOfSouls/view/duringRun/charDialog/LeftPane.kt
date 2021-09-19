@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.runt9.fusionOfSouls.service.runState
-import com.runt9.fusionOfSouls.util.observableLabel
 import com.runt9.fusionOfSouls.util.progressBarStyleHeight
 import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.AbilityTab
 import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.AttrsTab
@@ -57,6 +56,7 @@ private fun KTable.buildCharInfo() = visTable {
 
         progressBarStyleHeight(xpBarStyleName, 10f)
 
+        val currentLevel = runState.hero.level
         val xpToLevel = runState.hero.xpToLevel
         val currentXp = runState.hero.xp
 
@@ -71,7 +71,7 @@ private fun KTable.buildCharInfo() = visTable {
             }
         }.cell(row = true, width = 50f, space = 5f)
 
-        scaledLabel("Level: 1").cell(row = true, expand = true, align = Align.center)
+        scaledLabel("Level: $currentLevel").cell(row = true, expand = true, align = Align.center)
         scaledLabel("Ranger").cell(row = true, expand = true, align = Align.center)
         scaledLabel("Fighter").cell(row = true, expand = true, align = Align.center)
     }.cell(grow = true)

@@ -20,6 +20,4 @@ class UnitBench(private val unitBenchDragPane: UnitBenchDragPane) : VisTable(), 
         runState.inactiveUnitAddedListeners += { unitBenchDragPane.addActor(it) }
 
     }
-
-    private fun UnitBenchDragPane.drawUnits() = runState.inactiveUnits.filter { !contains(it) }.forEach { addActor(it) }
 }

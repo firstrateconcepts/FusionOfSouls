@@ -38,19 +38,20 @@ class BattleArea(private val dragPane: UnitGridDragPane) : FloatingGroup(), KGro
     }
 
     fun drawUnits() {
-        runState.activeUnits.forEach {
+        runState.battleContext.playerTeam.forEach {
             dragPane += it
-            it.setInitialPosition()
+            it.toFront()
         }
 
         runState.battleContext.hero.let {
             dragPane += it
-            it.setInitialPosition()
+            it.toFront()
         }
 
         runState.battleContext.enemies.forEach {
             this += it
             it.setInitialPosition()
+            it.toFront()
         }
     }
 }

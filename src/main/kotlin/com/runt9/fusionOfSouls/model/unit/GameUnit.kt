@@ -40,6 +40,9 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
         secondaryAttrs.purgeTemporaryModifiers()
         primaryAttrs.purgeTemporaryModifiers()
         ability.resetCooldown()
+        // This is safe because only player units get reset and they'll always be facing 0 degrees
+        rotation = 0f
+        clearActions()
     }
 
     override fun <T : Event> addEventListener(clazz: KClass<T>, handler: (T) -> Unit) = dispatcher.addEventListener(clazz, handler)

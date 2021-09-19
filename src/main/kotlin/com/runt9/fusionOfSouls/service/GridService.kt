@@ -49,7 +49,7 @@ class GridService {
     }
 
     fun unitMovedToCellIndex(unit: BattleUnit, index: Int) {
-        val newPoint = GridPoint(index % 4.0, index % gridHeight.toDouble())
+        val newPoint = GridPoint.fromUserGridCellIndex(index)
         unblock(unit.gridPos)
         block(newPoint)
         unit.gridPos = newPoint

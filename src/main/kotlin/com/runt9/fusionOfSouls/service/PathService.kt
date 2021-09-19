@@ -54,7 +54,7 @@ class PathService(private val gridService: GridService, private val unitManager:
         return nextClosestYPoint?.y?.compareTo(unit.gridPos.y) ?: 0
     }
 
-    private fun crossesExistingMovement(start: GridPoint, end: GridPoint) = unitManager.allUnits
+    private fun crossesExistingMovement(start: GridPoint, end: GridPoint) = runState.battleContext.allUnits
         .filter { it.movingToGridPos != null && it.gridPos != start && it.gridPos != end }
         .any { unit ->
             val unitPos = unit.gridPos

@@ -5,11 +5,26 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.kotcrab.vis.ui.layout.DragPane
 import com.kotcrab.vis.ui.widget.Draggable
+import com.kotcrab.vis.ui.widget.VisImage
+import com.kotcrab.vis.ui.widget.VisTable
+import com.runt9.fusionOfSouls.service.BattleStatus
+import com.runt9.fusionOfSouls.service.runState
 import ktx.scene2d.KStack
-import ktx.scene2d.vis.KVisTable
+import ktx.scene2d.KTable
+
+abstract class UnitGridTable : VisTable(), KTable {
+    abstract val gridSquares: List<VisImage>
+
+    init {
+        runState.statusListeners += { if (it == BattleStatus.DURING) hideGrid() else showGrid() }
+    }
+
+    private fun showGrid() = gridSquares.forEach { it.isVisible = true }
+    private fun hideGrid() = gridSquares.forEach { it.isVisible = false }
+}
 
 // TODO: Swap on drop where another unit is. Currently just rejects to prevent overlap
-abstract class UnitDraggingDragPane(content: KVisTable) : DragPane(content) {
+abstract class UnitDraggingDragPane(content: UnitGridTable) : DragPane(content) {
     init {
         draggable = Draggable()
         draggable.isInvisibleWhenDragged = true
@@ -17,7 +32,7 @@ abstract class UnitDraggingDragPane(content: KVisTable) : DragPane(content) {
     }
 
     fun getClosestToPosition(position: Vector2) = getStacks().minByOrNull { position.dst(it.localToStageCoordinates(Vector2(0f, 0f))) }
-    fun getStacks() = (this.actor as KVisTable).cells.map { it.actor as KStack }
+    fun getStacks() = (this.actor as VisTable).cells.map { it.actor as KStack }
 
     abstract fun addToProperStack(actor: Actor)
     abstract fun getActorToAdd(actor: Actor): Actor

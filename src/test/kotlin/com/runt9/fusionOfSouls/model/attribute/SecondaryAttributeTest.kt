@@ -1,6 +1,7 @@
 package com.runt9.fusionOfSouls.model.attribute
 
 import assertk.assertThat
+import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttributes
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributes
@@ -49,32 +50,32 @@ class SecondaryAttributeTest {
 
     @Test
     fun `Test Skill Multiplier - Base`() {
-        assertThat(secondary.skillMulti.value).isEqualTo(1.41)
+        assertThat(secondary.skillMulti.value).isCloseTo(1.41, 0.1)
     }
 
     @Test
     fun `Test Skill Multiplier - Various Recalculations`() {
         primary.mind.addModifier(flatModifier = 50.0, percentModifier = 25.0)
         primary.instinct.addModifier(flatModifier = 25.0, percentModifier = 50.0)
-        assertThat(secondary.skillMulti.value).isEqualTo(1.94)
+        assertThat(secondary.skillMulti.value).isCloseTo(1.94, 0.1)
 
         secondary.skillMulti.addModifier(flatModifier = 0.25, percentModifier = 20.0)
-        assertThat(secondary.skillMulti.value).isEqualTo(2.62)
+        assertThat(secondary.skillMulti.value).isCloseTo(2.62, 0.1)
     }
 
     @Test
     fun `Test Defense - Base`() {
-        assertThat(secondary.defense.value).isEqualTo(19.84)
+        assertThat(secondary.defense.value).isCloseTo(19.84, 0.1)
     }
 
     @Test
     fun `Test Defense - Various Recalculations`() {
         primary.body.addModifier(flatModifier = 50.0, percentModifier = 25.0)
         primary.luck.addModifier(flatModifier = 25.0, percentModifier = 50.0)
-        assertThat(secondary.defense.value).isEqualTo(27.17)
+        assertThat(secondary.defense.value).isCloseTo(27.17, 0.1)
 
         secondary.defense.addModifier(flatModifier = 5.0, percentModifier = 25.0)
-        assertThat(secondary.defense.value).isEqualTo(40.21)
+        assertThat(secondary.defense.value).isCloseTo(40.21, 0.1)
     }
 
     @Test
@@ -86,10 +87,10 @@ class SecondaryAttributeTest {
     fun `Test Evasion - Various Recalculations`() {
         primary.instinct.addModifier(flatModifier = 50.0, percentModifier = 25.0)
         primary.luck.addModifier(flatModifier = 25.0, percentModifier = 50.0)
-        assertThat(secondary.evasion.value).isEqualTo(9.38)
+        assertThat(secondary.evasion.value).isCloseTo(9.38, 0.1)
 
         secondary.evasion.addModifier(flatModifier = 5.0, percentModifier = 25.0)
-        assertThat(secondary.evasion.value).isEqualTo(17.97)
+        assertThat(secondary.evasion.value).isCloseTo(17.97, 0.1)
     }
 
     @Test
@@ -104,22 +105,22 @@ class SecondaryAttributeTest {
         assertThat(secondary.critThreshold.value).isEqualTo(81.25)
 
         secondary.critThreshold.addModifier(flatModifier = -5.0, percentModifier = -25.0)
-        assertThat(secondary.critThreshold.value).isEqualTo(57.19)
+        assertThat(secondary.critThreshold.value).isCloseTo(57.19, 0.1)
     }
 
     @Test
     fun `Test Crit Bonus - Base`() {
-        assertThat(secondary.critBonus.value).isEqualTo(1.41)
+        assertThat(secondary.critBonus.value).isCloseTo(1.41, 0.1)
     }
 
     @Test
     fun `Test Crit Bonus - Various Recalculations`() {
         primary.body.addModifier(flatModifier = 50.0, percentModifier = 25.0)
         primary.luck.addModifier(flatModifier = 25.0, percentModifier = 50.0)
-        assertThat(secondary.critBonus.value).isEqualTo(1.94)
+        assertThat(secondary.critBonus.value).isCloseTo(1.94, 0.1)
 
         secondary.critBonus.addModifier(flatModifier = 0.25, percentModifier = 30.0)
-        assertThat(secondary.critBonus.value).isEqualTo(2.84)
+        assertThat(secondary.critBonus.value).isCloseTo(2.84, 0.1)
     }
 
     @Test
@@ -131,10 +132,10 @@ class SecondaryAttributeTest {
     fun `Test Attack Speed - Various Recalculations`() {
         primary.body.addModifier(flatModifier = 50.0, percentModifier = 25.0)
         primary.mind.addModifier(flatModifier = 25.0, percentModifier = 50.0)
-        assertThat(secondary.attackSpeed.value).isEqualTo(0.94)
+        assertThat(secondary.attackSpeed.value).isCloseTo(0.94, 0.1)
 
         secondary.attackSpeed.addModifier(flatModifier = 0.1, percentModifier = 25.0)
-        assertThat(secondary.attackSpeed.value).isEqualTo(1.3)
+        assertThat(secondary.attackSpeed.value).isCloseTo(1.3, 0.1)
     }
 
     @Test
@@ -146,9 +147,9 @@ class SecondaryAttributeTest {
     fun `Test Cooldown Reduction - Various Recalculations`() {
         primary.mind.addModifier(flatModifier = 50.0, percentModifier = 25.0)
         primary.instinct.addModifier(flatModifier = 25.0, percentModifier = 50.0)
-        assertThat(secondary.cooldownReduction.value).isEqualTo(1.37)
+        assertThat(secondary.cooldownReduction.value).isCloseTo(1.37, 0.1)
 
         secondary.cooldownReduction.addModifier(flatModifier = 0.25, percentModifier = 30.0)
-        assertThat(secondary.cooldownReduction.value).isEqualTo(2.11)
+        assertThat(secondary.cooldownReduction.value).isCloseTo(2.11, 0.1)
     }
 }

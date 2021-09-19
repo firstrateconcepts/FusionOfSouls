@@ -1,8 +1,12 @@
 package com.runt9.fusionOfSouls.model
 
 import com.runt9.fusionOfSouls.cellSize
+import com.runt9.fusionOfSouls.gridHeight
+import com.runt9.fusionOfSouls.userGridWidth
 import com.soywiz.korma.geom.IPoint
 import kotlin.math.abs
+
+operator fun GridPoint.minus(that: GridPoint) = GridPoint(x - that.x, y - that.y)
 
 class GridPoint(
     override val x: Double,
@@ -10,8 +14,19 @@ class GridPoint(
     var isBlocked: Boolean = false,
     val worldX: Double = x * cellSize,
     val worldY: Double = y * cellSize,
-    val userGridCellIndex: Int = (((x + 1) * (y + 1)) - 1).toInt()
+    val userGridCellIndex: Int = (flipY(y) * userGridWidth + x).toInt()
 ): IPoint {
+    companion object {
+        fun fromUserGridCellIndex(index: Int): GridPoint {
+            val x = index % userGridWidth
+            val y = index / userGridWidth
+            return GridPoint(x.toDouble(), flipY(y).toDouble())
+        }
+
+        fun flipY(y: Number) = gridHeight - 1 - y.toInt()
+
+        operator fun invoke(x: Int, y: Int) = GridPoint(x.toDouble(), y.toDouble())
+    }
     fun manhattanDistance(other: GridPoint) = abs(x - other.x) + abs(y - other.y)
 
     override fun equals(other: Any?): Boolean {
