@@ -12,6 +12,7 @@ typealias ValueChangeListener = (Double) -> Unit
 interface AttributeType<A : Attribute, T : Attributes<A>> {
     val unitAttrSelection: GameUnit.() -> T
     val displayName: String
+    val shortName: String
     val attrsAttrSelection: T.() -> A
     val attrRandomizer: AttributeModifierRandomizer
     val valueDisplayer: (Double) -> String

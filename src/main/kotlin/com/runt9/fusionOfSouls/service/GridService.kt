@@ -48,6 +48,14 @@ class GridService {
         return randomOpenSpot
     }
 
+    fun unitMovedToCellIndex(unit: BattleUnit, index: Int) {
+        val newPoint = GridPoint.fromUserGridCellIndex(index)
+        unblock(unit.gridPos)
+        block(newPoint)
+        unit.gridPos = newPoint
+        unit.unit.savedGridPos = newPoint
+    }
+
     fun tryGet(x: Int, y: Int) = grid.tryGet(x, y)
     fun findBy(predicate: (GridPoint) -> Boolean) = grid.filter(predicate)
 }

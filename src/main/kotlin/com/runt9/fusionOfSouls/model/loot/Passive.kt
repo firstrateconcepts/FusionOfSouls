@@ -26,14 +26,3 @@ class DefaultPassive : Passive(Rarity.COMMON) {
         listener?.close()
     }
 }
-
-class TestPassive : Passive(Rarity.COMMON) {
-    override val description = "Gain 50% increased attack speed for 4 seconds after killing an enemy unit"
-
-    override fun applyToUnit(unit: GameUnit) {
-    }
-
-    override fun removeFromUnit(unit: GameUnit) {
-    }
-
-}

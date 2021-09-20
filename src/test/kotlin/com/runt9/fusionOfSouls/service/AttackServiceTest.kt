@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test
 
 class AttackServiceTest {
     val seed = "seed"
-    val runState = RunState()
     lateinit var attackService: AttackService
 
     @BeforeEach

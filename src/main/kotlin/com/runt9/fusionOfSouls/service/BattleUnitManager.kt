@@ -9,6 +9,7 @@ import com.runt9.fusionOfSouls.model.GridPoint
 import com.runt9.fusionOfSouls.model.event.BeforeDamageEvent
 import com.runt9.fusionOfSouls.model.event.OnHitEvent
 import com.runt9.fusionOfSouls.model.event.WhenHitEvent
+import com.runt9.fusionOfSouls.model.minus
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.ability.AbilityUseContext
 import com.runt9.fusionOfSouls.model.unit.attack.AttackRollRequest
@@ -18,7 +19,7 @@ import com.runt9.fusionOfSouls.model.unit.hero.Hero
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
 import com.soywiz.korev.dispatch
-import com.soywiz.korma.geom.Angle
+import com.soywiz.korma.geom.angleTo
 import com.soywiz.korma.geom.degrees
 import com.soywiz.korma.math.roundDecimalPlaces
 import kotlinx.coroutines.launch
@@ -32,19 +33,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class BattleUnitManager(private val gridService: GridService, private val attackService: AttackService) {
-    val playerTeam = mutableListOf<BattleUnit>()
-    val enemyTeam = mutableListOf<BattleUnit>()
-    val allUnits
-        get() = playerTeam + enemyTeam
-
-    fun clear() {
-        playerTeam.forEach(BattleUnit::remove)
-        playerTeam.clear()
-        enemyTeam.forEach(BattleUnit::remove)
-        enemyTeam.clear()
-    }
-
-    fun enemyTeamOf(unit: BattleUnit) = if (unit.team == Team.PLAYER) enemyTeam else playerTeam
+    fun enemyTeamOf(unit: BattleUnit) = if (unit.team == Team.PLAYER) runState.battleContext.enemyTeam else runState.battleContext.playerTeam
 
     fun unitMoveComplete(unit: BattleUnit) {
         unit.previousGridPos = unit.gridPos
@@ -61,7 +50,9 @@ class BattleUnitManager(private val gridService: GridService, private val attack
             enemyTeamOf(unit).find { unit.withinAttackRange(it) }?.let { unit.changeTarget(it) }
         }
 
-        unit.body.addAction(rotateTo(Angle.between(unit.gridPos, unit.target!!.gridPos).degrees.toFloat(), 0.15f))
+        val rotation = unit.gridPos.angleTo(unit.target!!.gridPos).degrees.toFloat()
+        info("[${unit.name}]") { "Rotating from ${unit.unit.rotation} to $rotation degrees" }
+        unit.unit.addAction(rotateTo(rotation, 0.15f))
         unit.startAttacking()
         return true
     }
@@ -82,15 +73,19 @@ class BattleUnitManager(private val gridService: GridService, private val attack
         unit.movingToGridPos = nextPoint
         gridService.unblock(unit.gridPos)
         gridService.block(nextPoint)
-        val newAngle = Angle.between(unit.gridPos, nextPoint)
-        val distance = unit.gridPos.manhattanDistance(nextPoint)
+        val newAngle = unit.gridPos.angleTo(nextPoint).degrees.toFloat()
+        val diff = nextPoint - unit.gridPos
 
         KtxAsync.launch {
-            unit.body.addAction(rotateTo(newAngle.degrees.toFloat(), 0.15f))
+            info("[${unit.name}]") { "Rotating from ${unit.unit.rotation} to $newAngle degrees" }
+            // TODO: If > 180, it's rotating all the way around. See if we can figure out a rotateBy instead
+            val action = rotateTo(newAngle, 0.15f)
+            action.isUseShortestDirection = true
+            unit.unit.addAction(action)
         }
 
         KtxAsync.launch {
-            unit.addAction(moveTo(nextPoint.worldX.toFloat(), nextPoint.worldY.toFloat(), 1f))
+            unit.addAction(moveBy(diff.worldX.toFloat(), diff.worldY.toFloat(), 1f))
         }
     }
 
@@ -145,7 +140,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
     }
 
     private fun checkForKills() {
-        allUnits.filter { it.currentHp <= 0 }.forEach { unitKilled(it) }
+        runState.battleContext.allUnits.filter { it.currentHp <= 0 }.forEach { unitKilled(it) }
     }
 
     fun unitAttackAnimation(unit: BattleUnit) {
@@ -154,7 +149,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
             val currentY = y
 
             // TODO: This isn't properly using rotation, will need to figure it out
-            unit += moveBy(cos(body.rotation) * 3, sin(body.rotation * 3), 0.025f) then moveTo(currentX, currentY, 0.15f)
+            unit += moveBy(cos(this.unit.rotation) * 3, sin(this.unit.rotation * 3), 0.025f) then moveTo(currentX, currentY, 0.15f)
         }
     }
 
@@ -200,18 +195,18 @@ class BattleUnitManager(private val gridService: GridService, private val attack
         unit.states.clear()
         unit.cancelAttacking()
         gridService.unblock(unit.gridPos)
-        allUnits.filter { it.target == unit }.forEach {
+        runState.battleContext.allUnits.filter { it.target == unit }.forEach {
             it.removeTarget()
         }
 
         if (unit.team == Team.PLAYER) {
-            playerTeam.remove(unit)
+            runState.battleContext.playerTeam.remove(unit)
             runState.battleContext.flawless = false
             if (unit.unit is Hero) {
                 runState.battleContext.heroLived = false
             }
         } else {
-            enemyTeam.remove(unit)
+            runState.battleContext.enemyTeam.remove(unit)
         }
 
         unit += fadeOut(0.25f) then removeActor()
@@ -219,7 +214,7 @@ class BattleUnitManager(private val gridService: GridService, private val attack
     }
 
     fun initSkills() {
-        playerTeam.forEach { it.initSkill() }
-        enemyTeam.forEach { it.initSkill() }
+        runState.battleContext.playerTeam.forEach { it.initSkill() }
+        runState.battleContext.enemyTeam.forEach { it.initSkill() }
     }
 }
