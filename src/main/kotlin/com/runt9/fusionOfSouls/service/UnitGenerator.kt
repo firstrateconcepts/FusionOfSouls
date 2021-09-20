@@ -19,7 +19,9 @@ class UnitGenerator {
         val ability = getAbilityFromPool(classes)
         val attrMod = generateAttributeModifier(rarity, classes)
 
-        return BasicUnit("Unit Name ${unitNum++}", image, ability, passive, attrMod, classes)
+        val unit = BasicUnit("Unit Name ${unitNum++}", image, ability, passive, attrMod, classes)
+        unit.initTooltip()
+        return unit
     }
 
     private fun generateAttributeModifier(rarity: Rarity, classes: List<UnitClass>): AttributeModifierEffect<*, *> {

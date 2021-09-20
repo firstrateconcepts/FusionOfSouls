@@ -47,14 +47,15 @@ fun leftPane() = scene2d.visTable {
 
 private const val xpBarStyleName = "charDialogXpBar"
 private fun KTable.buildCharInfo() = visTable {
+    val hero = runState.hero
     visTable {
-        visImage(runState.hero.unitImage).cell(row = true)
+        visImage(hero.unitImage).cell(row = true)
 
         progressBarStyleHeight(xpBarStyleName, 10f)
 
-        val currentLevel = runState.hero.level
-        val xpToLevel = runState.hero.xpToLevel
-        val currentXp = runState.hero.xp
+        val currentLevel = hero.level
+        val xpToLevel = hero.xpToLevel
+        val currentXp = hero.xp
 
         stack {
             visProgressBar(0f, xpToLevel.toFloat(), style = xpBarStyleName) {
@@ -68,12 +69,13 @@ private fun KTable.buildCharInfo() = visTable {
         }.cell(row = true, width = 50f, space = 5f)
 
         scaledLabel("Level: $currentLevel").cell(row = true, expand = true, align = Align.center)
-        scaledLabel("Ranger").cell(row = true, expand = true, align = Align.center)
-        scaledLabel("Fighter").cell(row = true, expand = true, align = Align.center)
+        hero.classes.forEach {
+            scaledLabel(it.name).cell(row = true, expand = true, align = Align.center)
+        }
     }.cell(grow = true)
 
     visTable {
-        runState.hero.primaryAttrs.all.forEach { attr ->
+        hero.primaryAttrs.all.forEach { attr ->
             visLabel(attr.type.displayName).cell(align = Align.left, expandX = true)
             visLabel(attr.displayValue()) {
                 attr.addListener {

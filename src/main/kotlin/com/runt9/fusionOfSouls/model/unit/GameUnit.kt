@@ -3,6 +3,7 @@ package com.runt9.fusionOfSouls.model.unit
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.utils.Disableable
 import com.badlogic.gdx.utils.Align
+import com.kotcrab.vis.ui.widget.Tooltip
 import com.kotcrab.vis.ui.widget.VisImage
 import com.runt9.fusionOfSouls.model.GridPoint
 import com.runt9.fusionOfSouls.model.unit.ability.Ability
@@ -14,7 +15,9 @@ import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.scaledLabel
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
+import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.scene2d
+import ktx.scene2d.vis.KVisTable
 import ktx.scene2d.vis.visTable
 import ktx.scene2d.vis.visTooltip
 import kotlin.reflect.KClass
@@ -26,6 +29,7 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
     val secondaryAttrs = SecondaryAttributes(primaryAttrs)
     val attackRange: Int
     val classes = mutableListOf<UnitClass>()
+    var infoTooltip: Tooltip? = null
     private var isDisabled = false
 
     // Null means on bench
@@ -39,8 +43,45 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
         runState.statusListeners.add { setDisabled(it == BattleStatus.DURING) }
         setOrigin(Align.center)
 
-        // TODO: Disable tooltip during battle, doesn't seem particularly easy
-        visTooltip(scene2d.visTable {
+        runState.statusListeners += {
+            if (it == BattleStatus.DURING) {
+                infoTooltip?.detach()
+                infoTooltip?.remove()
+                infoTooltip = null
+            } else {
+                initTooltip()
+            }
+        }
+    }
+
+    @Scene2dDsl
+    abstract fun KVisTable.additionalTooltipData()
+
+    fun reset() {
+        secondaryAttrs.purgeTemporaryModifiers()
+        primaryAttrs.purgeTemporaryModifiers()
+        ability.resetCooldown()
+        // This is safe because only player units get reset, and they'll always be facing 0 degrees
+        rotation = 0f
+        clearActions()
+    }
+
+    override fun <T : Event> addEventListener(clazz: KClass<T>, handler: (T) -> Unit) = dispatcher.addEventListener(clazz, handler)
+
+    override fun <T : Event> dispatch(clazz: KClass<T>, event: T) {
+        dispatcher.dispatch(clazz, event)
+    }
+
+    override fun setDisabled(isDisabled: Boolean) {
+        this.isDisabled = isDisabled
+    }
+
+    override fun isDisabled() = this.isDisabled
+
+    fun initTooltip() {
+        if (infoTooltip != null) return
+
+        infoTooltip = visTooltip(scene2d.visTable {
             visTable {
                 primaryAttrs.all.forEach { attr ->
                     val textGetter = { "${attr.type.displayName}: ${attr.displayValue()}" }
@@ -53,7 +94,7 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
             }.cell(spaceRight = 5f, growY = true)
 
             visTable {
-                scaledLabel(name).cell(row = true, colspan = 3)
+                scaledLabel(this@GameUnit.name).cell(row = true, colspan = 3)
 
                 classes.forEach { unitClass ->
                     scaledLabel(unitClass.name).cell(colspan = 4 - classes.size)
@@ -80,29 +121,10 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
                     row()
                 }
             }
+
+            additionalTooltipData()
         }) {
             appearDelayTime = 0.1f
         }
     }
-
-    fun reset() {
-        secondaryAttrs.purgeTemporaryModifiers()
-        primaryAttrs.purgeTemporaryModifiers()
-        ability.resetCooldown()
-        // This is safe because only player units get reset, and they'll always be facing 0 degrees
-        rotation = 0f
-        clearActions()
-    }
-
-    override fun <T : Event> addEventListener(clazz: KClass<T>, handler: (T) -> Unit) = dispatcher.addEventListener(clazz, handler)
-
-    override fun <T : Event> dispatch(clazz: KClass<T>, event: T) {
-        dispatcher.dispatch(clazz, event)
-    }
-
-    override fun setDisabled(isDisabled: Boolean) {
-        this.isDisabled = isDisabled
-    }
-
-    override fun isDisabled() = this.isDisabled
 }
