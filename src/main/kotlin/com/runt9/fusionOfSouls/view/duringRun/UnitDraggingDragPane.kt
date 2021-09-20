@@ -24,6 +24,7 @@ abstract class UnitGridTable : VisTable(), KTable {
 }
 
 // TODO: Swap on drop where another unit is. Currently just rejects to prevent overlap
+// TODO: Utilize addListener InputListener for enter/exit on table grid for show/hide
 abstract class UnitDraggingDragPane(content: UnitGridTable) : DragPane(content) {
     init {
         draggable = Draggable()

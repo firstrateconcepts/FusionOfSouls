@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.kotcrab.vis.ui.VisUI
+import com.kotcrab.vis.ui.widget.VisLabel
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.actor
@@ -62,3 +63,9 @@ fun <S, T> KWidget<S>.observableLabel(listenerList: MutableList<(T) -> Unit>, st
 }
 
 fun <T> simpleObservable(initialValue: T, listeners: List<(T) -> Unit>) = Delegates.observable(initialValue) { _, _, newValue -> listeners.forEach { it(newValue) } }
+
+@Scene2dDsl
+fun <S> KWidget<S>.scaledLabel(text: String, init: (@Scene2dDsl VisLabel).(S) -> Unit = {}) = visLabel(text, "small") {
+    setFontScale(0.75f)
+    init(it)
+}

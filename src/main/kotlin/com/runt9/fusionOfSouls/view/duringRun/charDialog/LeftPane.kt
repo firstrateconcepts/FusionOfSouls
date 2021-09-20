@@ -1,17 +1,13 @@
 package com.runt9.fusionOfSouls.view.duringRun.charDialog
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Align
-import com.kotcrab.vis.ui.widget.VisLabel
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.progressBarStyleHeight
+import com.runt9.fusionOfSouls.util.scaledLabel
 import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.AbilityTab
 import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.AttrsTab
 import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.RuneTab
 import ktx.scene2d.KTable
-import ktx.scene2d.KWidget
-import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.scene2d
 import ktx.scene2d.stack
 import ktx.scene2d.vis.addTabContentsTo
@@ -52,7 +48,7 @@ fun leftPane() = scene2d.visTable {
 private const val xpBarStyleName = "charDialogXpBar"
 private fun KTable.buildCharInfo() = visTable {
     visTable {
-        visImage(Texture(Gdx.files.internal("blueArrow-tp.png"))).cell(row = true)
+        visImage(runState.hero.unitImage).cell(row = true)
 
         progressBarStyleHeight(xpBarStyleName, 10f)
 
@@ -86,10 +82,4 @@ private fun KTable.buildCharInfo() = visTable {
             }.cell(align = Align.center, row = true)
         }
     }.cell(grow = true)
-}
-
-@Scene2dDsl
-fun <S> KWidget<S>.scaledLabel(text: String, init: (@Scene2dDsl VisLabel).(S) -> Unit = {}) = visLabel(text, "small") {
-    setFontScale(0.75f)
-    init(it)
 }

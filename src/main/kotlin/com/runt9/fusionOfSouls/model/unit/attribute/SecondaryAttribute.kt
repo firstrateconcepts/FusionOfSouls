@@ -18,20 +18,21 @@ private val intDisplayer = { d: Double -> d.toIntRound().toString() }
 private val multiDisplayer = { d: Double -> "${d.roundDecimalPlaces(2)}x" }
 
 enum class SecondaryAttributeType(
+    override val shortName: String,
     override val displayName: String,
     override val attrsAttrSelection: SecondaryAttributes.() -> SecondaryAttribute,
     override val attrRandomizer: AttributeModifierRandomizer,
     override val valueDisplayer: (Double) -> String
 ) : AttributeType<SecondaryAttribute, SecondaryAttributes> {
-    MAX_HP("Max HP", SecondaryAttributes::maxHp, randomMaxHp, intDisplayer),
-    BASE_DAMAGE("Base Damage", SecondaryAttributes::baseDamage, randomBaseDamage, intDisplayer),
-    SKILL_MULTI("Skill Multiplier", SecondaryAttributes::skillMulti, randomSkillMulti, multiDisplayer),
-    DEFENSE("Defense", SecondaryAttributes::defense, randomDefense, {d: Double -> "${d.toIntRound()}%"}),
-    EVASION("Evasion", SecondaryAttributes::evasion, randomEvasion, intDisplayer),
-    CRIT_THRESHOLD("Crit Threshold", SecondaryAttributes::critThreshold, randomCritThreshold, intDisplayer),
-    CRIT_BONUS("Crit Multiplier", SecondaryAttributes::critBonus, randomCritMulti, multiDisplayer),
-    ATTACK_SPEED("Attacks per Second", SecondaryAttributes::attackSpeed, randomAttackSpeed, { d: Double -> d.roundDecimalPlaces(2).toString() }),
-    COOLDOWN_REDUCTION("Cooldown Reduction", SecondaryAttributes::cooldownReduction, randomCdr, multiDisplayer);
+    MAX_HP("HP", "Max HP", SecondaryAttributes::maxHp, randomMaxHp, intDisplayer),
+    BASE_DAMAGE("Dmg", "Base Damage", SecondaryAttributes::baseDamage, randomBaseDamage, intDisplayer),
+    SKILL_MULTI("SkMul", "Skill Multiplier", SecondaryAttributes::skillMulti, randomSkillMulti, multiDisplayer),
+    DEFENSE("Def", "Defense", SecondaryAttributes::defense, randomDefense, {d: Double -> "${d.toIntRound()}%"}),
+    EVASION("Eva", "Evasion", SecondaryAttributes::evasion, randomEvasion, intDisplayer),
+    CRIT_THRESHOLD("Crit", "Crit Threshold", SecondaryAttributes::critThreshold, randomCritThreshold, intDisplayer),
+    CRIT_BONUS("Crit x", "Crit Multiplier", SecondaryAttributes::critBonus, randomCritMulti, multiDisplayer),
+    ATTACK_SPEED("ApS", "Attacks per Second", SecondaryAttributes::attackSpeed, randomAttackSpeed, { d: Double -> d.roundDecimalPlaces(2).toString() }),
+    COOLDOWN_REDUCTION("CDR", "Cooldown Reduction", SecondaryAttributes::cooldownReduction, randomCdr, multiDisplayer);
 
     override val unitAttrSelection = GameUnit::secondaryAttrs
 }

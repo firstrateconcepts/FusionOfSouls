@@ -15,6 +15,8 @@ enum class PrimaryAttributeType(override val attrsAttrSelection: PrimaryAttribut
     override val attrRandomizer = AttributeModifierRandomizer(5, 10)
     override val displayName: String
         get() = name.lowercase().replaceFirstChar(Character::toTitleCase)
+    override val shortName: String
+        get() = displayName
     override val valueDisplayer = { d: Double -> d.toIntRound().toString() }
 }
 

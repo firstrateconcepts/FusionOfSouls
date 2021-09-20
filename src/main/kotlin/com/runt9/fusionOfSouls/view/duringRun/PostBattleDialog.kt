@@ -21,8 +21,8 @@ import ktx.actors.onClick
 import ktx.actors.plusAssign
 import ktx.actors.then
 import ktx.scene2d.KTable
+import ktx.scene2d.actor
 import ktx.scene2d.container
-import ktx.scene2d.image
 import ktx.scene2d.scene2d
 import ktx.scene2d.stack
 import ktx.scene2d.vis.KVisTable
@@ -129,7 +129,7 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
                 val group = scene2d.visTable(defaultSpacing = true) {
                     stack {
                         container { squarePixmap(40, Color.LIGHT_GRAY) }
-                        container { image(this@UnitRuneSelectionDialog.unit.unitImage) }
+                        container { actor(this@UnitRuneSelectionDialog.unit) }
 
                         onClick {
                             runState.addNewUnit(this@UnitRuneSelectionDialog.unit)

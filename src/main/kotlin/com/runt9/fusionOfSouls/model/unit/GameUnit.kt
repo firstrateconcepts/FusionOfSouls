@@ -11,8 +11,12 @@ import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributes
 import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
 import com.runt9.fusionOfSouls.service.BattleStatus
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.util.scaledLabel
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
+import ktx.scene2d.scene2d
+import ktx.scene2d.vis.visTable
+import ktx.scene2d.vis.visTooltip
 import kotlin.reflect.KClass
 
 // TODO: Refactor to 100% scene2d events
@@ -34,13 +38,58 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
         classes.addAll(startingClasses)
         runState.statusListeners.add { setDisabled(it == BattleStatus.DURING) }
         setOrigin(Align.center)
+
+        // TODO: Disable tooltip during battle, doesn't seem particularly easy
+        visTooltip(scene2d.visTable {
+            visTable {
+                primaryAttrs.all.forEach { attr ->
+                    val textGetter = { "${attr.type.displayName}: ${attr.displayValue()}" }
+                    scaledLabel(textGetter()) {
+                        attr.addListener {
+                            setText(textGetter())
+                        }
+                    }.cell(row = true, growY = true)
+                }
+            }.cell(spaceRight = 5f, growY = true)
+
+            visTable {
+                scaledLabel(name).cell(row = true, colspan = 3)
+
+                classes.forEach { unitClass ->
+                    scaledLabel(unitClass.name).cell(colspan = 4 - classes.size)
+                }
+                row()
+
+                // TODO: Probably need a cooldown time listener
+                val cdTextGetter = { ability.displayStr }
+                scaledLabel(cdTextGetter()) {
+                    secondaryAttrs.cooldownReduction.addListener { setText(cdTextGetter()) }
+                }.cell(colspan = 3)
+
+                row()
+
+                secondaryAttrs.all.chunked(3).forEach { attrRow ->
+                    attrRow.forEach { attr ->
+                        val textGetter = { "${attr.type.shortName}: ${attr.displayValue()}" }
+                        scaledLabel(textGetter()) {
+                            attr.addListener {
+                                setText(textGetter())
+                            }
+                        }.cell(spaceLeft = 4f, spaceRight = 4f)
+                    }
+                    row()
+                }
+            }
+        }) {
+            appearDelayTime = 0.1f
+        }
     }
 
     fun reset() {
         secondaryAttrs.purgeTemporaryModifiers()
         primaryAttrs.purgeTemporaryModifiers()
         ability.resetCooldown()
-        // This is safe because only player units get reset and they'll always be facing 0 degrees
+        // This is safe because only player units get reset, and they'll always be facing 0 degrees
         rotation = 0f
         clearActions()
     }
