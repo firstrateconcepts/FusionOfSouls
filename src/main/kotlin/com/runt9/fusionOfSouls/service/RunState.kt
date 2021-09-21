@@ -1,5 +1,6 @@
 package com.runt9.fusionOfSouls.service
 
+import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.model.loot.Rune
 import com.runt9.fusionOfSouls.model.unit.BasicUnit
 import com.runt9.fusionOfSouls.model.unit.hero.Hero

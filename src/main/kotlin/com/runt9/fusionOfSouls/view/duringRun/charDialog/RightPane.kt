@@ -3,6 +3,7 @@ package com.runt9.fusionOfSouls.view.duringRun.charDialog
 import com.badlogic.gdx.utils.Align
 import com.runt9.fusionOfSouls.model.loot.FusionType
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.util.observableLabel
 import ktx.scene2d.KTable
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.KVisTable
@@ -11,9 +12,8 @@ import ktx.scene2d.vis.visScrollPane
 import ktx.scene2d.vis.visTable
 
 fun rightPane() = scene2d.visTable {
-    val fusions = runState.hero.fusions
     visTable {
-        visLabel("Fusions: ${fusions.size}/${runState.fusionCap}")
+        observableLabel(runState.hero.fusionAddedListeners) { "Fusions: ${runState.hero.fusions.size}/${runState.fusionCap}" }
     }.cell(growX = true, height = 30f, row = true)
 
     visScrollPane {
@@ -22,7 +22,7 @@ fun rightPane() = scene2d.visTable {
         val fusionInfo: KTable.(String, FusionType) -> KVisTable = { title, type ->
             visTable {
                 visLabel("${title}:").cell(row = true, growX = true)
-                fusions.filter { it.effect.fusionType == type }.forEach {
+                runState.hero.fusions.filter { it.effect.fusionType == type }.forEach {
                     visLabel("- ${it.description}", "small") {
                         wrap = true
                         setFontScale(0.75f)

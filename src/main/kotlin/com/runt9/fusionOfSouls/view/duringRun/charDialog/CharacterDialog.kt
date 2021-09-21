@@ -1,6 +1,5 @@
 package com.runt9.fusionOfSouls.view.duringRun.charDialog
 
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.widget.VisDialog
 import com.runt9.fusionOfSouls.battleWidth
@@ -12,11 +11,11 @@ import ktx.scene2d.splitPane
 
 class CharacterDialog(title: String) : VisDialog(title, "dialog"), KTable {
     init {
+        addCloseButton()
         setOrigin(Align.center)
         centerWindow()
         isMovable = false
         button("Done")
-        key(Input.Keys.ESCAPE, null)
 
         contentTable.apply {
             val pane = scene2d.splitPane {

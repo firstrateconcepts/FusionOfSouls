@@ -1,7 +1,9 @@
 package com.runt9.fusionOfSouls.view.duringRun
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.kotcrab.vis.ui.layout.DragPane
 import com.kotcrab.vis.ui.widget.Draggable
@@ -27,7 +29,7 @@ abstract class UnitGridTable : VisTable(), KTable {
 // TODO: Utilize addListener InputListener for enter/exit on table grid for show/hide
 abstract class UnitDraggingDragPane(content: UnitGridTable) : DragPane(content) {
     init {
-        draggable = Draggable()
+        draggable = SkipRightClickDraggable()
         draggable.isInvisibleWhenDragged = true
         draggable.listener = UnitDraggingDragListener()
     }
@@ -93,6 +95,16 @@ abstract class UnitDraggingDragPane(content: UnitGridTable) : DragPane(content) 
             }
 
             return APPROVE
+        }
+    }
+
+    private inner class SkipRightClickDraggable : Draggable() {
+        override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+            if (event?.button == Input.Buttons.RIGHT) {
+                return false
+            }
+
+            return super.touchDown(event, x, y, pointer, button)
         }
     }
 }

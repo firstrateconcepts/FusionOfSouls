@@ -11,6 +11,7 @@ import com.kotcrab.vis.ui.widget.VisTextButton
 import com.runt9.fusionOfSouls.battleWidth
 import com.runt9.fusionOfSouls.model.loot.Rarity
 import com.runt9.fusionOfSouls.model.loot.Rune
+import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.service.UnitGenerator
 import com.runt9.fusionOfSouls.service.runState
@@ -83,7 +84,6 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
                 }.cell(growX = true, row = true)
             }
             add(group).growX().expandY().pad(10f).align(Align.top)
-//            debugAll()
         }
     }
 
@@ -116,7 +116,7 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
     }
 
     inner class UnitRuneSelectionDialog(private val listener: () -> Unit) : VisDialog("Choose Reward"), KTable {
-        private val unit = this@PostBattleDialog.unitGenerator.generateUnit(Rarity.COMMON, Texture(Gdx.files.internal("blueArrow-tp.png")))
+        private val unit = this@PostBattleDialog.unitGenerator.generateUnit(Rarity.COMMON, Texture(Gdx.files.internal("blueArrow-tp.png")), Team.PLAYER)
         private val rune = Rune(Rarity.COMMON)
 
         init {

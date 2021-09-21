@@ -12,8 +12,11 @@ import com.runt9.fusionOfSouls.model.loot.Rarity.UNCOMMON
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.service.generateModifiers
 import com.runt9.fusionOfSouls.util.rectPixmapTexture
+import com.runt9.fusionOfSouls.view.duringRun.fuseMenuItem
 import ktx.scene2d.KGroup
+import ktx.scene2d.scene2d
 import ktx.scene2d.textTooltip
+import ktx.scene2d.vis.popupMenu
 import ktx.style.defaultStyle
 import ktx.style.get
 import ktx.style.textTooltip
@@ -41,6 +44,8 @@ class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup {
                 setFontScale(0.75f)
             })
         }
+
+        addRightClickMenu()
     }
 
     override fun applyToUnit(unit: GameUnit) {
@@ -62,6 +67,14 @@ class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup {
             sb.append("${it.description}\n")
         }
         return sb.toString()
+    }
+
+    private fun addRightClickMenu() {
+        val menu = scene2d.popupMenu {
+            fuseMenuItem()
+        }
+
+        addListener(menu.defaultInputListener)
     }
 }
 
