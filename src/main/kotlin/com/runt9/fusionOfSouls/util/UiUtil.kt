@@ -3,6 +3,7 @@ package com.runt9.fusionOfSouls.util
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisLabel
@@ -10,10 +11,14 @@ import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.actor
 import ktx.scene2d.defaultHorizontalStyle
+import ktx.scene2d.textTooltip
 import ktx.scene2d.vis.KVisTable
 import ktx.scene2d.vis.visImage
 import ktx.scene2d.vis.visLabel
+import ktx.style.defaultStyle
+import ktx.style.get
 import ktx.style.progressBar
+import ktx.style.textTooltip
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -62,10 +67,22 @@ fun <S, T> KWidget<S>.observableLabel(listenerList: MutableList<(T) -> Unit>, st
     }
 }
 
-fun <T> simpleObservable(initialValue: T, listeners: List<(T) -> Unit>) = Delegates.observable(initialValue) { _, _, newValue -> listeners.forEach { it(newValue) } }
+fun <T> simpleObservable(initialValue: T, listeners: List<(T) -> Unit>) =
+    Delegates.observable(initialValue) { _, _, newValue -> listeners.forEach { it(newValue) } }
 
 @Scene2dDsl
 fun <S> KWidget<S>.scaledLabel(text: String, init: (@Scene2dDsl VisLabel).(S) -> Unit = {}) = visLabel(text, "small") {
     setFontScale(0.75f)
     init(it)
+}
+
+@Scene2dDsl
+fun Actor.smallTextTooltip(text: String) = textTooltip(text) { tt ->
+    wrap = true
+
+    tt.setInstant(true)
+    tt.setStyle(VisUI.getSkin().textTooltip("smallerTooltip", extend = defaultStyle) {
+        label = VisUI.getSkin()["small"]
+        setFontScale(0.75f)
+    })
 }

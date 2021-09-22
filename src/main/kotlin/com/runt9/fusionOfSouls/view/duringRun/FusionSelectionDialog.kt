@@ -10,6 +10,7 @@ import com.runt9.fusionOfSouls.battleWidth
 import com.runt9.fusionOfSouls.model.loot.Fusible
 import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.util.smallTextTooltip
 import com.runt9.fusionOfSouls.viewportHeight
 import ktx.actors.onChangeEvent
 import ktx.actors.onClick
@@ -51,6 +52,8 @@ class FusionSelectionDialog(fusible: Fusible) : VisDialog("Select Fusion", "dial
             val table = scene2d.visTable(defaultSpacing = true) {
                 fusible.getFusibleEffects().forEach { effect ->
                     visTextButton(effect.fusionDisplayName) {
+                        smallTextTooltip(effect.description)
+
                         onClick {
                             fusible.onFusionChosen(Fusion(effect))
                             this@FusionSelectionDialog.hide()

@@ -36,16 +36,24 @@ class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<Uni
     fun addRune(rune: Rune) {
         rune.applyToUnit(this)
         runes += rune
+        rune.isActive = true
     }
 
     fun removeRune(rune: Rune) {
         rune.removeFromUnit(this)
         runes -= rune
+        rune.isActive = false
     }
 
     fun fuseRune(rune: Rune, selectedFusion: Fusion) {
         rune.removeFromUnit(this)
-        runes -= rune
+
+        if (rune.isActive) {
+            runes -= rune
+        } else {
+            runState.unequippedRunes -= rune
+        }
+
         rune.remove()
         addFusion(selectedFusion)
         notify(RuneCountUpdateEvent(this), false)

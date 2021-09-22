@@ -6,6 +6,7 @@ import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.model.loot.FusionType
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.observableLabel
+import com.runt9.fusionOfSouls.util.smallTextTooltip
 import ktx.scene2d.KTable
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.KVisTable
@@ -49,7 +50,10 @@ fun rightPane() = scene2d.visTable {
     }.cell(grow = true, align = Align.top)
 }
 
-fun KVisTable.addFusion(fusion: Fusion) = visLabel("- ${fusion.description}", "small") {
-    wrap = true
+fun KVisTable.addFusion(fusion: Fusion) = visLabel("- ${fusion.effect.fusionDisplayName}", "small") {
+    smallTextTooltip(fusion.description)
+    // Would prefer to have wrap on but messes up tooltip without explicit width, but with wrap and fill on, is too wide and tooltip
+    // shows up even when not hovering over the text iself, so /shrug
+//    wrap = true
     setFontScale(0.75f)
-}.cell(row = true, growX = true, padLeft = 10f)
+}.cell(row = true, expandX = true, padLeft = 10f, align = Align.left)

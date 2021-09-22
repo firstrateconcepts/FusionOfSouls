@@ -3,7 +3,6 @@ package com.runt9.fusionOfSouls.model.loot
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.GameUnitEffect
 import com.runt9.fusionOfSouls.model.loot.Rarity.COMMON
 import com.runt9.fusionOfSouls.model.loot.Rarity.LEGENDARY
@@ -13,11 +12,8 @@ import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.service.generateModifiers
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.rectPixmapTexture
+import com.runt9.fusionOfSouls.util.smallTextTooltip
 import ktx.scene2d.KGroup
-import ktx.scene2d.textTooltip
-import ktx.style.defaultStyle
-import ktx.style.get
-import ktx.style.textTooltip
 
 private val Rarity.numRuneAttrs: Int
     get() = when(this) {
@@ -26,23 +22,16 @@ private val Rarity.numRuneAttrs: Int
         RARE, LEGENDARY -> 3
     }
 
+// TODO: Active vs inactive
 class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup, Fusible {
     override val description by lazy { generateDescription() }
     private val modifiers = generateModifiers(rarity, rarity.numRuneAttrs)
     private val passives = if (rarity == LEGENDARY) listOf(randomLegendaryPassive()) else emptyList()
+    var isActive = false
 
     init {
         actor = Image(rectPixmapTexture(25, 25, Color.BLUE))
-        textTooltip(description) { tt ->
-            wrap = true
-
-            tt.setInstant(true)
-            tt.setStyle(VisUI.getSkin().textTooltip("smallerTooltip", extend = defaultStyle) {
-                label = VisUI.getSkin()["small"]
-                setFontScale(0.75f)
-            })
-        }
-
+        smallTextTooltip(description)
         addRightClickMenu()
     }
 

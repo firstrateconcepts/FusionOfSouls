@@ -24,6 +24,7 @@ class AttributeModifierEffect<A : Attribute, T : Attributes<A>>(private val type
         return type.attrsAttrSelection(unitAttr)
     }
 
+    // TODO: These should maybe strip off the minus in front of negative numbers??
     private fun generateDescription(): String {
         val sb = StringBuilder()
         sb.append("${type.displayName} ")
