@@ -2,10 +2,11 @@ package com.runt9.fusionOfSouls.service
 
 import com.runt9.fusionOfSouls.model.event.EndTurnEvent
 import com.runt9.fusionOfSouls.model.event.StartTurnEvent
+import com.runt9.fusionOfSouls.model.unit.BasicUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
-import com.soywiz.kmem.toIntFloor
+import com.soywiz.kmem.toIntCeil
 import com.soywiz.korev.dispatch
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -19,16 +20,20 @@ class BattleManager(
 ) {
     lateinit var onBattleComplete: (Team) -> Unit
 
+    val activeUnitAddedListener = { unit: BasicUnit -> unitAddedToBattle(unit.battleUnit!!) }
+    val activeUnitRemovedListener = { unit: BasicUnit -> unitRemovedFromBattle(unit.battleUnit!!) }
+
     fun newBattle() {
         runState.battleStatus = BattleStatus.BEFORE
 
         val hero = BattleUnit(runState.hero, Team.PLAYER)
         gridService.block(hero.gridPos)
 
-        // TODO: Algorithm for floor/room changes # and strength of enemies
+        // TODO: Please runt write unit tests for these for your own sanity you'll regret it later if you don't
 
-        val enemyCount = max((((runState.floor - 1) * 10.0) + runState.room) / 3.0, 1.0).toIntFloor()
-        val enemies = enemyGenerator.generateEnemies(enemyCount, -25.0)
+        val enemyCount = max((((runState.floor - 1) * 10.0) + runState.room) / 3.0, 1.0).toIntCeil()
+        val enemyStrength = -25.0 + (((((runState.floor - 1) * 10.0) + runState.room) - 1) * 5.0)
+        val enemies = enemyGenerator.generateEnemies(enemyCount, enemyStrength)
 
         runState.battleContext = BattleContext(enemies, hero).apply {
             runState.activeUnits.forEach { playerTeam += BattleUnit(it, Team.PLAYER) }
@@ -36,6 +41,9 @@ class BattleManager(
             enemies.forEach { enemyTeam += it }
             playerTeam += hero
         }
+
+        runState.activeUnitAddedListeners += activeUnitAddedListener
+        runState.activeUnitRemovedListeners += activeUnitRemovedListener
     }
 
     fun unitAddedToBattle(unit: BattleUnit) {
@@ -113,5 +121,7 @@ class BattleManager(
         runState.battleStatus = BattleStatus.AFTER
         onBattleComplete(team)
         gridService.reset()
+        runState.activeUnitAddedListeners -= activeUnitAddedListener
+        runState.activeUnitRemovedListeners -= activeUnitRemovedListener
     }
 }

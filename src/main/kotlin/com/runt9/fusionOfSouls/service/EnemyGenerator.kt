@@ -15,7 +15,7 @@ class EnemyGenerator(private val gridService: GridService, private val unitGener
 
     fun generateEnemy(strength: Double): BattleUnit {
         val randomEnemyPoint = gridService.addRandomlyToGrid(gridWidth - 5, gridWidth - 1)
-        val enemyUnit = unitGenerator.generateUnit(Rarity.getFromFloor(runState.floor), Texture(Gdx.files.internal("redArrow-tp.png")))
+        val enemyUnit = unitGenerator.generateUnit(Rarity.getFromFloor(runState.floor), Texture(Gdx.files.internal("redArrow-tp.png")), Team.ENEMY)
         enemyUnit.savedGridPos = randomEnemyPoint
         val enemyUnitView = BattleUnit(enemyUnit, Team.ENEMY)
         enemyUnit.primaryAttrs.all.forEach {

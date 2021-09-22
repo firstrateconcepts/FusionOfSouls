@@ -6,12 +6,13 @@ import com.runt9.fusionOfSouls.model.unit.attribute.times
 import com.soywiz.korio.lang.Closeable
 import kotlin.math.roundToInt
 
-abstract class Passive(val rarity: Rarity) : FusableEffect {
+abstract class Passive(val rarity: Rarity) : FusibleEffect {
     override val fusionType = FusionType.PASSIVE
 }
 
 class DefaultPassive : Passive(Rarity.COMMON) {
     private val value = 0.01
+    override val fusionDisplayName = "Bloodthirsty"
     override val description = "Attacks and abilities deal additional damage equal to ${value * 100}% of the target's Maximum HP."
     private var listener: Closeable? = null
 

@@ -46,6 +46,7 @@ class RuneTab : CharDialogTab("Runes") {
 
             this@RuneTab.equippedPane.addListener(listener)
             this@RuneTab.inventoryPane.addListener(listener)
+            runState.hero.addListener(listener)
         }.cell(growX = true, row = true, padLeft = 5f)
         visScrollPane {
             setScrollingDisabled(true, false)
