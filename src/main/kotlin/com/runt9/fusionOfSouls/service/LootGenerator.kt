@@ -7,6 +7,7 @@ import com.runt9.fusionOfSouls.model.unit.attribute.PrimaryAttributeType
 import com.runt9.fusionOfSouls.model.unit.attribute.SecondaryAttributeType
 import kotlin.random.Random
 
+// TODO: Ensure this is actually random? 4 straight instinct increases may not be valid?
 fun generateModifiers(rarity: Rarity, count: Int): List<AttributeModifierEffect<*, *>> {
     val generatedSoFar = mutableListOf<AttributeType<*, *>>()
     val output = mutableListOf<AttributeModifierEffect<*, *>>()

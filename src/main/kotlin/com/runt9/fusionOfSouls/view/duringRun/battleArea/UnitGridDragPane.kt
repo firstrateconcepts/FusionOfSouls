@@ -87,15 +87,6 @@ class UnitGridDragPane(private val battleManager: BattleManager, private val gri
     private fun bringUnitFromBench(unit: BasicUnit): BattleUnit {
         unit.savedGridPos = GridPoint(0.0, 0.0)
         unit.listeners.removeAll { it is Draggable }
-
-        val battleUnit = BattleUnit(unit, Team.PLAYER)
-
-        runState.apply {
-            inactiveUnits -= unit
-            activeUnits += unit
-        }
-
-        battleManager.unitAddedToBattle(battleUnit)
-        return battleUnit
+        return runState.activateUnit(unit)
     }
 }

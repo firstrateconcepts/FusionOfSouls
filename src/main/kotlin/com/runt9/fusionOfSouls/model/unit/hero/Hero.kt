@@ -3,13 +3,17 @@ package com.runt9.fusionOfSouls.model.unit.hero
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Align
 import com.runt9.fusionOfSouls.model.GridPoint
+import com.runt9.fusionOfSouls.model.event.FusionAddedEvent
 import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.model.loot.Passive
 import com.runt9.fusionOfSouls.model.loot.Rune
+import com.runt9.fusionOfSouls.model.unit.BasicUnit
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.model.unit.ability.Ability
 import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
+import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.progressBarStyleHeight
+import com.runt9.fusionOfSouls.view.duringRun.charDialog.tab.RuneCountUpdateEvent
 import ktx.scene2d.stack
 import ktx.scene2d.vis.KVisTable
 import ktx.scene2d.vis.visLabel
@@ -42,7 +46,18 @@ class Hero(name: String, unitImage: Texture, ability: Ability, classes: List<Uni
     fun fuseRune(rune: Rune, selectedFusion: Fusion) {
         rune.removeFromUnit(this)
         runes -= rune
+        rune.remove()
+        addFusion(selectedFusion)
+        notify(RuneCountUpdateEvent(this), false)
+        notify(FusionAddedEvent(this, selectedFusion), false)
+    }
 
+    fun fuseUnit(unit: BasicUnit, selectedFusion: Fusion) {
+        runState.removeUnit(unit)
+        addFusion(selectedFusion)
+    }
+
+    private fun addFusion(selectedFusion: Fusion) {
         selectedFusion.applyToUnit(this)
         fusions += selectedFusion
         fusionAddedListeners.forEach { it(selectedFusion) }

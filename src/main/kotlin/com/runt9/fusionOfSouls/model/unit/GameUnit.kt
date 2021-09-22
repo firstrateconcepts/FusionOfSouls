@@ -13,6 +13,7 @@ import com.runt9.fusionOfSouls.model.unit.unitClass.UnitClass
 import com.runt9.fusionOfSouls.service.BattleStatus
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.scaledLabel
+import com.runt9.fusionOfSouls.view.BattleUnit
 import com.soywiz.korev.Event
 import com.soywiz.korev.EventDispatcher
 import ktx.scene2d.Scene2dDsl
@@ -30,6 +31,7 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
     val attackRange: Int
     val classes = mutableListOf<UnitClass>()
     var infoTooltip: Tooltip? = null
+    var battleUnit: BattleUnit? = null
     private var isDisabled = false
 
     // Null means on bench
@@ -63,6 +65,7 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
         ability.resetCooldown()
         // This is safe because only player units get reset, and they'll always be facing 0 degrees
         rotation = 0f
+        battleUnit = null
         clearActions()
     }
 

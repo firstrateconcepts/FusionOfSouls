@@ -63,15 +63,10 @@ class UnitBenchDragPane(private val battleManager: BattleManager) : UnitDragging
     private fun putUnitOnBench(unit: BattleUnit): BasicUnit {
         unit.listeners.removeAll { it is Draggable }
 
-        val gameUnit = unit.unit as BasicUnit
+        val basicUnit = unit.unit as BasicUnit
 
-        runState.apply {
-            activeUnits -= gameUnit
-            inactiveUnits += gameUnit
-        }
+        runState.deactivateUnit(basicUnit)
 
-        battleManager.unitRemovedFromBattle(unit)
-
-        return gameUnit
+        return basicUnit
     }
 }

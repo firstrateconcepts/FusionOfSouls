@@ -23,7 +23,7 @@ import ktx.scene2d.vis.visLabel
 import ktx.scene2d.vis.visTextButton
 
 
-// TODO: Ensure all user actions are disabled during battle
+// TODO: During post battle rewards, disable dragging but allow seeing units. This is important to decide on a unit choice for class synergies as well as potential fusions opportunities
 class DuringRunScreen(
     private val game: FosGame,
     private val battleManager: BattleManager,

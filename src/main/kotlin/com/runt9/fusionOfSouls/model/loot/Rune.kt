@@ -11,12 +11,10 @@ import com.runt9.fusionOfSouls.model.loot.Rarity.RARE
 import com.runt9.fusionOfSouls.model.loot.Rarity.UNCOMMON
 import com.runt9.fusionOfSouls.model.unit.GameUnit
 import com.runt9.fusionOfSouls.service.generateModifiers
+import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.rectPixmapTexture
-import com.runt9.fusionOfSouls.view.duringRun.fuseMenuItem
 import ktx.scene2d.KGroup
-import ktx.scene2d.scene2d
 import ktx.scene2d.textTooltip
-import ktx.scene2d.vis.popupMenu
 import ktx.style.defaultStyle
 import ktx.style.get
 import ktx.style.textTooltip
@@ -28,7 +26,7 @@ private val Rarity.numRuneAttrs: Int
         RARE, LEGENDARY -> 3
     }
 
-class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup {
+class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup, Fusible {
     override val description by lazy { generateDescription() }
     private val modifiers = generateModifiers(rarity, rarity.numRuneAttrs)
     private val passives = if (rarity == LEGENDARY) listOf(randomLegendaryPassive()) else emptyList()
@@ -69,12 +67,10 @@ class Rune(rarity: Rarity) : GameUnitEffect, Container<Image>(), KGroup {
         return sb.toString()
     }
 
-    private fun addRightClickMenu() {
-        val menu = scene2d.popupMenu {
-            fuseMenuItem()
-        }
+    override fun getFusibleEffects() = modifiers + passives
 
-        addListener(menu.defaultInputListener)
+    override fun onFusionChosen(fusion: Fusion) {
+        runState.hero.fuseRune(this, fusion)
     }
 }
 

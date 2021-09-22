@@ -76,6 +76,7 @@ class BattleUnit(val unit: GameUnit, val team: Team) : EventDispatcher, WidgetGr
         setOrigin(Align.center)
         unit.setOrigin(Align.center)
         unit.rotation = team.initialRotation.degrees.toFloat()
+        unit.battleUnit = this
 
         progressBarStyleHeight(unitBarStyle, 2f)
 

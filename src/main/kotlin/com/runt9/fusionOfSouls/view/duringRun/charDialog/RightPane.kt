@@ -1,6 +1,8 @@
 package com.runt9.fusionOfSouls.view.duringRun.charDialog
 
 import com.badlogic.gdx.utils.Align
+import com.runt9.fusionOfSouls.model.event.FusionAddedEvent
+import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.model.loot.FusionType
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.observableLabel
@@ -23,10 +25,16 @@ fun rightPane() = scene2d.visTable {
             visTable {
                 visLabel("${title}:").cell(row = true, growX = true)
                 runState.hero.fusions.filter { it.effect.fusionType == type }.forEach {
-                    visLabel("- ${it.description}", "small") {
-                        wrap = true
-                        setFontScale(0.75f)
-                    }.cell(row = true, growX = true, padLeft = 10f)
+                    addFusion(it)
+                }
+
+                runState.hero.addListener { event ->
+                    if (event is FusionAddedEvent && event.fusionAdded.effect.fusionType == type) {
+                        addFusion(event.fusionAdded)
+                        return@addListener true
+                    }
+
+                    return@addListener false
                 }
             }.cell(row = true, growX = true)
         }
@@ -41,3 +49,7 @@ fun rightPane() = scene2d.visTable {
     }.cell(grow = true, align = Align.top)
 }
 
+fun KVisTable.addFusion(fusion: Fusion) = visLabel("- ${fusion.description}", "small") {
+    wrap = true
+    setFontScale(0.75f)
+}.cell(row = true, growX = true, padLeft = 10f)

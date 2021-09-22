@@ -2,6 +2,7 @@ package com.runt9.fusionOfSouls.service
 
 import com.runt9.fusionOfSouls.model.event.EndTurnEvent
 import com.runt9.fusionOfSouls.model.event.StartTurnEvent
+import com.runt9.fusionOfSouls.model.unit.BasicUnit
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.BattleUnitState
@@ -18,6 +19,9 @@ class BattleManager(
     private val enemyGenerator: EnemyGenerator
 ) {
     lateinit var onBattleComplete: (Team) -> Unit
+
+    val activeUnitAddedListener = { unit: BasicUnit -> unitAddedToBattle(unit.battleUnit!!) }
+    val activeUnitRemovedListener = { unit: BasicUnit -> unitRemovedFromBattle(unit.battleUnit!!) }
 
     fun newBattle() {
         runState.battleStatus = BattleStatus.BEFORE
@@ -36,6 +40,9 @@ class BattleManager(
             enemies.forEach { enemyTeam += it }
             playerTeam += hero
         }
+
+        runState.activeUnitAddedListeners += activeUnitAddedListener
+        runState.activeUnitRemovedListeners += activeUnitRemovedListener
     }
 
     fun unitAddedToBattle(unit: BattleUnit) {
@@ -113,5 +120,7 @@ class BattleManager(
         runState.battleStatus = BattleStatus.AFTER
         onBattleComplete(team)
         gridService.reset()
+        runState.activeUnitAddedListeners -= activeUnitAddedListener
+        runState.activeUnitRemovedListeners -= activeUnitRemovedListener
     }
 }

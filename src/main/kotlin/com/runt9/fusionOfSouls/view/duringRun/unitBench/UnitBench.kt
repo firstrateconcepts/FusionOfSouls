@@ -18,6 +18,5 @@ class UnitBench(private val unitBenchDragPane: UnitBenchDragPane) : VisTable(), 
         actor(unitBenchDragPane).cell(grow = true)
 
         runState.inactiveUnitAddedListeners += { unitBenchDragPane.addActor(it) }
-
     }
 }
