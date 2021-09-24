@@ -63,7 +63,7 @@ class FosGame : KtxGame<KtxScreen>() {
             bindSingleton { stage }
             bindSingleton { AssetManager() }
             bindSingleton { initSettings(Gdx.app.getPreferences("FusionOfSouls")) }
-            bind { GridService() }
+            bindSingleton { GridService() }
             bindSingleton { UnitGenerator() }
             bindSingleton { EnemyGenerator(inject(), inject()) }
 
@@ -86,7 +86,7 @@ class FosGame : KtxGame<KtxScreen>() {
             addScreen(LoadingScreen(this@FosGame, inject(), inject()))
             addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
             addScreen(RunStartScreen(this@FosGame, inject(), inject()))
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject(), inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject()))
         }
 
         setScreen<LoadingScreen>()
@@ -138,7 +138,9 @@ class FosGame : KtxGame<KtxScreen>() {
         // TODO: This seems like a bad, hacky way to do this instead of properly handling disposal of actors
         removeScreen<DuringRunScreen>()
         injector.apply {
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject(), inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject()))
+            // TODO: Yep also make this not have to reset here
+            inject<GridService>().reset()
         }
     }
 }

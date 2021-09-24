@@ -2,6 +2,7 @@ package com.runt9.fusionOfSouls.service
 
 import com.runt9.fusionOfSouls.model.loot.Rune
 import com.runt9.fusionOfSouls.model.unit.BasicUnit
+import com.runt9.fusionOfSouls.model.unit.Boss
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.hero.Hero
 import com.runt9.fusionOfSouls.util.simpleObservable
@@ -40,6 +41,7 @@ class RunState {
     var room by simpleObservable(1, roomNumberListeners)
 
     lateinit var hero: Hero
+    lateinit var boss: Boss
     var activeUnits = mutableListOf<BasicUnit>()
     val inactiveUnits = mutableListOf<BasicUnit>()
     val unequippedRunes = mutableListOf<Rune>()
@@ -49,9 +51,9 @@ class RunState {
     var battleStatus by simpleObservable(BattleStatus.BEFORE, statusListeners)
 
     // TODO: Not hard-coded
-    var unitCap = 2
-    var runeCap = 1
-    var fusionCap = 3
+    var unitCap = 3
+    var runeCap = 2
+    var fusionCap = 5
     var rng = Random(Random.nextBytes(32).hashCode())
 
     fun overrideSeed(seed: Any) {

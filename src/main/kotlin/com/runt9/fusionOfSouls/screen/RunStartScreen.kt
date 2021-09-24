@@ -8,6 +8,7 @@ import com.runt9.fusionOfSouls.model.loot.DefaultPassive
 import com.runt9.fusionOfSouls.model.loot.Fusion
 import com.runt9.fusionOfSouls.model.loot.Rarity
 import com.runt9.fusionOfSouls.model.loot.Rune
+import com.runt9.fusionOfSouls.model.unit.Boss
 import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.hero.defaultHero
 import com.runt9.fusionOfSouls.service.UnitGenerator
@@ -33,6 +34,7 @@ class RunStartScreen(private val game: FosGame, private val unitGenerator: UnitG
                         runState.hero.addRune(Rune(Rarity.COMMON))
                         runState.hero.fusions.add(Fusion(DefaultPassive()))
                         runState.addNewUnit(unitGenerator.generateUnit(Rarity.COMMON, Texture(Gdx.files.internal("blueArrow-tp.png")), Team.PLAYER))
+                        runState.boss = Boss()
                         game.setScreen<DuringRunScreen>()
                     }
                 }

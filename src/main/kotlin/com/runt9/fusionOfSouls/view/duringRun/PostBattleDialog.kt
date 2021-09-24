@@ -57,21 +57,23 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
                     }
                 }.cell(growX = true, row = true)
 
-                visTextButton("$xp Hero XP") {
-                    onClick {
-                        if (runState.hero.addXp(xp)) {
-                            table.visTextButton("Hero level up!") {
-                                onClick {
-                                    runState.hero.primaryAttrs.all.forEach {
-                                        it.addModifier(AttributeModifier(percentModifier = 10.0))
+                if (xp > 0) {
+                    visTextButton("$xp Hero XP") {
+                        onClick {
+                            if (runState.hero.addXp(xp)) {
+                                table.visTextButton("Hero level up!") {
+                                    onClick {
+                                        runState.hero.primaryAttrs.all.forEach {
+                                            it.addModifier(AttributeModifier(percentModifier = 10.0))
+                                        }
+                                        buttonHandler(table)
                                     }
-                                    buttonHandler(table)
-                                }
-                            }.cell(growX = true, row = true)
+                                }.cell(growX = true, row = true)
+                            }
+                            buttonHandler(table)
                         }
-                        buttonHandler(table)
-                    }
-                }.cell(growX = true, row = true)
+                    }.cell(growX = true, row = true)
+                }
 
                 visTextButton("Unit or Rune") {
                     onClick {
@@ -102,6 +104,11 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
             gold++
         }
         gold += ((runState.gold + gold) / 10.0).toIntFloor()
+
+        if (runState.room == 11) {
+            gold *= 3
+        }
+
         return gold
     }
 
@@ -112,6 +119,9 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
 
         var xp = runState.floor
         xp += runState.battleContext.enemyCount
+        if (runState.room == 11) {
+            xp *= 5
+        }
         return xp
     }
 
@@ -133,6 +143,7 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
 
                         onClick {
                             runState.addNewUnit(this@UnitRuneSelectionDialog.unit)
+                            runState.boss.addFusible(this@UnitRuneSelectionDialog.rune)
                             this@UnitRuneSelectionDialog.listener()
                             this@UnitRuneSelectionDialog.hide()
                         }
@@ -144,6 +155,7 @@ class PostBattleDialog(val unitGenerator: UnitGenerator, private val listener: (
 
                         onClick {
                             runState.unequippedRunes.add(this@UnitRuneSelectionDialog.rune)
+                            runState.boss.addFusible(this@UnitRuneSelectionDialog.unit)
                             this@UnitRuneSelectionDialog.listener()
                             this@UnitRuneSelectionDialog.hide()
                         }

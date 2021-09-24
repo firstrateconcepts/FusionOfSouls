@@ -8,7 +8,6 @@ import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.UnitGenerator
 import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.fosVisTable
-import com.runt9.fusionOfSouls.view.duringRun.InGameMenuDialog
 import com.runt9.fusionOfSouls.view.duringRun.PostBattleDialog
 import com.runt9.fusionOfSouls.view.duringRun.TopBar
 import com.runt9.fusionOfSouls.view.duringRun.battleArea.BattleArea
@@ -32,7 +31,6 @@ class DuringRunScreen(
     private val battleArea: BattleArea,
     private val unitBench: UnitBench,
     private val topBar: TopBar,
-    private val inGameMenuDialog: InGameMenuDialog,
     override val stage: Stage
 ) : FosScreen {
     private lateinit var updater: Timer.Task
@@ -79,7 +77,7 @@ class DuringRunScreen(
 
         drawPostBattle()
 
-        if (runState.room == 10) {
+        if (runState.room == 11) {
             runState.floor++
             runState.room = 1
         } else {
