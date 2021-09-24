@@ -16,6 +16,7 @@ class CharacterDialog(title: String) : VisDialog(title, "dialog"), KTable {
         centerWindow()
         isMovable = false
         button("Done")
+        closeOnEscape()
 
         contentTable.apply {
             val pane = scene2d.splitPane {

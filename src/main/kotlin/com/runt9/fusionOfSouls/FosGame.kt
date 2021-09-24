@@ -14,7 +14,7 @@ import com.runt9.fusionOfSouls.screen.DuringRunScreen
 import com.runt9.fusionOfSouls.screen.LoadingScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.RunStartScreen
-import com.runt9.fusionOfSouls.screen.SettingsScreen
+import com.runt9.fusionOfSouls.screen.SettingsDialog
 import com.runt9.fusionOfSouls.service.AttackService
 import com.runt9.fusionOfSouls.service.BattleManager
 import com.runt9.fusionOfSouls.service.BattleUnitManager
@@ -25,6 +25,7 @@ import com.runt9.fusionOfSouls.service.RunState
 import com.runt9.fusionOfSouls.service.UnitGenerator
 import com.runt9.fusionOfSouls.service.injector
 import com.runt9.fusionOfSouls.service.runState
+import com.runt9.fusionOfSouls.view.duringRun.InGameMenuDialog
 import com.runt9.fusionOfSouls.view.duringRun.TopBar
 import com.runt9.fusionOfSouls.view.duringRun.battleArea.BattleArea
 import com.runt9.fusionOfSouls.view.duringRun.battleArea.UnitGridDragPane
@@ -62,7 +63,7 @@ class FosGame : KtxGame<KtxScreen>() {
             bindSingleton { stage }
             bindSingleton { AssetManager() }
             bindSingleton { initSettings(Gdx.app.getPreferences("FusionOfSouls")) }
-            bindSingleton { GridService() }
+            bind { GridService() }
             bindSingleton { UnitGenerator() }
             bindSingleton { EnemyGenerator(inject(), inject()) }
 
@@ -77,13 +78,15 @@ class FosGame : KtxGame<KtxScreen>() {
             bind { UnitBenchDragPane(inject()) }
             bind { UnitBench(inject()) }
 
-            bind { TopBar() }
+            bind { SettingsDialog(this@FosGame, inject()) }
+            bind { InGameMenuDialog(this@FosGame, inject()) }
+
+            bind { TopBar(inject()) }
 
             addScreen(LoadingScreen(this@FosGame, inject(), inject()))
             addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
             addScreen(RunStartScreen(this@FosGame, inject(), inject()))
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject()))
-            addScreen(SettingsScreen(this@FosGame, inject(), inject()))
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject(), inject()))
         }
 
         setScreen<LoadingScreen>()
@@ -132,5 +135,10 @@ class FosGame : KtxGame<KtxScreen>() {
 
     fun reset() {
         runState = RunState()
+        // TODO: This seems like a bad, hacky way to do this instead of properly handling disposal of actors
+        removeScreen<DuringRunScreen>()
+        injector.apply {
+            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject(), inject()))
+        }
     }
 }
