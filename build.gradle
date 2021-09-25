@@ -22,7 +22,7 @@ test {
 	useJUnitPlatform()
 }
 
-version = '0.0.1'
+version = '0.1.0'
 ext.appName = 'fusion-of-souls'
 repositories {
 	mavenLocal()
@@ -32,7 +32,7 @@ repositories {
 	maven { url 'https://jitpack.io' }
 }
 
-mainClassName = 'com.runt9.fusionofsouls.lwjgl3.Lwjgl3Launcher'
+mainClassName = 'com.runt9.fusionOfSouls.Lwjgl3Launcher'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 dependencies {
