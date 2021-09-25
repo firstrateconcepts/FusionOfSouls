@@ -31,9 +31,13 @@ class BattleManager(
 
         // TODO: Please runt write unit tests for these for your own sanity you'll regret it later if you don't
 
-        val enemyCount = max((((runState.floor - 1) * 10.0) + runState.room) / 3.0, 1.0).toIntCeil()
-        val enemyStrength = -25.0 + (((((runState.floor - 1) * 10.0) + runState.room) - 1) * 5.0)
-        val enemies = enemyGenerator.generateEnemies(enemyCount, enemyStrength)
+        val enemies = if (runState.room == 11) {
+            listOf(BattleUnit(runState.boss, Team.ENEMY))
+        } else {
+            val enemyCount = max((((runState.floor - 1) * 10.0) + runState.room) / 3.0, 1.0).toIntCeil()
+            val enemyStrength = -25.0 + (((((runState.floor - 1) * 10.0) + runState.room) - 1) * 2.5)
+            enemyGenerator.generateEnemies(enemyCount, enemyStrength)
+        }
 
         runState.battleContext = BattleContext(enemies, hero).apply {
             runState.activeUnits.forEach { playerTeam += BattleUnit(it, Team.PLAYER) }

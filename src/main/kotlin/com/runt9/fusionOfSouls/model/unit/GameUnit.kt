@@ -65,7 +65,6 @@ abstract class GameUnit(name: String, val unitImage: Texture, val ability: Abili
         ability.resetCooldown()
         // This is safe because only player units get reset, and they'll always be facing 0 degrees
         rotation = 0f
-        battleUnit = null
         clearActions()
     }
 

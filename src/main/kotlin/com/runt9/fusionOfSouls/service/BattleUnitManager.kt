@@ -32,6 +32,7 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+// TODO: Needs to tear down units on returning to main menu
 class BattleUnitManager(private val gridService: GridService, private val attackService: AttackService) {
     fun enemyTeamOf(unit: BattleUnit) = if (unit.team == Team.PLAYER) runState.battleContext.enemyTeam else runState.battleContext.playerTeam
 
