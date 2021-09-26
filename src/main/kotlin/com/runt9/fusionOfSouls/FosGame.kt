@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.Settings
 import com.runt9.fusionOfSouls.screen.DuringRunScreen
+import com.runt9.fusionOfSouls.screen.GdxSteeringTestScreen
 import com.runt9.fusionOfSouls.screen.LoadingScreen
 import com.runt9.fusionOfSouls.screen.MainMenuScreen
 import com.runt9.fusionOfSouls.screen.RunStartScreen
@@ -87,6 +88,7 @@ class FosGame : KtxGame<KtxScreen>() {
             addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
             addScreen(RunStartScreen(this@FosGame, inject(), inject()))
             addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject()))
+            addScreen(GdxSteeringTestScreen(inject()))
         }
 
         setScreen<LoadingScreen>()
