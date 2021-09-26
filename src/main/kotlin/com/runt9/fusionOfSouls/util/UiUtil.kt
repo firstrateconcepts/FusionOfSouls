@@ -72,7 +72,7 @@ fun <T> simpleObservable(initialValue: T, listeners: List<(T) -> Unit>) =
 
 @Scene2dDsl
 fun <S> KWidget<S>.scaledLabel(text: String, init: (@Scene2dDsl VisLabel).(S) -> Unit = {}) = visLabel(text, "small") {
-    setFontScale(0.75f)
+//    setFontScale(0.75f)
     init(it)
 }
 

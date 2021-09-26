@@ -7,13 +7,14 @@ import com.runt9.fusionOfSouls.service.runState
 import com.runt9.fusionOfSouls.util.rectPixmapTexture
 import com.runt9.fusionOfSouls.util.toDrawable
 import com.runt9.fusionOfSouls.viewportWidth
+import com.soywiz.kmem.toIntRound
 import ktx.scene2d.KTable
 import ktx.scene2d.actor
 
 class UnitBench(private val unitBenchDragPane: UnitBenchDragPane) : VisTable(), KTable {
     init {
         setSize(viewportWidth.toFloat(), benchBarHeight.toFloat())
-        background(rectPixmapTexture(viewportWidth, benchBarHeight, Color.SLATE).toDrawable())
+        background(rectPixmapTexture(viewportWidth, benchBarHeight.toIntRound(), Color.SLATE).toDrawable())
 
         actor(unitBenchDragPane).cell(grow = true)
 

@@ -16,6 +16,7 @@ import com.runt9.fusionOfSouls.util.squarePixmap
 import com.runt9.fusionOfSouls.view.BattleUnit
 import com.runt9.fusionOfSouls.view.duringRun.UnitDraggingDragPane
 import com.runt9.fusionOfSouls.view.duringRun.UnitGridTable
+import com.soywiz.kmem.toIntRound
 import ktx.scene2d.KStack
 import ktx.scene2d.stack
 
@@ -27,7 +28,7 @@ class UnitBenchGridTable : UnitGridTable() {
 
         repeat(maxInactiveUnits) {
             stack {
-                grid += squarePixmap(benchBarHeight, Color.LIGHT_GRAY)
+                grid += squarePixmap(benchBarHeight.toIntRound(), Color.LIGHT_GRAY)
             }.cell(space = 2f)
         }
 

@@ -7,7 +7,6 @@ import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager
-import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
 import com.runt9.fusionOfSouls.model.Settings
 import com.runt9.fusionOfSouls.screen.DuringRunScreen
@@ -36,59 +35,80 @@ import ktx.actors.stage
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import ktx.async.KtxAsync
+import ktx.freetype.registerFreeTypeFontLoaders
+import ktx.inject.Context
 import ktx.inject.register
 import ktx.log.debug
 import ktx.scene2d.Scene2DSkin
+import kotlin.reflect.jvm.jvmErasure
+
+inline fun <reified Type : Any> Context.autoBindSingleton() = bindSingleton(autoInject<Type>())
+
+inline fun <reified T> autoInject(): T {
+    val constructor = T::class.constructors.first()
+    val args = constructor.parameters.map { param -> injector.getProvider(param.type.jvmErasure.java)() }.toTypedArray()
+    return constructor.call(*args)
+}
+
 
 class FosGame : KtxGame<KtxScreen>() {
     private val profiler by lazy { GLProfiler(Gdx.graphics).apply { enable() } }
     private val stage by lazy {
-        val stage = stage(viewport = FitViewport(viewportWidth.toFloat(), viewportHeight.toFloat()))
+//        val stage = stage(viewport = FitViewport(viewportWidth.toFloat(), viewportHeight.toFloat()))
+//        val stage = stage(viewport = LetterboxingViewport(aspectRatio = 16 / 9f))
+        val stage = stage()
         Gdx.input.inputProcessor = stage
         stage
     }
+
 
     override fun create() {
         KtxAsync.initiate()
         // TODO: Use real skin
 //        VisUI.load(Gdx.files.classpath("ui/uiskin.json"))
-        VisUI.load()
+        VisUI.load(VisUI.SkinScale.X2)
         Scene2DSkin.defaultSkin = VisUI.getSkin()
         TooltipManager.getInstance().apply {
             instant()
             animations = false
         }
 
+        val assetManager = AssetManager().apply {
+            registerFreeTypeFontLoaders(replaceDefaultBitmapFontLoader = true)
+        }
+
         injector.register {
-            bindSingleton { PooledEngine() }
+            bindSingleton { autoInject<PooledEngine>() }
             bindSingleton { stage }
-            bindSingleton { AssetManager() }
+            bindSingleton { assetManager }
             bindSingleton { initSettings(Gdx.app.getPreferences("FusionOfSouls")) }
-            bindSingleton { GridService() }
+            bindSingleton { autoInject<GridService>() }
             bindSingleton { UnitGenerator() }
-            bindSingleton { EnemyGenerator(inject(), inject()) }
+            autoBindSingleton<EnemyGenerator>()
+//            bindSingleton { autoInject<EnemyGenerator>() }
+            bindSingleton { this@FosGame }
 
-            bindSingleton { AttackService() }
-            bind { BattleUnitManager(inject(), inject()) }
-            bindSingleton { PathService(inject(), inject()) }
-            bindSingleton { BattleManager(inject(), inject(), inject(), inject()) }
+            bindSingleton { autoInject<AttackService>() }
+            bind { autoInject<BattleUnitManager>() }
+            bindSingleton { autoInject<PathService>() }
+            bindSingleton { autoInject<BattleManager>() }
 
-            bind { UnitGridDragPane(inject(), inject()) }
-            bind { BattleArea(inject()) }
+            bind { autoInject<UnitGridDragPane>() }
+            bind { autoInject<BattleArea>() }
 
-            bind { UnitBenchDragPane(inject()) }
-            bind { UnitBench(inject()) }
+            bind { autoInject<UnitBenchDragPane>() }
+            bind { autoInject<UnitBench>() }
 
-            bind { SettingsDialog(this@FosGame, inject()) }
-            bind { InGameMenuDialog(this@FosGame, inject()) }
+            bind { autoInject<SettingsDialog>() }
+            bind { autoInject<InGameMenuDialog>() }
 
-            bind { TopBar(inject()) }
+            bind { autoInject<TopBar>() }
 
-            addScreen(LoadingScreen(this@FosGame, inject(), inject()))
-            addScreen(MainMenuScreen(this@FosGame, inject(), inject()))
-            addScreen(RunStartScreen(this@FosGame, inject(), inject()))
-            addScreen(DuringRunScreen(this@FosGame, inject(), inject(), inject(), inject(), inject(), inject()))
-            addScreen(GdxSteeringTestScreen(inject()))
+            addScreen(autoInject<LoadingScreen>())
+            addScreen(autoInject<MainMenuScreen>())
+            addScreen(autoInject<RunStartScreen>())
+            addScreen(autoInject<DuringRunScreen>())
+            addScreen(autoInject<GdxSteeringTestScreen>())
         }
 
         setScreen<LoadingScreen>()
@@ -116,6 +136,7 @@ class FosGame : KtxGame<KtxScreen>() {
         debug { "Texture bindings: ${profiler.textureBindings}" }
         debug { "Sprites in batch: ${injector.inject<SpriteBatch>().maxSpritesInBatch}" }
 
+        injector.remove<FosGame>()
         injector.dispose()
         VisUI.dispose()
         super.dispose()
