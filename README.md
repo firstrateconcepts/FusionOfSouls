@@ -42,4 +42,4 @@ Let's say `current-release` is stable at version `0.1.0`, `next-release` is stab
 
 **Release/Patch to `next-release` process**
 
-This mimics the `current-release` process using the `working` branch as the source of new code. The main difference is that the tag and release are not created and it's shipped to the Beta branch on Steam.
+This mimics the `current-release` process using the `working` branch as the source of new code. The main difference is that the tag and release are marked as pre-release, and it's shipped to the Beta branch on Steam.
