@@ -32,4 +32,8 @@ class CharacterDialog(title: String) : VisDialog(title, "dialog"), KTable {
 
     override fun getPrefWidth() = (battleWidth * 0.75).toFloat()
     override fun getPrefHeight() = viewportHeight.toFloat() - resourceBarHeight
+
+    override fun act(delta: Float) {
+        super.act(delta)
+    }
 }

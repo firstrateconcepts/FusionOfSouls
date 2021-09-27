@@ -2,6 +2,7 @@ package com.runt9.fusionOfSouls.view.duringRun
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.runt9.fusionOfSouls.basicMargin
 import com.runt9.fusionOfSouls.resourceBarHeight
@@ -27,6 +28,7 @@ class TopBar(private val inGameMenuDialog: InGameMenuDialog) : VisTable(true), K
 
         visTable(true) {
             defaults().expand().center()
+
             observableLabel(runState.goldListeners) { "Gold: ${runState.gold}" }
             observableLabel(runState.activeUnitListeners) { "Units: ${runState.activeUnits.size} / ${runState.unitCap}" }
         }

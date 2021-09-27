@@ -35,8 +35,8 @@ class RunStartScreen(private val game: FosGame, private val unitGenerator: UnitG
                         runState.hero.fusions.add(Fusion(DefaultPassive()))
                         runState.addNewUnit(unitGenerator.generateUnit(Rarity.COMMON, Texture(Gdx.files.internal("blueArrow-tp.png")), Team.PLAYER))
                         runState.boss = Boss()
-                        game.setScreen<DuringRunScreen>()
-//                        game.setScreen<GdxSteeringTestScreen>()
+//                        game.setScreen<DuringRunScreen>()
+                        game.setScreen<GdxSteeringTestScreen>()
                     }
                 }
 

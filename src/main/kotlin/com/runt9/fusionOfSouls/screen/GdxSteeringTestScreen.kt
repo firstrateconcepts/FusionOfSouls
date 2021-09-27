@@ -161,12 +161,6 @@ class SteeringActor(var region: TextureRegion, var isIndependentFacing: Boolean 
             alignTolerance = 0.001f
             decelerationRadius = MathUtils.degreesToRadians * 90
         }
-//        priority = PrioritySteering(this).apply {
-//            add(look)
-//            add(avoid)
-//            add(pursue)
-////            add(face)
-//        }
         blend = BlendedSteering(this).apply {
             add(look, 20f)
             add(avoid, 10f)
@@ -283,14 +277,6 @@ class SteeringActor(var region: TextureRegion, var isIndependentFacing: Boolean 
 
             steer.calculateSteering(steeringOutput)
 
-            /*
-			 * Here you might want to add a motor control layer filtering steering accelerations.
-			 *
-			 * For instance, a car in a driving game has physical constraints on its movement: it cannot turn while stationary; the
-			 * faster it moves, the slower it can turn (without going into a skid); it can brake much more quickly than it can
-			 * accelerate; and it only moves in the direction it is facing (ignoring power slides).
-			 */
-
             // Apply steering acceleration
             applySteering(steeringOutput, delta)
             setPosition(position.x, position.y, Align.center)
@@ -305,7 +291,7 @@ class SteeringActor(var region: TextureRegion, var isIndependentFacing: Boolean 
 
         // Update orientation and angular velocity
         if (isIndependentFacing) {
-            rotation = rotation + angularVelocity * time * MathUtils.radiansToDegrees
+            rotation += angularVelocity * time * MathUtils.radiansToDegrees
             angularVelocity += steering.angular * time
         } else {
             // If we haven't got any velocity, then we can do nothing.

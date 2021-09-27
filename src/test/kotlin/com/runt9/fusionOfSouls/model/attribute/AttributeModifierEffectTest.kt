@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import com.badlogic.gdx.graphics.Texture
 import com.runt9.fusionOfSouls.model.loot.DefaultPassive
 import com.runt9.fusionOfSouls.model.unit.BasicUnit
+import com.runt9.fusionOfSouls.model.unit.Team
 import com.runt9.fusionOfSouls.model.unit.ability.DefaultAbility
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifier
 import com.runt9.fusionOfSouls.model.unit.attribute.AttributeModifierEffect
@@ -26,6 +27,7 @@ class AttributeModifierEffectTest {
             "test",
             texture,
             DefaultAbility(),
+            Team.PLAYER,
             DefaultPassive(),
             AttributeModifierEffect(PrimaryAttributeType.BODY, AttributeModifier(flatModifier = 0.0)),
             listOf(TankClass())
