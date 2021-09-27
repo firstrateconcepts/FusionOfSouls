@@ -18,6 +18,10 @@ application {
     mainClass.set("net.firstrateconcepts.fusionofsouls.FosApplication")
 }
 
+tasks.wrapper {
+    gradleVersion = "7.2"
+}
+
 runtime {
     options.set(listOf("--compress", "2", "--no-header-files", "--no-man-pages", "--strip-debug"))
 

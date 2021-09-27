@@ -19,14 +19,16 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: gradle
-    - name: Echo JAVA_HOME
-      run: echo $JAVA_HOME
+    - name: Setup Wrapper
+      run: ./gradlew --info --stacktrace wrapper
+    - name: Execute tests
+      run: ./gradlew --info --stacktrace test
     - name: Execute build
-      run: ./gradlew --info --stacktrace build -x test
+      run: ./gradlew --info --stacktrace build
     - name: Execute runtime
-      run: ./gradlew --info --stacktrace runtime -x test
+      run: ./gradlew --info --stacktrace runtime
     - name: Execute jpackage
-      run: ./gradlew --info --stacktrace jpackage -x test
+      run: ./gradlew --info --stacktrace jpackage
     - name: Upload Installation Artifact(s)
       uses: actions/upload-artifact@v2
       with:
