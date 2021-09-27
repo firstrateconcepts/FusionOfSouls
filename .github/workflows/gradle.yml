@@ -8,7 +8,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
-        java: [ '16.0.2' ]
       fail-fast: false
     name: ${{ matrix.os }}
     steps:
@@ -17,7 +16,9 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: ${{ matrix.java }}
+        java-version: '16'
+        distribution: 'adopt'
+        cache: gradle
     - name: Echo JAVA_HOME
       run: echo $JAVA_HOME
     - name: Verify Gradle Wrapper
@@ -28,23 +29,8 @@ jobs:
       run: ./gradlew --info --stacktrace runtime -x test
     - name: Execute jpackage
       run: ./gradlew --info --stacktrace jpackage -x test
-    - name: Upload DMG as an artifact
+    - name: Upload Installation Artifact(s)
       uses: actions/upload-artifact@v2
       with:
-        name: fusion-of-souls-jdk${{ matrix.java }}-${{ matrix.os }}-dmg
-        path: build/package/install/*.dmg
-    - name: Upload MSI as an artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: fusion-of-souls-jdk${{ matrix.java }}-${{ matrix.os }}-exe
-        path: build/package/install/*.msi
-    - name: Upload DEB as an artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: fusion-of-souls-jdk${{ matrix.java }}-${{ matrix.os }}-deb
-        path: build/package/install/*.deb
-    - name: Upload RPM as an artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: fusion-of-souls-jdk${{ matrix.java }}-${{ matrix.os }}-rpm
-        path: build/package/install/*.rpm
+        name: fusion-of-souls-${{ matrix.os }}-installer
+        path: build/package/install/*
