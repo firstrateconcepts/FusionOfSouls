@@ -135,8 +135,11 @@ runtime {
 			installerOptions += ['--linux-package-name', 'fusion-of-souls','--linux-shortcut']
 		}
 		else if (currentOs.macOsX) {
-			installerOptions += ['--mac-package-name', 'fusion-of-souls']
-			appVersion = "1.$version"
+			installerOptions += [
+					'--mac-package-name', 'Fusion of Souls',
+					'--mac-package-identifier', 'fusion-of-souls'
+			]
+			appVersion = version.replace('^0\\.', '1.')
 		}
 	}
 }
