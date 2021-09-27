@@ -19,8 +19,6 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: gradle
-    - name: Setup Wrapper
-      run: ./gradlew --info --stacktrace wrapper
     - name: Execute tests
       run: ./gradlew --info --stacktrace test
     - name: Execute build
