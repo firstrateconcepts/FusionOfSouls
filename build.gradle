@@ -136,6 +136,7 @@ runtime {
 		}
 		else if (currentOs.macOsX) {
 			installerOptions += ['--mac-package-name', 'fusion-of-souls']
+			appVersion = "1.$version"
 		}
 	}
 }
