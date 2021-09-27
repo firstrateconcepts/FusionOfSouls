@@ -139,7 +139,7 @@ runtime {
 					'--mac-package-name', 'Fusion of Souls',
 					'--mac-package-identifier', 'fusion-of-souls'
 			]
-			appVersion = version.replace('^0\\.', '1.')
+			appVersion = version.replace('0.', '1.')
 		}
 	}
 }
