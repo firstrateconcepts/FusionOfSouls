@@ -23,11 +23,11 @@ jobs:
     - name: Verify Gradle Wrapper
       uses: gradle/wrapper-validation-action@v1
     - name: Execute build
-      run: ./gradlew --info --stacktrace build
+      run: ./gradlew --info --stacktrace build -x test
     - name: Execute runtime
-      run: ./gradlew --info --stacktrace runtime
+      run: ./gradlew --info --stacktrace runtime -x test
     - name: Execute jpackage
-      run: ./gradlew --info --stacktrace jpackage
+      run: ./gradlew --info --stacktrace jpackage -x test
     - name: Upload DMG as an artifact
       uses: actions/upload-artifact@v2
       with:
