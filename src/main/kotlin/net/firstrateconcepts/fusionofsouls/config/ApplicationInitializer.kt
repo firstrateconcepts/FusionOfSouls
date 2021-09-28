@@ -5,9 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TooltipManager
 import com.kotcrab.vis.ui.VisUI
 import ktx.async.KtxAsync
 import ktx.scene2d.Scene2DSkin
+import net.firstrateconcepts.fusionofsouls.event.EventBus
+import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 
-class ApplicationInitializer {
+class ApplicationInitializer(private val eventBus: EventBus, private val assetLoader: AssetLoader, private val config: PlayerSettingsConfig) {
     fun initialize() {
+        Gdx.app.logLevel = config.get().logLevel
         KtxAsync.initiate()
         VisUI.load(Gdx.files.classpath("skin/star-soldier-ui.json"))
         Scene2DSkin.defaultSkin = VisUI.getSkin()
@@ -15,5 +18,12 @@ class ApplicationInitializer {
             instant()
             animations = false
         }
+        eventBus.loop()
+        assetLoader.load()
+    }
+
+    fun shutdown() {
+        eventBus.dispose()
+        assetLoader.dispose()
     }
 }

@@ -9,14 +9,21 @@ import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreen
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreen
 
 class FusionOfSoulsGame : KtxGame<KtxScreen>() {
-    override fun create() {
-        Injector.initGdxDeps()
-        Injector.initRemainingDeps()
+    private val initializer by lazy { inject<ApplicationInitializer>() }
 
-        inject<ApplicationInitializer>().initialize()
+    override fun create() {
+        initializer.initialize()
+
+        Injector.initGdxDeps()
+        Injector.initRunningDeps()
 
         addScreen(inject<LoadingScreen>())
         addScreen(inject<MainMenuScreen>())
         setScreen<LoadingScreen>()
+    }
+
+    override fun dispose() {
+        super.dispose()
+        initializer.shutdown()
     }
 }

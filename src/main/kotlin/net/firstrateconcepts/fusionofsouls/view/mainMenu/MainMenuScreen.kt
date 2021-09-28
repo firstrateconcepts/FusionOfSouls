@@ -1,6 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.view.mainMenu
 
-import ktx.app.KtxScreen
+import net.firstrateconcepts.fusionofsouls.util.ext.UiScreen
 
-class MainMenuScreen : KtxScreen {
+class MainMenuScreen : UiScreen() {
 }

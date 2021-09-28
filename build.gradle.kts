@@ -3,8 +3,10 @@ import org.gradle.internal.os.OperatingSystem.current
 val gdxVersion: String by project
 val gdxAiVersion: String by project
 val ktxVersion: String by project
+val korlibsVersion: String by project
 val kotlinCoroutinesVersion: String by project
 val kotlinSerializationVersion: String by project
+val kotlinDatetimeVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.5.31"
@@ -20,14 +22,15 @@ repositories {
 }
 
 fun DependencyHandlerScope.implementationKotlin(vararg names: String) = names.forEach { implementation(kotlin(it)) }
+fun DependencyHandlerScope.implementationKotlinx(vararg opts: Pair<String, String>) = opts.forEach { implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-${it.first}", version = it.second) }
 fun DependencyHandlerScope.implementationGdx(vararg names: String, classifier: String = "") = names.forEach { implementation(group = "com.badlogicgames.gdx", name = it, version = gdxVersion, classifier = classifier) }
 fun DependencyHandlerScope.implementationGdxNative(vararg names: String) = implementationGdx(classifier = "natives-desktop", names = names)
 fun DependencyHandlerScope.implementationKtx(vararg names: String) = names.forEach { implementation(group = "io.github.libktx", name = "ktx-$it", version = ktxVersion) }
+fun DependencyHandlerScope.implementationKorlibs(vararg names: String) = names.forEach { implementation(group = "com.soywiz.korlibs.$it", name = "$it-jvm", version = korlibsVersion) }
 
 dependencies {
     implementationKotlin("stdlib", "reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+    implementationKotlinx("serialization-json" to kotlinSerializationVersion, "coroutines-core" to kotlinCoroutinesVersion)
 
     implementationGdx("gdx", "gdx-freetype", "gdx-backend-lwjgl3")
     implementationGdxNative("gdx-platform", "gdx-freetype-platform")
@@ -36,6 +39,8 @@ dependencies {
     implementationKtx(
         "app", "actors", "ashley", "assets", "assets-async", "async", "collections", "freetype", "freetype-async", "graphics", "inject", "json", "log", "math", "preferences", "reflect", "vis", "vis-style"
     )
+
+    implementationKorlibs("klock")
 }
 
 application {
@@ -43,7 +48,7 @@ application {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=ktx.reflect.Reflection,kotlinx.serialization.ExperimentalSerializationApi"
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=ktx.reflect.Reflection,kotlinx.serialization.ExperimentalSerializationApi,kotlinx.coroutines.ExperimentalCoroutinesApi"
 }
 
 runtime {
