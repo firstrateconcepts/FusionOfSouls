@@ -9,7 +9,7 @@ import net.firstrateconcepts.fusionofsouls.config.inject
 object FusionOfSoulsLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
-        Injector.initialize()
+        Injector.initStartupDeps()
         Lwjgl3Application(inject<FusionOfSoulsGame>(), inject<ApplicationConfiguration>()).apply {
             val settings = inject<PlayerSettingsConfig>()
             logLevel = settings.get().logLevel

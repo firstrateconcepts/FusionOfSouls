@@ -1,8 +1,10 @@
-import org.gradle.internal.os.OperatingSystem.*
+import org.gradle.internal.os.OperatingSystem.current
 
 val gdxVersion: String by project
 val gdxAiVersion: String by project
 val ktxVersion: String by project
+val kotlinCoroutinesVersion: String by project
+val kotlinSerializationVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.5.31"
@@ -24,14 +26,15 @@ fun DependencyHandlerScope.implementationKtx(vararg names: String) = names.forEa
 
 dependencies {
     implementationKotlin("stdlib", "reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinSerializationVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
     implementationGdx("gdx", "gdx-freetype", "gdx-backend-lwjgl3")
     implementationGdxNative("gdx-platform", "gdx-freetype-platform")
     implementation("com.badlogicgames.gdx:gdx-ai:$gdxAiVersion")
 
     implementationKtx(
-        "app", "actors", "ashley", "assets", "async", "collections", "freetype", "graphics", "inject", "json", "log", "math", "preferences", "reflect", "vis", "vis-style"
+        "app", "actors", "ashley", "assets", "assets-async", "async", "collections", "freetype", "freetype-async", "graphics", "inject", "json", "log", "math", "preferences", "reflect", "vis", "vis-style"
     )
 }
 
