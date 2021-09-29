@@ -25,11 +25,18 @@ repositories {
 }
 
 fun DependencyHandlerScope.implementationKotlin(vararg names: String) = names.forEach { implementation(kotlin(it)) }
-fun DependencyHandlerScope.implementationKotlinx(vararg opts: Pair<String, String>) = opts.forEach { implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-${it.first}", version = it.second) }
-fun DependencyHandlerScope.implementationGdx(vararg names: String, classifier: String = "") = names.forEach { implementation(group = "com.badlogicgames.gdx", name = it, version = gdxVersion, classifier = classifier) }
+fun DependencyHandlerScope.implementationKotlinx(vararg opts: Pair<String, String>) =
+    opts.forEach { implementation(group = "org.jetbrains.kotlinx", name = "kotlinx-${it.first}", version = it.second) }
+
+fun DependencyHandlerScope.implementationGdx(vararg names: String, classifier: String = "") =
+    names.forEach { implementation(group = "com.badlogicgames.gdx", name = it, version = gdxVersion, classifier = classifier) }
+
 fun DependencyHandlerScope.implementationGdxNative(vararg names: String) = implementationGdx(classifier = "natives-desktop", names = names)
-fun DependencyHandlerScope.implementationKtx(vararg names: String) = names.forEach { implementation(group = "io.github.libktx", name = "ktx-$it", version = ktxVersion) }
-fun DependencyHandlerScope.implementationKorlibs(vararg names: String) = names.forEach { implementation(group = "com.soywiz.korlibs.$it", name = "$it-jvm", version = korlibsVersion) }
+fun DependencyHandlerScope.implementationKtx(vararg names: String) =
+    names.forEach { implementation(group = "io.github.libktx", name = "ktx-$it", version = ktxVersion) }
+
+fun DependencyHandlerScope.implementationKorlibs(vararg names: String) =
+    names.forEach { implementation(group = "com.soywiz.korlibs.$it", name = "$it-jvm", version = korlibsVersion) }
 
 dependencies {
     implementationKotlin("stdlib", "reflect")
@@ -40,7 +47,24 @@ dependencies {
     implementation("com.badlogicgames.gdx:gdx-ai:$gdxAiVersion")
 
     implementationKtx(
-        "app", "actors", "ashley", "assets", "assets-async", "async", "collections", "freetype", "freetype-async", "graphics", "inject", "json", "log", "math", "preferences", "reflect", "vis", "vis-style"
+        "app",
+        "actors",
+        "ashley",
+        "assets",
+        "assets-async",
+        "async",
+        "collections",
+        "freetype",
+        "freetype-async",
+        "graphics",
+        "inject",
+        "json",
+        "log",
+        "math",
+        "preferences",
+        "reflect",
+        "vis",
+        "vis-style"
     )
 
     implementationKorlibs("klock")
@@ -55,7 +79,12 @@ application {
 }
 
 tasks.compileKotlin {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=ktx.reflect.Reflection,kotlinx.serialization.ExperimentalSerializationApi,kotlinx.coroutines.ExperimentalCoroutinesApi"
+    val optIns = listOf(
+        "ktx.reflect.Reflection",
+        "kotlinx.serialization.ExperimentalSerializationApi",
+        "kotlinx.coroutines.ExperimentalCoroutinesApi"
+    )
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=${optIns.joinToString(",")}"
 }
 
 tasks.test {
@@ -72,10 +101,12 @@ runtime {
     jpackage {
         val currentOs = current()
 
-        installerOptions.addAll(listOf(
-            "--resource-dir", "src/main/resources",
-            "--vendor", "First Rate Concepts"
-        ))
+        installerOptions.addAll(
+            listOf(
+                "--resource-dir", "src/main/resources",
+                "--vendor", "First Rate Concepts"
+            )
+        )
 
         imageOutputDir = file("$buildDir/package/image")
         installerOutputDir = file("$buildDir/package/install")
@@ -84,19 +115,23 @@ runtime {
         installerName = "Fusion of Souls"
 
         if (currentOs.isWindows) {
-            installerOptions.addAll(listOf(
-                "--win-dir-chooser",
-                "--win-menu",
-                "--win-upgrade-uuid", "786a1694-b2cd-4fc5-a823-d5625177903c"
-            ))
+            installerOptions.addAll(
+                listOf(
+                    "--win-dir-chooser",
+                    "--win-menu",
+                    "--win-upgrade-uuid", "786a1694-b2cd-4fc5-a823-d5625177903c"
+                )
+            )
             installerType = "msi"
         } else if (currentOs.isLinux) {
             installerOptions.addAll(listOf("--linux-package-name", "fusion-of-souls", "--linux-shortcut"))
         } else if (currentOs.isMacOsX) {
-            installerOptions.addAll(listOf(
-                "--mac-package-name", "Fusion of Souls",
-                "--mac-package-identifier", "fusion-of-souls"
-            ))
+            installerOptions.addAll(
+                listOf(
+                    "--mac-package-name", "Fusion of Souls",
+                    "--mac-package-identifier", "fusion-of-souls"
+                )
+            )
             appVersion = (version as String).replace("0.", "1.")
         }
     }
