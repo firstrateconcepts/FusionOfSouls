@@ -5,6 +5,7 @@
       maxLineLength: 160
     ParameterListWrapping:
       maxLineLength: 160
+  style:
     ForbiddenComment:
       active: false
 
