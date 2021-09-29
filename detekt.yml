@@ -8,4 +8,5 @@
   style:
     ForbiddenComment:
       active: false
-
+    MaxLineLength:
+      maxLineLength: 160

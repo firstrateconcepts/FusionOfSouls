@@ -1,4 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.util.ext
 
-fun Float.percent() = this * 100
-fun Double.percent() = this * 100
+const val PERCENT_MULTI = 100
+
+fun Float.percent() = this * PERCENT_MULTI
+fun Double.percent() = this * PERCENT_MULTI
