@@ -8,5 +8,7 @@
   style:
     ForbiddenComment:
       active: false
+    MagicNumber:
+      active: false
     MaxLineLength:
       maxLineLength: 160

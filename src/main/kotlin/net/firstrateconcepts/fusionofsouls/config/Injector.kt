@@ -6,6 +6,7 @@ import ktx.inject.Context
 import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
+import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreen
@@ -23,6 +24,7 @@ object Injector : Context() {
         bindSingleton<EventBus>()
         bindSingleton<AssetConfig>()
         bindSingleton<UnitAssets>()
+        bindSingleton<SkinLoader>()
         bindSingleton<AssetLoader>()
         bindSingleton<ApplicationInitializer>()
     }

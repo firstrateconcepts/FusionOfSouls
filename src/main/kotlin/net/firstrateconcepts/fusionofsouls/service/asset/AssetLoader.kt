@@ -9,12 +9,17 @@ import net.firstrateconcepts.fusionofsouls.model.event.AssetsLoadedEvent
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
-class AssetLoader(private val unitAssets: UnitAssets, private val eventBus: EventBus, private val assetConfig: AssetConfig) : Disposable {
+class AssetLoader(
+    private val unitAssets: UnitAssets,
+    private val eventBus: EventBus,
+    private val assetConfig: AssetConfig
+) : Disposable {
     private val logger = fosLogger()
 
     fun load() = KtxAsync.launch(assetConfig.asyncContext) {
         logger.info { "Loading assets" }
-        unitAssets.loadAll().joinAll()
+        val assetsToLoad = unitAssets.loadAll().toMutableList()
+        assetsToLoad.joinAll()
         logger.info { "Asset loading complete" }
         eventBus.postEvent(AssetsLoadedEvent())
     }

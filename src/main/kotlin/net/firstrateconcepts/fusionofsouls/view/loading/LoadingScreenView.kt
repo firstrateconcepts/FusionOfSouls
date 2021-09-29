@@ -5,6 +5,7 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.percent
 import net.firstrateconcepts.fusionofsouls.util.ext.ui.autoLabel
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.ScreenView
+import kotlin.math.roundToInt
 
 class LoadingScreenView(override val controller: LoadingScreenController, override val vm: LoadingScreenViewModel) : ScreenView() {
     private val logger = fosLogger()
@@ -12,12 +13,6 @@ class LoadingScreenView(override val controller: LoadingScreenController, overri
     override fun init() {
         logger.debug { "Initializing" }
         super.init()
-        autoLabel({ "Loading ${vm.loadingPercent().percent()}%" }).cell(expand = true, align = Align.center)
-    }
-
-    override fun dispose() {
-        logger.debug { "Disposing" }
-        clear()
-        remove()
+        autoLabel({ "Loading ${vm.loadingPercent().percent().roundToInt()}%" }, "title-plain").cell(expand = true, align = Align.center)
     }
 }

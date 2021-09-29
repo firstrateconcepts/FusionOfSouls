@@ -11,6 +11,11 @@ abstract class View : VisTable(), KTable, Disposable, Updatable {
     abstract fun init()
 
     override fun update() = Unit
+
+    override fun dispose() {
+        clear()
+        remove()
+    }
 }
 
 abstract class ScreenView : View() {
