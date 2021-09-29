@@ -27,6 +27,11 @@ jobs:
       run: ./gradlew --info --stacktrace runtime
     - name: Execute jpackage
       run: ./gradlew --info --stacktrace jpackage
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      runs-on: ubuntu-latest
+      with:
+        files: test-results/**/*.xml
     - name: Upload Installation Artifact(s)
       uses: actions/upload-artifact@v2
       with:

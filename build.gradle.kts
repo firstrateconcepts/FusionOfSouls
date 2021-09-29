@@ -55,7 +55,6 @@ application {
 }
 
 tasks.compileKotlin {
-//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=ktx.reflect.Reflection,kotlinx.serialization.ExperimentalSerializationApi,kotlinx.coroutines.ExperimentalCoroutinesApi"
 }
 
