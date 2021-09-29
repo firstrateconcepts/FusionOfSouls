@@ -34,7 +34,7 @@ class SkinLoader(private val assetStorage: AssetStorage) {
     }
 
     private fun FreeTypeFontGenerator.buttonFont() = generateFont {
-        size = 32
+        size = 16
         spaceX = 2
         spaceY = 2
         padLeft = 5
@@ -42,13 +42,15 @@ class SkinLoader(private val assetStorage: AssetStorage) {
     }
 
     private fun FreeTypeFontGenerator.labelFont() = generateFont {
-        size = 32
+        size = 16
         spaceX = 2
         spaceY = 2
+        padLeft = 5
+        padRight = 5
     }
 
     private fun FreeTypeFontGenerator.titleFont() = generateFont {
-        size = 60
+        size = 32
         shadowOffsetX = 3
         shadowOffsetY = 2
         spaceX = 2

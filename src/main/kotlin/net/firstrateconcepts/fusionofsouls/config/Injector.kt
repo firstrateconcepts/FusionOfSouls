@@ -13,8 +13,10 @@ import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreen
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreen
+import net.firstrateconcepts.fusionofsouls.view.settings.SettingsDialogController
 
 inline fun <reified Type : Any> inject(): Type = Injector.inject()
+inline fun <reified Type : Any> lazyInject() = lazy { inject<Type>() }
 
 object Injector : Context() {
     fun initStartupDeps() = register {
@@ -43,6 +45,7 @@ object Injector : Context() {
         bindSingleton { InputMultiplexer() }
         bindSingleton<LoadingScreenController>()
         bindSingleton<LoadingScreen>()
+        bindSingleton<SettingsDialogController>()
         bindSingleton<MainMenuController>()
         bindSingleton<MainMenuScreen>()
     }

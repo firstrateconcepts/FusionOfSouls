@@ -8,7 +8,7 @@ com.badlogic.gdx.graphics.Color: {
 	hover: { r: 0, g: 0.5, b: 1, a: 1 },
 	select: { r: 0, g: 0.25, b: 0.5, a: 1 },
 	black: { r: 0, g: 0, b: 0, a: 1 },
-	almostBlack: { r: 0.2, g: 0.2, b: 0.2, a: 1 }
+	almostBlack: { r: 0.1, g: 0.1, b: 0.1, a: 0.75 }
 },
 com.badlogic.gdx.graphics.g2d.BitmapFont: {},
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
@@ -27,12 +27,12 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		fontColor: white,
 		overFontColor: hover,
 		downFontColor: select,
-		disabledFontColor: lightGrey,
+		disabledFontColor: grey,
 		up: button,
 		down: button-down,
 	},
 	round: {
-		font: font-button,
+		font: font-title,
 		fontColor: white,
 		overFontColor: hover,
 		downFontColor: select,
@@ -79,14 +79,14 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
 	default: {
 		background: window,
-		titleFont: font-title,
+		titleFont: font-label,
 		titleFontColor: white
 	},
 	dialog: {
 		background: window,
-		titleFont: font-title,
+		titleFont: font-label,
 		titleFontColor: white,
-		stageBackground: list
+		stageBackground: dialogDim
 	}
 },
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {

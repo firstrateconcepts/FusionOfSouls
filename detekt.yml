@@ -5,6 +5,8 @@
       maxLineLength: 160
     ParameterListWrapping:
       maxLineLength: 160
+    FinalNewline:
+      active: false
   style:
     ForbiddenComment:
       active: false
@@ -12,3 +14,6 @@
       active: false
     MaxLineLength:
       maxLineLength: 160
+    NewLineAtEndOfFile:
+      active: false
+

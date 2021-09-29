@@ -2,6 +2,7 @@ package net.firstrateconcepts.fusionofsouls.config
 
 import com.badlogic.gdx.Application.LOG_ERROR
 import com.badlogic.gdx.Files
+import com.badlogic.gdx.Graphics
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3FileHandle
 import com.badlogic.gdx.scenes.scene2d.utils.UIUtils
@@ -9,6 +10,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import net.firstrateconcepts.fusionofsouls.model.config.PlayerSettings
+import net.firstrateconcepts.fusionofsouls.util.ext.getMatching
 import java.nio.file.Paths
 
 const val USER_DIR = "First Rate Concepts/Fusion Of Souls"
@@ -20,6 +22,7 @@ class PlayerSettingsConfig {
     private val json = Json { prettyPrint = true }
     private val settingsDir by lazy { Paths.get(getDefaultPreferencesDirectory(), USER_DIR) }
     private val settingsFile by lazy { Lwjgl3FileHandle(settingsDir.resolve(USER_SETTINGS_FILE).toFile(), Files.FileType.Absolute) }
+    private val graphics by lazyInject<Graphics>()
     private lateinit var settings: PlayerSettings
 
     fun get(): PlayerSettings {
@@ -42,8 +45,25 @@ class PlayerSettingsConfig {
         }
     }
 
+    fun apply(settings: PlayerSettings) {
+        settings.apply {
+            applyResolution()
+            graphics.setVSync(settings.vsync)
+        }
+    }
+
+    // TODO: This is the same as ApplicationConfiguration but different due to no overlapping interface
+    private fun PlayerSettings.applyResolution() {
+        if (fullscreen) {
+            graphics.setFullscreenMode(graphics.displayModes.getMatching(resolution, graphics.displayMode))
+        } else {
+            resolution.apply { graphics.setWindowedMode(width, height) }
+        }
+    }
+
     fun save(settings: PlayerSettings) {
         settingsFile.writeString(json.encodeToString(settings), false)
+        this.settings = settings
     }
 
     private fun initDefaultSettings() {

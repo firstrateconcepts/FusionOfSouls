@@ -2,6 +2,7 @@ package net.firstrateconcepts.fusionofsouls.config
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import net.firstrateconcepts.fusionofsouls.model.config.PlayerSettings
+import net.firstrateconcepts.fusionofsouls.util.ext.getMatching
 
 
 class ApplicationConfiguration(settingsConfig: PlayerSettingsConfig) : Lwjgl3ApplicationConfiguration() {
@@ -15,7 +16,7 @@ class ApplicationConfiguration(settingsConfig: PlayerSettingsConfig) : Lwjgl3App
 
     private fun handleResolution(fullscreen: Boolean, resolution: PlayerSettings.Resolution) {
         if (fullscreen) {
-            setFullscreenMode(getDisplayModes().find { it.width == resolution.width && it.height == resolution.height } ?: getDisplayMode())
+            setFullscreenMode(getDisplayModes().getMatching(resolution, getDisplayMode()))
         } else {
             resolution.apply { setWindowedMode(width, height) }
         }

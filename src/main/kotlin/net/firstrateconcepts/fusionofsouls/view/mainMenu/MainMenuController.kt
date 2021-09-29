@@ -1,9 +1,10 @@
 package net.firstrateconcepts.fusionofsouls.view.mainMenu
 
 import com.badlogic.gdx.Application
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.Controller
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
+import net.firstrateconcepts.fusionofsouls.view.settings.SettingsDialogController
 
-class MainMenuController(private val app: Application) : Controller {
+class MainMenuController(private val app: Application, private val settingsDialog: SettingsDialogController) : Controller() {
     override val vm = MainMenuViewModel()
     override val view = MainMenuView(this, vm)
 
@@ -12,7 +13,8 @@ class MainMenuController(private val app: Application) : Controller {
     }
 
     fun showSettings() {
-        TODO("Not yet implemented")
+        stage?.attachController(settingsDialog, false)
+        settingsDialog.show()
     }
 
     fun exit() = app.exit()

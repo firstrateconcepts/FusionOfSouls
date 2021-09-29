@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import ktx.app.KtxScreen
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.config.inject
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.Controller
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 
 interface FosScreen : KtxScreen {
     val stages: List<FosStage>
@@ -40,7 +40,7 @@ abstract class UiScreen : FosScreen {
 
     override fun hide() {
         input.removeProcessor(uiStage)
-        uiStage.detachController()
+        uiStage.clearControllers()
     }
 
     override fun render(delta: Float) {
@@ -61,7 +61,7 @@ abstract class GameScreen(worldWidth: Float, worldHeight: Float) : UiScreen() {
     }
 
     override fun hide() {
-        gameStage.detachController()
+        gameStage.clearControllers()
         input.removeProcessor(gameStage)
         super.hide()
     }

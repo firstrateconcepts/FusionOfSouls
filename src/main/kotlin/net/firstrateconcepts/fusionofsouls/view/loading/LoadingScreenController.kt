@@ -3,9 +3,9 @@ package net.firstrateconcepts.fusionofsouls.view.loading
 import ktx.assets.async.AssetStorage
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.percent
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.Controller
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 
-class LoadingScreenController(private val assets: AssetStorage) : Controller {
+class LoadingScreenController(private val assets: AssetStorage) : Controller() {
     private val logger = fosLogger()
     override val vm = LoadingScreenViewModel()
     override val view = LoadingScreenView(this, vm)

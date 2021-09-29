@@ -8,3 +8,9 @@ interface Updatable {
         return get()
     }
 }
+
+fun updatable(updater: Updatable.() -> Unit) = object : Updatable {
+    override fun update() {
+        updater()
+    }
+}

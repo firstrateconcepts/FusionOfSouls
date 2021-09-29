@@ -3,9 +3,9 @@ package net.firstrateconcepts.fusionofsouls.view.mainMenu
 import ktx.actors.onClick
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.visLabel
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.ScreenView
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.view.ScreenView
 
-class MainMenuView(override val controller: MainMenuController, override val vm: MainMenuViewModel) : ScreenView() {
+class MainMenuView(override val controller: MainMenuController, override val vm: MainMenuViewModel) : ScreenView(controller, vm) {
     override fun init() {
         super.init()
 
