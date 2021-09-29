@@ -29,7 +29,7 @@ jobs:
       run: ./gradlew --info --stacktrace jpackage
     - name: Publish test results
       uses: EnricoMi/publish-unit-test-result-action@v1
-      runs-on: ubuntu-latest
+      if: matrix.os == ubuntu-latest
       with:
         files: test-results/**/*.xml
     - name: Upload Installation Artifact(s)
