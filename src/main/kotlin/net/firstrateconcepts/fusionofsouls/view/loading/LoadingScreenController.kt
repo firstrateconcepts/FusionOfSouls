@@ -2,6 +2,7 @@ package net.firstrateconcepts.fusionofsouls.view.loading
 
 import ktx.assets.async.AssetStorage
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.percent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.Controller
 
 class LoadingScreenController(private val assets: AssetStorage) : Controller {
@@ -11,7 +12,7 @@ class LoadingScreenController(private val assets: AssetStorage) : Controller {
 
     override fun render(delta: Float) {
         assets.progress.run {
-            logger.debug { "Asset loading status: $loaded / $total (${percent * 100}%)" }
+            logger.debug { "Asset loading status: $loaded / $total (${percent.percent()}%)" }
             vm.loadingPercent(percent)
         }
     }

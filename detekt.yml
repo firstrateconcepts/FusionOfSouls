@@ -1,0 +1,10 @@
+  formatting:
+    MaximumLineLength:
+      maxLineLength: 160
+    ArgumentListWrapping:
+      maxLineLength: 160
+    ParameterListWrapping:
+      maxLineLength: 160
+    ForbiddenComment:
+      active: false
+

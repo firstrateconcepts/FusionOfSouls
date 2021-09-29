@@ -24,6 +24,8 @@ jobs:
     - name: Execute detekt
       uses: natiginfo/action-detekt-all@1.18.1
       if: matrix.os == 'ubuntu-latest'
+      with:
+        args: --config detekt.yml --build-upon-default-config
     - name: Execute build
       run: ./gradlew --info --stacktrace build
     - name: Execute runtime

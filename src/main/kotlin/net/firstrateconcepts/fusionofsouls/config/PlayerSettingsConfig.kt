@@ -48,7 +48,12 @@ class PlayerSettingsConfig {
 
     private fun initDefaultSettings() {
         val primaryDisplayMode = Lwjgl3ApplicationConfiguration.getDisplayMode()
-        val settings = PlayerSettings(fullscreen = true, vsync = true, logLevel = LOG_ERROR, resolution = PlayerSettings.Resolution(primaryDisplayMode.width, primaryDisplayMode.height))
+        val settings = PlayerSettings(
+            fullscreen = true,
+            vsync = true,
+            logLevel = LOG_ERROR,
+            resolution = PlayerSettings.Resolution(primaryDisplayMode.width, primaryDisplayMode.height)
+        )
         save(settings)
         this.settings = settings
     }

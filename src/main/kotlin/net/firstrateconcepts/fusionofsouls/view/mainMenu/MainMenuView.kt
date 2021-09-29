@@ -6,8 +6,10 @@ import net.firstrateconcepts.fusionofsouls.util.framework.ui.ViewModel
 
 class MainMenuView(override val controller: Controller, override val vm: ViewModel) : View() {
     override fun init() {
+        TODO("Not yet implemented")
     }
 
     override fun dispose() {
+        TODO("Not yet implemented")
     }
 }
