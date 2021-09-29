@@ -5,9 +5,9 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import net.firstrateconcepts.fusionofsouls.config.AssetConfig
-import net.firstrateconcepts.fusionofsouls.event.EventBus
 import net.firstrateconcepts.fusionofsouls.model.event.AssetsLoadedEvent
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 class AssetLoader(private val unitAssets: UnitAssets, private val eventBus: EventBus, private val assetConfig: AssetConfig) : Disposable {
     private val logger = fosLogger()

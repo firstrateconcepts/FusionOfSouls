@@ -7,6 +7,9 @@ val korlibsVersion: String by project
 val kotlinCoroutinesVersion: String by project
 val kotlinSerializationVersion: String by project
 val kotlinDatetimeVersion: String by project
+val junitVersion: String by project
+val assertkVersion: String by project
+val mockkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.5.31"
@@ -41,14 +44,23 @@ dependencies {
     )
 
     implementationKorlibs("klock")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:$assertkVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
 application {
     mainClass.set("net.firstrateconcepts.fusionofsouls.FusionOfSoulsLauncher")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+tasks.compileKotlin {
+//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions.freeCompilerArgs += "-Xopt-in=ktx.reflect.Reflection,kotlinx.serialization.ExperimentalSerializationApi,kotlinx.coroutines.ExperimentalCoroutinesApi"
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 runtime {

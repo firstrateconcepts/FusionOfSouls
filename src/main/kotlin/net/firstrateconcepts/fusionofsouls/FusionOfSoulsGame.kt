@@ -1,5 +1,7 @@
 package net.firstrateconcepts.fusionofsouls
 
+import com.badlogic.gdx.Input
+import com.badlogic.gdx.InputMultiplexer
 import ktx.app.KtxGame
 import ktx.app.KtxScreen
 import net.firstrateconcepts.fusionofsouls.config.ApplicationInitializer
@@ -16,6 +18,8 @@ class FusionOfSoulsGame : KtxGame<KtxScreen>() {
 
         Injector.initGdxDeps()
         Injector.initRunningDeps()
+
+        inject<Input>().inputProcessor = inject<InputMultiplexer>()
 
         addScreen(inject<LoadingScreen>())
         addScreen(inject<MainMenuScreen>())

@@ -1,14 +1,16 @@
 package net.firstrateconcepts.fusionofsouls.config
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import ktx.inject.Context
 import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
-import net.firstrateconcepts.fusionofsouls.event.EventBus
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
+import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreen
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreenController
+import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreen
 
 inline fun <reified Type : Any> inject(): Type = Injector.inject()
@@ -36,8 +38,10 @@ object Injector : Context() {
     }
 
     fun initRunningDeps() = register {
+        bindSingleton { InputMultiplexer() }
         bindSingleton<LoadingScreenController>()
         bindSingleton<LoadingScreen>()
+        bindSingleton<MainMenuController>()
         bindSingleton<MainMenuScreen>()
     }
 }

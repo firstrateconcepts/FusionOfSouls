@@ -15,6 +15,7 @@ const val USER_DIR = "First Rate Concepts/Fusion Of Souls"
 const val USER_SETTINGS_FILE = "fusion-of-souls-config.json"
 
 // TODO: Backwards-compatibility capabilities for migrating settings files
+// TODO: Unit testing this would be nice, but file-system specific stuff isn't the easiest thing to test. Maybe needs some refactoring first
 class PlayerSettingsConfig {
     private val json = Json { prettyPrint = true }
     private val settingsDir by lazy { Paths.get(getDefaultPreferencesDirectory(), USER_DIR) }

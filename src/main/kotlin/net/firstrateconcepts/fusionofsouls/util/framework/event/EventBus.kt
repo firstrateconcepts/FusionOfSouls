@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.event
+package net.firstrateconcepts.fusionofsouls.util.framework.event
 
 import com.badlogic.gdx.utils.Disposable
 import kotlinx.coroutines.channels.Channel
@@ -8,15 +8,19 @@ import ktx.async.newSingleThreadAsyncContext
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 
 // TODO: There is possibly a world that we can avoid instead of ignore the unchecked cast, but this does the trick for now
+// TODO: It'd be nice to unit test this, but unit testing multithreading is seriously tough. Before any future modifications, this must become automatically tested.
+// TODO: It's highly likely a situation will occur that we want to be able to stop event propagation. At that point, it needs to be figured out how that should be handled here.
 class EventBus : Disposable {
-    private val log = fosLogger()
+    private val logger = fosLogger()
     private val asyncContext = newSingleThreadAsyncContext("EventBus-Loop")
     private val eventQueue = Channel<Event>()
     private val eventHandlers = mutableListOf<EventHandler<Event>>()
 
     suspend fun <T : Event> postEvent(event: T) {
-        log.debug { "Posting event ${event.name}" }
-        eventQueue.send(event)
+        logger.debug { "Posting event ${event.name}" }
+        if (!eventQueue.isClosedForSend) {
+            eventQueue.send(event)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -29,7 +33,7 @@ class EventBus : Disposable {
     }
 
     fun loop() {
-        log.info { "Starting loop" }
+        logger.info { "Starting loop" }
         KtxAsync.launch(asyncContext) {
             while (!eventQueue.isClosedForReceive) {
                 eventQueue.receiveCatching().apply {
@@ -38,7 +42,7 @@ class EventBus : Disposable {
                     }
 
                     val event = getOrThrow()
-                    log.debug { "Received ${event.name} from queue" }
+                    logger.debug { "Received ${event.name} from queue" }
                     eventHandlers.filter { it.canHandleEvent(event) }.forEach { it.handle(event) }
                 }
             }
@@ -46,7 +50,7 @@ class EventBus : Disposable {
     }
 
     override fun dispose() {
-        log.info { "Disposing" }
+        logger.info { "Disposing" }
         eventQueue.close()
         eventHandlers.clear()
         asyncContext.dispose()
