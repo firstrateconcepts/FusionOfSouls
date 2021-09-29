@@ -21,6 +21,9 @@ jobs:
         cache: gradle
     - name: Execute tests
       run: ./gradlew --info --stacktrace test
+    - name: Execute detekt
+      uses: natiginfo/action-detekt-all@1.18.1
+      if: matrix.os == 'ubuntu-latest'
     - name: Execute build
       run: ./gradlew --info --stacktrace build
     - name: Execute runtime
