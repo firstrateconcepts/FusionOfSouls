@@ -9,6 +9,9 @@ import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
+import net.firstrateconcepts.fusionofsouls.view.duringRun.DuringRunScreen
+import net.firstrateconcepts.fusionofsouls.view.duringRun.game.DuringRunGameController
+import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.DuringRunUiController
 import net.firstrateconcepts.fusionofsouls.view.heroSelect.HeroSelectScreenController
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
@@ -46,5 +49,8 @@ object Injector : Context() {
         bindSingleton<MainMenuScreenController>()
         bindSingleton<HeroSelectScreenController>()
         bindSingleton<SettingsDialogController>()
+        bindSingleton<DuringRunUiController>()
+        bindSingleton<DuringRunGameController>()
+        bindSingleton<DuringRunScreen>()
     }
 }

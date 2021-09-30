@@ -1,6 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.model.event
 
-import net.firstrateconcepts.fusionofsouls.util.ext.FosScreen
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.core.FosScreen
 import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 import kotlin.reflect.KClass
 

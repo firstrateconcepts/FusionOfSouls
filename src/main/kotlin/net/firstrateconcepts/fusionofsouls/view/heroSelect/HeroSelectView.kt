@@ -10,8 +10,8 @@ class HeroSelectView(override val controller: HeroSelectScreenController, overri
     override fun init() {
         super.init()
 
-        visLabel("Select Hero", "title").cell(row = true)
-        textButton("Start") { onChange { this@HeroSelectView.controller.startRun() } }.cell(row = true)
-        textButton("Back") { onChange { this@HeroSelectView.controller.back() } }
+        visLabel("Select Hero", "title-plain").cell(row = true)
+        textButton("Start", "round") { onChange { this@HeroSelectView.controller.startRun() } }.cell(row = true)
+        textButton("Back", "round") { onChange { this@HeroSelectView.controller.back() } }
     }
 }

@@ -7,6 +7,7 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.percent
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventHandler
+import net.firstrateconcepts.fusionofsouls.util.framework.event.enqueueChangeScreen
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.UiScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
 
@@ -21,6 +22,7 @@ class LoadingScreenController(private val assets: AssetStorage, private val even
     }
 
     override fun render(delta: Float) {
+        super.render(delta)
         assets.progress.run {
             logger.debug { "Asset loading status: $loaded / $total (${percent.percent()}%)" }
             vm.loadingPercent(percent)
@@ -38,7 +40,6 @@ class LoadingScreenController(private val assets: AssetStorage, private val even
         onRenderingThread {
             logger.debug { "Loading complete, moving to main menu" }
             eventBus.enqueueChangeScreen<MainMenuScreenController>()
-            destroy()
         }
     }
 }

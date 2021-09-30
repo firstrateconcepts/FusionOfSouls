@@ -13,6 +13,8 @@ import net.firstrateconcepts.fusionofsouls.model.event.ChangeScreenRequest
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventHandler
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.core.FosScreen
+import net.firstrateconcepts.fusionofsouls.view.duringRun.DuringRunScreen
 import net.firstrateconcepts.fusionofsouls.view.heroSelect.HeroSelectScreenController
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
@@ -32,9 +34,10 @@ class FusionOfSoulsGame : KtxGame<KtxScreen>(), EventHandler<ChangeScreenRequest
         input.inputProcessor = inject<InputMultiplexer>()
         eventBus.registerHandler(this)
 
-        addScreen(inject<LoadingScreenController>())
-        addScreen(inject<MainMenuScreenController>())
-        addScreen(inject<HeroSelectScreenController>())
+        addScreen<LoadingScreenController>()
+        addScreen<MainMenuScreenController>()
+        addScreen<HeroSelectScreenController>()
+        addScreen<DuringRunScreen>()
         setScreen<LoadingScreenController>()
     }
 
@@ -48,4 +51,6 @@ class FusionOfSoulsGame : KtxGame<KtxScreen>(), EventHandler<ChangeScreenRequest
         logger.debug { "Changing screen to ${event.screenClass.simpleName}" }
         setScreen(event.screenClass.java)
     }
+
+    private inline fun <reified S : FosScreen> addScreen() = addScreen(inject<S>())
 }

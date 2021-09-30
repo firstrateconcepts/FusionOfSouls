@@ -2,6 +2,7 @@ package net.firstrateconcepts.fusionofsouls.view.mainMenu
 
 import com.badlogic.gdx.Application
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
+import net.firstrateconcepts.fusionofsouls.util.framework.event.enqueueChangeScreen
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.UiScreenController
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.emptyViewModel
 import net.firstrateconcepts.fusionofsouls.view.heroSelect.HeroSelectScreenController

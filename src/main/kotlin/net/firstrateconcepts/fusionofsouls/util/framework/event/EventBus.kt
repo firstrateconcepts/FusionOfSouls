@@ -5,7 +5,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
+import net.firstrateconcepts.fusionofsouls.model.event.changeScreenRequest
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.core.FosScreen
 import kotlin.reflect.KClass
 
 // TODO: There is possibly a world that we can avoid instead of ignore the unchecked cast, but this does the trick for now
@@ -63,3 +65,5 @@ class EventBus : Disposable {
         asyncContext.dispose()
     }
 }
+
+inline fun <reified S : FosScreen> EventBus.enqueueChangeScreen() = enqueueEventSync(changeScreenRequest<S>())
