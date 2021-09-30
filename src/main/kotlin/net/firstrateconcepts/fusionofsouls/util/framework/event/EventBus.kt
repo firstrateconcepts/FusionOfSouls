@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import kotlin.reflect.KClass
 
 // TODO: There is possibly a world that we can avoid instead of ignore the unchecked cast, but this does the trick for now
 // TODO: It'd be nice to unit test this, but unit testing multithreading is seriously tough.
@@ -16,22 +17,26 @@ class EventBus : Disposable {
     private val logger = fosLogger()
     private val asyncContext = newSingleThreadAsyncContext("EventBus-Loop")
     private val eventQueue = Channel<Event>()
-    private val eventHandlers = mutableListOf<EventHandler<Event>>()
+    val eventHandlers = mutableMapOf<KClass<out Event>, MutableList<EventHandler<Event>>>()
 
-    suspend fun <T : Event> postEvent(event: T) {
+    suspend fun <T : Event> enqueueEvent(event: T) {
         logger.debug { "Posting event ${event.name}" }
         if (!eventQueue.isClosedForSend) {
             eventQueue.send(event)
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T : Event> registerHandler(handler: EventHandler<T>) {
-        eventHandlers.add(handler as EventHandler<Event>)
+    fun <T : Event> enqueueEventSync(event: T) {
+        KtxAsync.launch(asyncContext) { enqueueEvent(event) }
     }
 
-    fun <T : Event> deregisterHandler(handler: EventHandler<T>) {
-        eventHandlers.remove(handler)
+    @Suppress("UNCHECKED_CAST")
+    inline fun <reified T : Event> registerHandler(handler: EventHandler<T>) {
+        eventHandlers.computeIfAbsent(T::class) { mutableListOf() } += handler as EventHandler<Event>
+    }
+
+    inline fun <reified T : Event> deregisterHandler(handler: EventHandler<T>) {
+        eventHandlers[T::class]?.remove(handler)
     }
 
     fun loop() {
@@ -45,7 +50,7 @@ class EventBus : Disposable {
 
                     val event = getOrThrow()
                     logger.debug { "Received ${event.name} from queue" }
-                    eventHandlers.filter { it.canHandleEvent(event) }.forEach { it.handle(event) }
+                    eventHandlers[event::class]?.forEach { it.handle(event) }
                 }
             }
         }

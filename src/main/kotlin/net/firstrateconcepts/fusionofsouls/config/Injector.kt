@@ -9,10 +9,9 @@ import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreen
+import net.firstrateconcepts.fusionofsouls.view.heroSelect.HeroSelectScreenController
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreenController
-import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuController
-import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreen
+import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
 import net.firstrateconcepts.fusionofsouls.view.settings.SettingsDialogController
 
 inline fun <reified Type : Any> inject(): Type = Injector.inject()
@@ -44,9 +43,8 @@ object Injector : Context() {
     fun initRunningDeps() = register {
         bindSingleton { InputMultiplexer() }
         bindSingleton<LoadingScreenController>()
-        bindSingleton<LoadingScreen>()
+        bindSingleton<MainMenuScreenController>()
+        bindSingleton<HeroSelectScreenController>()
         bindSingleton<SettingsDialogController>()
-        bindSingleton<MainMenuController>()
-        bindSingleton<MainMenuScreen>()
     }
 }

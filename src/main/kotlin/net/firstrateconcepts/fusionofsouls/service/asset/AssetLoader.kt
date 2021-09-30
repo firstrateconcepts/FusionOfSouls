@@ -21,7 +21,7 @@ class AssetLoader(
         val assetsToLoad = unitAssets.loadAll().toMutableList()
         assetsToLoad.joinAll()
         logger.info { "Asset loading complete" }
-        eventBus.postEvent(AssetsLoadedEvent())
+        eventBus.enqueueEvent(AssetsLoadedEvent())
     }
 
     override fun dispose() {

@@ -57,3 +57,4 @@ abstract class ViewModel : Disposable {
     }
 }
 
+fun emptyViewModel() = object : ViewModel() {}
