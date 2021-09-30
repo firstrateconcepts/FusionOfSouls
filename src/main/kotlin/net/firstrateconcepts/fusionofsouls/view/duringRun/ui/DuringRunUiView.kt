@@ -21,7 +21,5 @@ class DuringRunUiView(controller: DuringRunUiController, vm: DuringRunUiViewMode
         unitBench {
             background(rectPixmapTexture(1, 60, Color.SLATE).toDrawable())
         }.cell(growX = true, height = 60f)
-
-        debugCell()
     }
 }

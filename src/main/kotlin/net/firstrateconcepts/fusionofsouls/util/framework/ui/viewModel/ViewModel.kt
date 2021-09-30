@@ -1,6 +1,7 @@
-package net.firstrateconcepts.fusionofsouls.util.framework.ui
+package net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel
 
 import com.badlogic.gdx.utils.Disposable
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.Updatable
 
 abstract class ViewModel : Disposable {
     private val fields = mutableListOf<Binding<*>>()

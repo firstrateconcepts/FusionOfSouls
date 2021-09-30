@@ -23,6 +23,7 @@ abstract class DialogController : Controller {
             view.hide()
             isShown = false
             stage = null
+            dispose()
         }
     }
 }

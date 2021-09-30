@@ -1,5 +1,5 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitBench
 
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.ViewModel
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
 
 class UnitBenchViewModel : ViewModel()

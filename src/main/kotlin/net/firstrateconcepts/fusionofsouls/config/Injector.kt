@@ -9,9 +9,11 @@ import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.DialogManager
 import net.firstrateconcepts.fusionofsouls.view.duringRun.DuringRunScreen
 import net.firstrateconcepts.fusionofsouls.view.duringRun.game.DuringRunGameController
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.DuringRunUiController
+import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.menu.MenuDialogController
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.topBar.TopBarController
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitBench.UnitBenchController
 import net.firstrateconcepts.fusionofsouls.view.heroSelect.HeroSelectScreenController
@@ -47,6 +49,7 @@ object Injector : Context() {
 
     fun initRunningDeps() = register {
         bindSingleton { InputMultiplexer() }
+        bindSingleton<DialogManager>()
         bindSingleton<LoadingScreenController>()
         bindSingleton<MainMenuScreenController>()
         bindSingleton<HeroSelectScreenController>()
@@ -56,5 +59,6 @@ object Injector : Context() {
         bindSingleton<DuringRunScreen>()
         bindSingleton<TopBarController>()
         bindSingleton<UnitBenchController>()
+        bindSingleton<MenuDialogController>()
     }
 }

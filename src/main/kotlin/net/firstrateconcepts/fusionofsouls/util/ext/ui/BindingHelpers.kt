@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import ktx.actors.onChange
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.Updatable
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.ViewModel
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.updatable
 
 fun <T : Any> Button.bindButtonDisabled(binding: ViewModel.Binding<T>, disabledValue: T, evaluateOnCall: Boolean = true) {

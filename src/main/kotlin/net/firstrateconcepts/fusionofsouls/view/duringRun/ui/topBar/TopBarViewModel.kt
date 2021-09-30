@@ -1,6 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.ui.topBar
 
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.ViewModel
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
 
 class TopBarViewModel : ViewModel() {
     val gold = Binding(0)

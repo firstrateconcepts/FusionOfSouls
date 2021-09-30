@@ -3,7 +3,7 @@ package net.firstrateconcepts.fusionofsouls.view.mainMenu
 import ktx.actors.onClick
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.visLabel
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.ViewModel
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.view.ScreenView
 
 class MainMenuView(override val controller: MainMenuScreenController, override val vm: ViewModel) : ScreenView(controller, vm) {

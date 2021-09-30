@@ -3,11 +3,11 @@ package net.firstrateconcepts.fusionofsouls.view.loading
 import ktx.assets.async.AssetStorage
 import ktx.async.onRenderingThread
 import net.firstrateconcepts.fusionofsouls.model.event.AssetsLoadedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.enqueueChangeScreen
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.percent
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventHandler
-import net.firstrateconcepts.fusionofsouls.util.framework.event.enqueueChangeScreen
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.UiScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
 

@@ -1,13 +1,14 @@
 package net.firstrateconcepts.fusionofsouls.view.settings
 
+import com.badlogic.gdx.Graphics
 import net.firstrateconcepts.fusionofsouls.config.PlayerSettingsConfig
 import net.firstrateconcepts.fusionofsouls.model.config.PlayerSettings
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.DialogController
 
-class SettingsDialogController(private val settingsConfig: PlayerSettingsConfig) : DialogController() {
+class SettingsDialogController(private val settingsConfig: PlayerSettingsConfig, graphics: Graphics) : DialogController() {
     private var currentSettings = settingsConfig.get()
     override val vm = SettingsDialogViewModel(currentSettings)
-    override val view = SettingsDialogView(this, vm)
+    override val view = SettingsDialogView(this, vm, graphics.width, graphics.height)
 
     fun applySettings() {
         val newSettings = PlayerSettings(

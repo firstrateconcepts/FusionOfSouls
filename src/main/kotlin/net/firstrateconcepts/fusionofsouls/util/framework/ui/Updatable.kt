@@ -1,5 +1,7 @@
 package net.firstrateconcepts.fusionofsouls.util.framework.ui
 
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
+
 interface Updatable {
     fun update()
 

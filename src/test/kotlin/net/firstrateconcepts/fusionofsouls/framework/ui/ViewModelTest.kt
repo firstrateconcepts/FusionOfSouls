@@ -5,7 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.Updatable
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.ViewModel
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
 import org.junit.jupiter.api.Test
 
 class ViewModelTest {

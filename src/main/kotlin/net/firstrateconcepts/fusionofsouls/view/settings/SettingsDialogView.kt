@@ -1,6 +1,5 @@
 package net.firstrateconcepts.fusionofsouls.view.settings
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Align
 import ktx.actors.onChange
 import ktx.scene2d.KTable
@@ -10,7 +9,15 @@ import net.firstrateconcepts.fusionofsouls.util.ext.ui.bindButtonDisabledToVmDir
 import net.firstrateconcepts.fusionofsouls.util.ext.ui.bindChecked
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.view.DialogView
 
-class SettingsDialogView(override val controller: SettingsDialogController, override val vm: SettingsDialogViewModel) : DialogView(controller, vm, "Settings") {
+class SettingsDialogView(
+    override val controller: SettingsDialogController,
+    override val vm: SettingsDialogViewModel,
+    screenWidth: Int,
+    screenHeight: Int
+) : DialogView(controller, vm, "Settings", screenWidth, screenHeight) {
+    override val widthScale = 0.33f
+    override val heightScale = 0.5f
+
     override fun KTable.initContentTable() {
         val vm = this@SettingsDialogView.vm
 
@@ -31,14 +38,6 @@ class SettingsDialogView(override val controller: SettingsDialogController, over
         textButton("Done") {
             onChange { controller.hide() }
         }
-    }
-
-    override fun getPrefWidth(): Float {
-        return Gdx.graphics.width *  0.33f
-    }
-
-    override fun getPrefHeight(): Float {
-        return Gdx.graphics.height *  0.5f
     }
 }
 
