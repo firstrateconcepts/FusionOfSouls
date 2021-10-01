@@ -24,7 +24,6 @@ abstract class ViewModel : Disposable {
 
     inner class Binding<T : Any>(initialValue: T) : Disposable {
         internal var dirty = false
-        // Needs to copy value, if initialValue is an object, this is pass-by-reference so....
         private var savedValue = initialValue
         private var currentValue = savedValue
         private val binds = mutableSetOf<Updatable>()
@@ -62,3 +61,18 @@ abstract class ViewModel : Disposable {
 }
 
 fun emptyViewModel() = object : ViewModel() {}
+
+operator fun <T : Any> ViewModel.Binding<List<T>>.plusAssign(toAdd: T) {
+    val newList = get() + toAdd
+    set(newList)
+}
+
+operator fun <T : Any> ViewModel.Binding<List<T>>.minusAssign(toRemove: T) {
+    val newList = get() - toRemove
+    set(newList)
+}
+
+fun <T : Any> ViewModel.Binding<List<T>>.removeIf(removeFilter: (T) -> Boolean) {
+    val newList = get().filterNot(removeFilter)
+    set(newList)
+}

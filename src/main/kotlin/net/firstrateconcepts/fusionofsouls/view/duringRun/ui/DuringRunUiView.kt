@@ -8,7 +8,7 @@ import net.firstrateconcepts.fusionofsouls.util.framework.ui.view.ScreenView
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.topBar.topBar
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitBench.unitBench
 
-class DuringRunUiView(controller: DuringRunUiController, vm: DuringRunUiViewModel) : ScreenView(controller, vm) {
+class DuringRunUiView(override val controller: DuringRunUiController, override val vm: DuringRunUiViewModel) : ScreenView(controller, vm) {
     override fun init() {
         super.init()
 
