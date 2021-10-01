@@ -1,5 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.config
 
+import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import ktx.inject.Context
@@ -8,6 +9,8 @@ import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
+import net.firstrateconcepts.fusionofsouls.service.engine.MovementSystem
+import net.firstrateconcepts.fusionofsouls.service.entity.UnitBuilder
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.DialogManager
 import net.firstrateconcepts.fusionofsouls.view.duringRun.DuringRunScreen
@@ -48,6 +51,10 @@ object Injector : Context() {
     }
 
     fun initRunningDeps() = register {
+        bindSingleton(PooledEngine())
+        bindSingleton<UnitBuilder>()
+        bindSingleton<MovementSystem>()
+
         bindSingleton { InputMultiplexer() }
         bindSingleton<DialogManager>()
         bindSingleton<LoadingScreenController>()

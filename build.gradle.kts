@@ -10,6 +10,7 @@ val kotlinDatetimeVersion: String by project
 val junitVersion: String by project
 val assertkVersion: String by project
 val mockkVersion: String by project
+val ashleyVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.5.31"
@@ -45,6 +46,7 @@ dependencies {
     implementationGdx("gdx", "gdx-freetype", "gdx-backend-lwjgl3")
     implementationGdxNative("gdx-platform", "gdx-freetype-platform")
     implementation("com.badlogicgames.gdx:gdx-ai:$gdxAiVersion")
+    implementation("com.badlogicgames.ashley:ashley:$ashleyVersion")
 
     implementationKtx(
         "app",

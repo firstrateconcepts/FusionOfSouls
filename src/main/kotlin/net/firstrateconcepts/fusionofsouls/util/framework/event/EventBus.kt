@@ -20,7 +20,6 @@ class EventBus : Disposable {
     val eventHandlers = mutableMapOf<KClass<out Event>, MutableList<EventHandler<Event>>>()
 
     suspend fun <T : Event> enqueueEvent(event: T) {
-        logger.debug { "Posting event ${event.name}" }
         if (!eventQueue.isClosedForSend) {
             eventQueue.send(event)
         }
@@ -49,7 +48,6 @@ class EventBus : Disposable {
                     }
 
                     val event = getOrThrow()
-                    logger.debug { "Received ${event.name} from queue" }
                     eventHandlers[event::class]?.forEach { it.handle(event) }
                 }
             }

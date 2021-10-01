@@ -2,6 +2,7 @@ package net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel
 
 import com.badlogic.gdx.utils.Disposable
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.Updatable
+import net.firstrateconcepts.fusionofsouls.util.framework.ui.updatable
 
 abstract class ViewModel : Disposable {
     private val fields = mutableListOf<Binding<*>>()
@@ -23,6 +24,7 @@ abstract class ViewModel : Disposable {
 
     inner class Binding<T : Any>(initialValue: T) : Disposable {
         internal var dirty = false
+        // Needs to copy value, if initialValue is an object, this is pass-by-reference so....
         private var savedValue = initialValue
         private var currentValue = savedValue
         private val binds = mutableSetOf<Updatable>()
@@ -44,6 +46,7 @@ abstract class ViewModel : Disposable {
         fun get() = currentValue
 
         fun bind(updatable: Updatable) = binds.add(updatable)
+        fun bind(updateFn: Updatable.() -> Unit) = bind(updatable(updateFn))
 
         fun saveCurrent() {
             savedValue = currentValue

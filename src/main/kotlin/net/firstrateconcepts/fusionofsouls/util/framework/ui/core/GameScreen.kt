@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 
 abstract class GameScreen(worldWidth: Float, worldHeight: Float) : UiScreen() {
-    val gameStage: FosStage = FosStage(FitViewport(worldWidth, worldHeight))
+    private val gameStage: FosStage = FosStage(FitViewport(worldWidth, worldHeight))
     override val stages = listOf(gameStage, uiStage)
     abstract val gameController: Controller
 
