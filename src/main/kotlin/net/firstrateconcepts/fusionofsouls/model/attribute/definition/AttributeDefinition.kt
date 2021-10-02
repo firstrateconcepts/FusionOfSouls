@@ -37,25 +37,3 @@ fun AttributeType.getBaseValue(attrs: AttributesComponent) = definition.getBaseV
 fun Attribute.getBaseValue(attrs: AttributesComponent) = type.getBaseValue(attrs)
 fun AttributeType.getDisplayValue(value: Float) = definition.getDisplayValue(value)
 fun Attribute.getDisplayValue() = type.getDisplayValue(value)
-
-sealed class PrimaryAttributeDefinition : AttributeDefinition {
-    override val priority = AttributePriority.PRIMARY
-    override val description get() = "$baseDescription Affects ${affects.display()}"
-    override val rangeForRandomizer = AttributeRandomRange(5f..10f, 10f..15f)
-
-    override fun getBaseValue(attrs: AttributesComponent) = 100f
-    override fun getDisplayValue(value: Float) = value.displayInt()
-
-    protected abstract val baseDescription: String
-    protected abstract val affects: Array<AttributeType>
-}
-
-sealed class SecondaryAttributeDefinition : AttributeDefinition {
-    override val priority = AttributePriority.SECONDARY
-    override val description get() = "$baseDescription Affected by ${affectedBy.display()}"
-
-    protected abstract val baseDescription: String
-    protected abstract val affectedBy: Array<AttributeType>
-}
-
-private fun Array<AttributeType>.display() = joinToString(",") { it.displayName }

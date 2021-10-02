@@ -10,7 +10,7 @@ object CritThresholdDefinition : SecondaryAttributeDefinition() {
     override val shortName = "Crit"
     override val displayName = "Crit Threshold"
     override val baseDescription = "Attack rolls over this amount are crits. Attack rolls proportional to this add or reduce potential damage."
-    override val affectedBy = arrayOf(AttributeType.MIND, AttributeType.LUCK)
+    override val affectedBy get() = AttributeType.MIND to AttributeType.LUCK
     override val rangeForRandomizer = AttributeRandomRange(-2f..-1f, -5f..-3f)
 
     override fun getBaseValue(attrs: AttributesComponent) = attrs.run { 100f - (mind() * 0.025f + luck() * 0.075f) }

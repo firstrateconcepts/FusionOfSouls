@@ -9,5 +9,5 @@ object LuckDefinition : PrimaryAttributeDefinition() {
     override val shortName = "Luck"
     override val displayName = "Luck"
     override val baseDescription = "Represents how much randomness favors this unit."
-    override val affects = arrayOf(DEFENSE, EVASION, CRIT_THRESHOLD, CRIT_BONUS)
+    override val affects get() = arrayOf(DEFENSE, EVASION, CRIT_THRESHOLD, CRIT_BONUS)
 }

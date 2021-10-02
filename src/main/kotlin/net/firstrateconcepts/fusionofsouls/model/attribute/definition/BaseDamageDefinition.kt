@@ -10,7 +10,7 @@ object BaseDamageDefinition : SecondaryAttributeDefinition() {
     override val shortName = "Dmg"
     override val displayName = "Base Damage"
     override val baseDescription = "The base amount of damage done by attacks and skills. Reduced by enemy Defense."
-    override val affectedBy = arrayOf(AttributeType.BODY, AttributeType.INSTINCT)
+    override val affectedBy get() = AttributeType.BODY to AttributeType.INSTINCT
     override val rangeForRandomizer = AttributeRandomRange(3f..7f, 10f..15f)
 
     override fun getBaseValue(attrs: AttributesComponent) = attrs.run { body() * 0.25f + instinct() * 0.25f }

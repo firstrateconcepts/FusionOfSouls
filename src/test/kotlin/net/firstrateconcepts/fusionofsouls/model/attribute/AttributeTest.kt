@@ -3,6 +3,7 @@ package net.firstrateconcepts.fusionofsouls.model.attribute
 import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.isCloseTo
+import assertk.assertions.isEqualTo
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
@@ -23,13 +24,27 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.LUCK
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.MAX_HP
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.MIND
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.SKILL_MULTI
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.description
 import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
 import net.firstrateconcepts.fusionofsouls.model.component.addModifier
+import net.firstrateconcepts.fusionofsouls.model.component.attacksPerSecond
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
+import net.firstrateconcepts.fusionofsouls.model.component.baseDamage
+import net.firstrateconcepts.fusionofsouls.model.component.body
+import net.firstrateconcepts.fusionofsouls.model.component.cooldownReduction
+import net.firstrateconcepts.fusionofsouls.model.component.critBonus
+import net.firstrateconcepts.fusionofsouls.model.component.critThreshold
+import net.firstrateconcepts.fusionofsouls.model.component.defense
+import net.firstrateconcepts.fusionofsouls.model.component.evasion
 import net.firstrateconcepts.fusionofsouls.model.component.get
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.instinct
+import net.firstrateconcepts.fusionofsouls.model.component.luck
+import net.firstrateconcepts.fusionofsouls.model.component.maxHp
+import net.firstrateconcepts.fusionofsouls.model.component.mind
+import net.firstrateconcepts.fusionofsouls.model.component.skillMulti
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
 import net.firstrateconcepts.fusionofsouls.service.entity.AttributeCalculator
 import org.junit.jupiter.api.BeforeEach
@@ -256,5 +271,26 @@ class AttributeTest {
             ATTACKS_PER_SECOND to 1.8f,
             COOLDOWN_REDUCTION to 1.41f
         )
+    }
+
+    @Test
+    fun `Test attribute descriptions`() {
+        recalculate()
+        with(entity.attrs) {
+            assertThat(body.description).isEqualTo("Represents the physical prowess of this unit. Affects Max HP, Base Damage, Defense, Crit Bonus, Attacks / Second")
+            assertThat(mind.description).isEqualTo("Represents the mental capacity of this unit. Affects Max HP, Skill Multiplier, Crit Threshold, Attacks / Second, Cooldown Reduction")
+            assertThat(instinct.description).isEqualTo("Represents the innate focus and reactions of this unit. Affects Base Damage, Skill Multiplier, Evasion, Cooldown Reduction")
+            assertThat(luck.description).isEqualTo("Represents how much randomness favors this unit. Affects Defense, Evasion, Crit Threshold, Crit Bonus")
+
+            assertThat(maxHp.description).isEqualTo("How much damage the unit can take before it dies. Affected by Body and Mind")
+            assertThat(baseDamage.description).isEqualTo("The base amount of damage done by attacks and skills. Reduced by enemy Defense. Affected by Body and Instinct")
+            assertThat(skillMulti.description).isEqualTo("Skill damage is multiplied by this amount. Affected by Mind and Instinct")
+            assertThat(defense.description).isEqualTo("Incoming damage is reduced by this percentage. Affected by Body and Luck")
+            assertThat(evasion.description).isEqualTo("Reduces enemy attack rolls by a flat amount, potentially causing them to miss. Affected by Instinct and Luck")
+            assertThat(critThreshold.description).isEqualTo("Attack rolls over this amount are crits. Attack rolls proportional to this add or reduce potential damage. Affected by Mind and Luck")
+            assertThat(critBonus.description).isEqualTo("Critical hits multiply their damage by this amount. Affected by Body and Luck")
+            assertThat(attacksPerSecond.description).isEqualTo("How many times per second this unit will attack. Affected by Body and Mind")
+            assertThat(cooldownReduction.description).isEqualTo("This unit's skill cooldown is divided by this amount. Affected by Mind and Instinct")
+        }
     }
 }

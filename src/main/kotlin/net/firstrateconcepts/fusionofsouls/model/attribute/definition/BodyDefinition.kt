@@ -10,5 +10,5 @@ object BodyDefinition : PrimaryAttributeDefinition() {
     override val shortName = "Body"
     override val displayName = "Body"
     override val baseDescription = "Represents the physical prowess of this unit."
-    override val affects = arrayOf(MAX_HP, BASE_DAMAGE, DEFENSE, CRIT_BONUS, ATTACKS_PER_SECOND)
+    override val affects get() = arrayOf(MAX_HP, BASE_DAMAGE, DEFENSE, CRIT_BONUS, ATTACKS_PER_SECOND)
 }

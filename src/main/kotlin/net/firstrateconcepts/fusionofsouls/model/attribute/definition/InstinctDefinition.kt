@@ -9,5 +9,5 @@ object InstinctDefinition : PrimaryAttributeDefinition() {
     override val shortName = "Instinct"
     override val displayName = "Instinct"
     override val baseDescription = "Represents the innate focus and reactions of this unit."
-    override val affects = arrayOf(BASE_DAMAGE, SKILL_MULTI, EVASION, COOLDOWN_REDUCTION)
+    override val affects get() = arrayOf(BASE_DAMAGE, SKILL_MULTI, EVASION, COOLDOWN_REDUCTION)
 }
