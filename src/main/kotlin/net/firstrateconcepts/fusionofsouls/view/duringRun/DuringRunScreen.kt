@@ -2,7 +2,7 @@ package net.firstrateconcepts.fusionofsouls.view.duringRun
 
 import com.badlogic.ashley.core.PooledEngine
 import ktx.async.newSingleThreadAsyncContext
-import net.firstrateconcepts.fusionofsouls.service.RunInitializer
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.core.GameScreen
 import net.firstrateconcepts.fusionofsouls.view.duringRun.game.DuringRunGameController
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.DuringRunUiController

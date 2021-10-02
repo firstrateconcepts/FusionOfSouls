@@ -6,10 +6,13 @@ import com.badlogic.gdx.InputMultiplexer
 import ktx.inject.Context
 import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
-import net.firstrateconcepts.fusionofsouls.service.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
+import net.firstrateconcepts.fusionofsouls.service.duringRun.UnitActivationListener
+import net.firstrateconcepts.fusionofsouls.service.entity.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.entity.UnitBuilder
 import net.firstrateconcepts.fusionofsouls.service.system.MovementSystem
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -62,6 +65,10 @@ object Injector : Context() {
         bindSingleton(PooledEngine())
         bindSingleton<UnitBuilder>()
         bindSingleton<MovementSystem>()
+        bindSingleton<RunServiceRegistry>()
+
+        bindSingleton<UnitActivationListener>()
+        bindSingleton<AttributeCalculator>()
 
         bindSingleton<RunInitializer>()
         bindSingleton<DuringRunUiController>()

@@ -7,6 +7,7 @@
       maxLineLength: 160
     FinalNewline:
       active: false
+
   style:
     ForbiddenComment:
       active: false
@@ -17,3 +18,6 @@
     NewLineAtEndOfFile:
       active: false
 
+  performance:
+    SpreadOperator:
+      active: false
