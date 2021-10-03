@@ -13,8 +13,17 @@ class PositionComponent(val initialPosition: Vector2) : Component {
 }
 val positionMapper = mapperFor<PositionComponent>()
 val Entity.position get() = this[positionMapper]!!
-val Entity.currentPosition get() = this[positionMapper]!!.currentPosition
+val Entity.currentPosition get() = position.currentPosition
 
 class UnitComponent(val type: UnitType, val team: UnitTeam) : Component
 val unitMapper = mapperFor<UnitComponent>()
 val Entity.unitInfo get() = this[unitMapper]!!
+
+class TargetComponent : Component {
+    var target: Int? = null
+    var canChangeTarget = true
+    var isTargetable = true
+}
+val targetMapper = mapperFor<TargetComponent>()
+val Entity.targetInfo get() = this[targetMapper]!!
+val Entity.currentTarget get() = targetInfo.target

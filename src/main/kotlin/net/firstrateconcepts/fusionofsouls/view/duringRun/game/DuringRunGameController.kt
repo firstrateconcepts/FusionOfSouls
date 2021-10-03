@@ -40,7 +40,7 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
         return unit
     }
 
-    private fun removeUnit(id: UUID) = vm.units.removeIf { it.id == id }
+    private fun removeUnit(id: Int) = vm.units.removeIf { it.id == id }
 
     override fun dispose() {
         eventBus.unregisterHandlers(this)

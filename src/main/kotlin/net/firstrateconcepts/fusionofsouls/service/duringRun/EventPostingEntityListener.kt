@@ -8,7 +8,6 @@ import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.FosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import java.util.*
 
 abstract class EventPostingEntityListener : EntityListener, RunService() {
     abstract val logger: FosLogger
@@ -40,6 +39,6 @@ abstract class EventPostingEntityListener : EntityListener, RunService() {
         }
     }
 
-    abstract fun entityAddedEvent(id: UUID): Event
-    abstract fun entityRemovedEvent(id: UUID): Event
+    abstract fun entityAddedEvent(id: Int): Event
+    abstract fun entityRemovedEvent(id: Int): Event
 }

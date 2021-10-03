@@ -6,9 +6,8 @@ import ktx.ashley.EngineEntity
 import ktx.reflect.reflect
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.idFamily
-import java.util.*
 
-fun Engine.findById(id: UUID) = getEntitiesFor(idFamily).find { it.id == id }
+fun Engine.findById(id: Int) = getEntitiesFor(idFamily).find { it.id == id }
 
 inline fun <reified T : Component> EngineEntity.with(vararg params: Any): T {
     val constructor = reflect<T>().constructor

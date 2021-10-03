@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Texture
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.oneOf
-import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
-class IdComponent(val id: UUID = UUID.randomUUID()) : Component
+private var idSequence = AtomicInteger(0)
+
+class IdComponent(val id: Int = idSequence.getAndIncrement()) : Component
 val idMapper = mapperFor<IdComponent>()
 val Entity.id get() = this[idMapper]!!.id
 val idFamily = oneOf(IdComponent::class).get()!!
