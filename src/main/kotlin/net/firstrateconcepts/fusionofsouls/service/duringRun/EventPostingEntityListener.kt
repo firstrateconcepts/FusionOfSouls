@@ -3,8 +3,8 @@ package net.firstrateconcepts.fusionofsouls.service.duringRun
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.Family
-import com.badlogic.ashley.core.PooledEngine
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.FosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -13,7 +13,7 @@ import java.util.*
 abstract class EventPostingEntityListener : EntityListener, RunService() {
     abstract val logger: FosLogger
     abstract val eventBus: EventBus
-    abstract val engine: PooledEngine
+    abstract val engine: AsyncPooledEngine
     abstract val family: Family
 
     override fun startInternal() {

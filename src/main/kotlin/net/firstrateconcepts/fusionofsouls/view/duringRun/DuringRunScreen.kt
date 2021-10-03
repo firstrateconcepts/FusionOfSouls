@@ -1,11 +1,10 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun
 
-import com.badlogic.ashley.core.PooledEngine
-import ktx.async.newSingleThreadAsyncContext
 import ktx.async.onRenderingThread
 import net.firstrateconcepts.fusionofsouls.model.BattleStatus
 import net.firstrateconcepts.fusionofsouls.model.event.GamePauseChanged
 import net.firstrateconcepts.fusionofsouls.model.event.RunStatusChanged
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
@@ -16,11 +15,10 @@ import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.DuringRunUiControll
 class DuringRunScreen(
     override val gameController: DuringRunGameController,
     override val uiController: DuringRunUiController,
-    private val engine: PooledEngine,
+    private val engine: AsyncPooledEngine,
     private val runInitializer: RunInitializer,
     private val eventBus: EventBus
 ) : GameScreen(GAME_AREA_WIDTH, GAME_AREA_HEIGHT) {
-    private val asyncContext = newSingleThreadAsyncContext("Engine")
     private var isRunning = false
     private var isPaused = false
 
@@ -37,7 +35,10 @@ class DuringRunScreen(
     }
 
     override fun render(delta: Float) {
-        if (isRunning && !isPaused) asyncContext.executor.submit { engine.update(delta) }
+        if (isRunning && !isPaused) {
+            engine.update(delta)
+            gameController.render()
+        }
         super.render(delta)
     }
 

@@ -1,6 +1,5 @@
 package net.firstrateconcepts.fusionofsouls.service.duringRun
 
-import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import ktx.ashley.with
@@ -14,12 +13,13 @@ import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.hero.DefaultHeroDefinition
 import net.firstrateconcepts.fusionofsouls.model.unit.hero.getHeroDefinitionForId
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.entity.UnitBuilder
 import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 class RunInitializer(
-    private val engine: PooledEngine,
+    private val engine: AsyncPooledEngine,
     private val unitBuilder: UnitBuilder,
     private val runServiceRegistry: RunServiceRegistry,
     private val eventBus: EventBus,

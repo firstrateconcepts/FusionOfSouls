@@ -21,7 +21,7 @@ import kotlin.reflect.jvm.jvmErasure
 @Suppress("UNCHECKED_CAST")
 class EventBus : Disposable {
     private val logger = fosLogger()
-    private val asyncContext = newSingleThreadAsyncContext("EventBus-Loop")
+    private val asyncContext = newSingleThreadAsyncContext("Event-Thread")
     private val eventQueue = Channel<Event>()
     private val eventHandlers = mutableMapOf<KClass<out Event>, MutableList<EventHandler<Event>>>()
     private val handlerClasses = mutableSetOf<ClassHandlerMapping>()
@@ -57,14 +57,6 @@ class EventBus : Disposable {
         eventHandlers[eventType]?.remove(handler)
     }
 
-    inline fun <reified T : Event> registerHandler(handler: EventHandler<T>) {
-        registerHandler(T::class, handler)
-    }
-
-    inline fun <reified T : Event> unregisterHandler(handler: EventHandler<T>) {
-        unregisterHandler(T::class, handler)
-    }
-
     fun loop() {
         KtxAsync.launch(asyncContext) {
             logger.info { "Starting loop" }
@@ -76,7 +68,6 @@ class EventBus : Disposable {
 
                     val event = getOrThrow()
                     eventHandlers[event::class]?.forEach {
-                        logger.debug { "Handling event ${event.name}" }
                         it.handle(event)
                     }
                 }
@@ -110,7 +101,7 @@ class EventBus : Disposable {
         }
 
         fun registerHandlers() {
-            logger.info { "Registering event handlers for ${obj::class.simpleName}" }
+            logger.debug { "Registering event handlers for ${obj::class.simpleName}" }
             handlers.forEach {
                 logger.debug { "Registering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
                 registerHandler(it.key, it.value)
@@ -118,7 +109,7 @@ class EventBus : Disposable {
         }
 
         fun unregisterHandlers() {
-            logger.info { "Unregistering event handlers for ${obj::class.simpleName}" }
+            logger.debug { "Unregistering event handlers for ${obj::class.simpleName}" }
             handlers.forEach {
                 logger.debug { "Unregistering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
                 unregisterHandler(it.key, it.value)

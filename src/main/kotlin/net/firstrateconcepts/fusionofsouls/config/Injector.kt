@@ -1,20 +1,20 @@
 package net.firstrateconcepts.fusionofsouls.config
 
-import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import ktx.inject.Context
 import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
+import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.duringRun.BattleManager
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.UnitActivationListener
-import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.entity.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.service.entity.UnitBuilder
 import net.firstrateconcepts.fusionofsouls.service.system.MovementSystem
@@ -59,7 +59,7 @@ object Injector : Context() {
     fun initRunningDeps() = register {
         bindSingleton { InputMultiplexer() }
 
-        bindSingleton(PooledEngine())
+        bindSingleton<AsyncPooledEngine>()
         bindSingleton<UnitBuilder>()
         bindSingleton<MovementSystem>()
         bindSingleton<RunServiceRegistry>()

@@ -1,6 +1,5 @@
 package net.firstrateconcepts.fusionofsouls.service.duringRun
 
-import com.badlogic.ashley.core.PooledEngine
 import net.firstrateconcepts.fusionofsouls.model.attribute.Attribute
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeModifier
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.getBaseValue
@@ -9,12 +8,13 @@ import net.firstrateconcepts.fusionofsouls.model.component.attrMods
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
-import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
+import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
-class AttributeCalculator(private val engine: PooledEngine, private val eventBus: EventBus) : RunService() {
+class AttributeCalculator(private val engine: AsyncPooledEngine, private val eventBus: EventBus) : RunService() {
     private val logger = fosLogger()
 
     @HandlesEvent

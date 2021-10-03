@@ -5,7 +5,6 @@ import assertk.assertThat
 import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
 import com.badlogic.ashley.core.Entity
-import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Gdx
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -48,18 +47,19 @@ import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.mind
 import net.firstrateconcepts.fusionofsouls.model.component.skillMulti
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AttributeCalculatorTest {
-    private lateinit var engine: PooledEngine
+    private lateinit var engine: AsyncPooledEngine
     private lateinit var attrCalculator: AttributeCalculator
     private lateinit var entity: Entity
 
     @BeforeEach
     fun setup() {
-        engine = PooledEngine()
+        engine = AsyncPooledEngine(mockk(relaxed = true))
         attrCalculator = AttributeCalculator(engine, mockk(relaxed = true))
         Gdx.app = mockk(relaxed = true)
 

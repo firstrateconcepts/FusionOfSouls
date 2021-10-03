@@ -8,9 +8,12 @@ import ktx.ashley.mapperFor
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 
-class PositionComponent(val position: Vector2) : Component
+class PositionComponent(val initialPosition: Vector2) : Component {
+    val currentPosition = initialPosition.cpy()!!
+}
 val positionMapper = mapperFor<PositionComponent>()
-val Entity.position get() = this[positionMapper]!!.position
+val Entity.position get() = this[positionMapper]!!
+val Entity.currentPosition get() = this[positionMapper]!!.currentPosition
 
 class UnitComponent(val type: UnitType, val team: UnitTeam) : Component
 val unitMapper = mapperFor<UnitComponent>()

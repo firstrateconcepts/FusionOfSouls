@@ -1,15 +1,16 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.game
 
 import com.badlogic.ashley.core.Entity
-import com.badlogic.ashley.core.PooledEngine
+import ktx.ashley.oneOf
 import ktx.async.onRenderingThread
+import net.firstrateconcepts.fusionofsouls.model.component.PositionComponent
+import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.name
-import net.firstrateconcepts.fusionofsouls.model.component.position
 import net.firstrateconcepts.fusionofsouls.model.component.texture
 import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
-import net.firstrateconcepts.fusionofsouls.model.event.UnitPositionUpdatedEvent
+import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
@@ -18,17 +19,10 @@ import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.plusAssig
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.removeIf
 import java.util.*
 
-class DuringRunGameController(private val eventBus: EventBus, private val engine: PooledEngine) : Controller {
+class DuringRunGameController(private val eventBus: EventBus, private val engine: AsyncPooledEngine) : Controller {
     override val vm = DuringRunGameViewModel()
     override val view = DuringRunGameView(this, vm)
-
-    // TODO: Convert this to query engine each frame, event bus can't handle this event throughput as written
-    @HandlesEvent
-    suspend fun positionUpdateHandler(event: UnitPositionUpdatedEvent) = onRenderingThread {
-        vm.units.get().find { it.id == event.id }?.apply {
-            position(event.position.cpy())
-        }
-    }
+    private val positionFamily = oneOf(PositionComponent::class).get()
 
     @HandlesEvent
     suspend fun unitActivatedHandler(event: UnitActivatedEvent) = onRenderingThread { engine.findById(event.id)?.also { addNewUnit(it) } }
@@ -41,7 +35,7 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
     }
 
     private fun addNewUnit(entity: Entity): UnitViewModel {
-        val unit = entity.run { UnitViewModel(id, name, texture, position.cpy()) }
+        val unit = entity.run { UnitViewModel(id, name, texture, currentPosition.cpy()) }
         vm.units += unit
         return unit
     }
@@ -51,5 +45,13 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
     override fun dispose() {
         eventBus.unregisterHandlers(this)
         super.dispose()
+    }
+
+    fun render() {
+        engine.getEntitiesFor(positionFamily).forEach { entity ->
+            vm.units.get().find { it.id == entity.id }?.apply {
+                position(entity.currentPosition.cpy())
+            }
+        }
     }
 }
