@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.model.attribute
+package net.firstrateconcepts.fusionofsouls.service.entity
 
 import assertk.Assert
 import assertk.assertThat
@@ -11,6 +11,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import ktx.ashley.entity
 import ktx.ashley.with
+import net.firstrateconcepts.fusionofsouls.model.attribute.Attribute
+import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACKS_PER_SECOND
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.BASE_DAMAGE
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.BODY
@@ -46,11 +48,10 @@ import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.mind
 import net.firstrateconcepts.fusionofsouls.model.component.skillMulti
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
-import net.firstrateconcepts.fusionofsouls.service.entity.AttributeCalculator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AttributeTest {
+class AttributeCalculatorTest {
     private lateinit var engine: PooledEngine
     private lateinit var attrCalculator: AttributeCalculator
     private lateinit var entity: Entity

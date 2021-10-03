@@ -1,20 +1,34 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.ui.menu
 
 import com.badlogic.gdx.Graphics
+import net.firstrateconcepts.fusionofsouls.model.RunStatus
+import net.firstrateconcepts.fusionofsouls.model.event.changeRunStatus
 import net.firstrateconcepts.fusionofsouls.model.event.enqueueChangeScreen
 import net.firstrateconcepts.fusionofsouls.model.event.enqueueExitRequest
 import net.firstrateconcepts.fusionofsouls.model.event.enqueueShowDialog
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.DialogController
-import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.emptyViewModel
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
 import net.firstrateconcepts.fusionofsouls.view.settings.SettingsDialogController
 
-class MenuDialogController(private val eventBus: EventBus, graphics: Graphics) : DialogController() {
-    override val vm = emptyViewModel()
+class MenuDialogController(private val eventBus: EventBus, graphics: Graphics, private val runStateService: RunStateService) : DialogController() {
+    override val vm = MenuDialogViewModel()
     override val view = MenuDialogView(this, vm, graphics.width, graphics.height)
+    private lateinit var previousStatus: RunStatus
 
-    fun resume() = hide()
+    override fun load() {
+        runStateService.load().run {
+            vm.runSeed(seed)
+            previousStatus = status
+        }
+        eventBus.changeRunStatus(RunStatus.PAUSED)
+    }
+
+    fun resume() {
+        eventBus.changeRunStatus(previousStatus)
+        hide()
+    }
     fun settings() = eventBus.enqueueShowDialog<SettingsDialogController>()
     fun mainMenu() {
         eventBus.enqueueChangeScreen<MainMenuScreenController>()

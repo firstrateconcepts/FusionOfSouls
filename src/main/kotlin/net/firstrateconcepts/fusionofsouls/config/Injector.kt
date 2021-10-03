@@ -8,9 +8,10 @@ import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
-import net.firstrateconcepts.fusionofsouls.service.asset.UnitAssets
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.UnitActivationListener
 import net.firstrateconcepts.fusionofsouls.service.entity.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.entity.UnitBuilder
@@ -38,7 +39,6 @@ object Injector : Context() {
         bindSingleton<ApplicationConfiguration>()
         bindSingleton<EventBus>()
         bindSingleton<AssetConfig>()
-        bindSingleton<UnitAssets>()
         bindSingleton<SkinLoader>()
         bindSingleton<AssetLoader>()
         bindSingleton<ApplicationInitializer>()
@@ -56,21 +56,23 @@ object Injector : Context() {
 
     fun initRunningDeps() = register {
         bindSingleton { InputMultiplexer() }
-        bindSingleton<DialogManager>()
-        bindSingleton<LoadingScreenController>()
-        bindSingleton<MainMenuScreenController>()
-        bindSingleton<HeroSelectScreenController>()
-        bindSingleton<SettingsDialogController>()
 
         bindSingleton(PooledEngine())
         bindSingleton<UnitBuilder>()
         bindSingleton<MovementSystem>()
         bindSingleton<RunServiceRegistry>()
+        bindSingleton<RunStateService>()
 
         bindSingleton<UnitActivationListener>()
         bindSingleton<AttributeCalculator>()
-
+        bindSingleton<RandomizerService>()
         bindSingleton<RunInitializer>()
+
+        bindSingleton<DialogManager>()
+        bindSingleton<LoadingScreenController>()
+        bindSingleton<MainMenuScreenController>()
+        bindSingleton<HeroSelectScreenController>()
+        bindSingleton<SettingsDialogController>()
         bindSingleton<DuringRunUiController>()
         bindSingleton<DuringRunGameController>()
         bindSingleton<DuringRunScreen>()

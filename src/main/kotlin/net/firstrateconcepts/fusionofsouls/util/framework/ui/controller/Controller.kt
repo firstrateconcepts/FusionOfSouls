@@ -8,6 +8,8 @@ interface Controller : Disposable {
     val vm: ViewModel
     val view: View
 
+    fun load() = Unit
+
     override fun dispose() {
         view.dispose()
         vm.dispose()

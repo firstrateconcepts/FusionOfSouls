@@ -11,6 +11,7 @@ import net.firstrateconcepts.fusionofsouls.util.framework.ui.view.TableView
 @Suppress("UNCHECKED_CAST")
 inline fun <S, reified C : Controller, V : TableView> KWidget<S>.uiComponent(init: V.(S) -> Unit = {}): V {
     val component = inject<C>()
+    component.load()
     component.view.init()
     return actor(component.view as V, init)
 }

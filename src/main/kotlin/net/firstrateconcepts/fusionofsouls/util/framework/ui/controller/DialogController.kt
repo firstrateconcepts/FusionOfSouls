@@ -11,6 +11,7 @@ abstract class DialogController : Controller {
 
     fun show(stage: FosStage) {
         if (!isShown) {
+            load()
             this.stage = stage
             view.show(stage)
             view.init()

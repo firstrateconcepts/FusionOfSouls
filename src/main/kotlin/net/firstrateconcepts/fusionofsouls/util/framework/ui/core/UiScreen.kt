@@ -14,6 +14,7 @@ abstract class UiScreen : FosScreen {
 
     override fun show() {
         input.addProcessor(uiStage)
+        uiController.load()
         uiStage.setView(uiController.view)
         dialogManager.currentStage = uiStage
     }

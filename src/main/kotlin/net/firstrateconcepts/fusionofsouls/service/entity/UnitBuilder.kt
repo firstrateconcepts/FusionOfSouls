@@ -11,13 +11,16 @@ import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
 import net.firstrateconcepts.fusionofsouls.model.component.NameComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TextureComponent
 import net.firstrateconcepts.fusionofsouls.model.component.UnitComponent
+import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
+import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
+import net.firstrateconcepts.fusionofsouls.util.ext.with
 
 class UnitBuilder(private val engine: PooledEngine) {
-    fun buildUnit(name: String, texture: Texture, config: EngineEntity.() -> Unit = {}) = engine.entity {
+    fun buildUnit(name: String, texture: Texture, type: UnitType, team: UnitTeam, config: EngineEntity.() -> Unit = {}) = engine.entity {
         with<IdComponent>()
-        with<UnitComponent>()
-        entity.add(NameComponent(name))
-        entity.add(TextureComponent(texture))
+        with<UnitComponent>(type, team)
+        with<NameComponent>(name)
+        with<TextureComponent>(texture)
         with<AttributesComponent>()
         with<AttributeModifiersComponent>()
         config()

@@ -30,7 +30,7 @@ class DuringRunGameController(private val eventBus: EventBus, engine: PooledEngi
     private val unitActivatedHandler = eventHandler<UnitActivatedEvent> { event -> engine.findById(event.id)?.also { addNewUnit(it) } }
     private val unitDeactivatedHandler = eventHandler<UnitDeactivatedEvent> { event -> removeUnit(event.id) }
 
-    init {
+    override fun load() {
         eventBus.registerHandler(positionUpdateHandler)
         eventBus.registerHandler(unitActivatedHandler)
         eventBus.registerHandler(unitDeactivatedHandler)

@@ -3,7 +3,6 @@ package net.firstrateconcepts.fusionofsouls.model.component
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.math.Vector2
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.oneOf
@@ -22,9 +21,4 @@ class TextureComponent(val texture: Texture) : Component
 val textureMapper = mapperFor<TextureComponent>()
 val Entity.texture get() = this[textureMapper]!!.texture
 
-class PositionComponent(val position: Vector2) : Component
-val positionMapper = mapperFor<PositionComponent>()
-val Entity.position get() = this[positionMapper]!!.position
-
-class UnitComponent : Component
 class ActiveComponent : Component
