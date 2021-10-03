@@ -48,6 +48,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.mind
 import net.firstrateconcepts.fusionofsouls.model.component.skillMulti
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
+import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

@@ -7,18 +7,18 @@ import net.firstrateconcepts.fusionofsouls.model.event.enqueueChangeScreen
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.percent
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import net.firstrateconcepts.fusionofsouls.util.framework.event.EventHandler
+import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.UiScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
 
-class LoadingScreenController(private val assets: AssetStorage, private val eventBus: EventBus) : UiScreenController(), EventHandler<AssetsLoadedEvent> {
+class LoadingScreenController(private val assets: AssetStorage, private val eventBus: EventBus) : UiScreenController() {
     private val logger = fosLogger()
     override val vm = LoadingScreenViewModel()
     override val view = LoadingScreenView(this, vm)
 
     override fun show() {
         super.show()
-        eventBus.registerHandler(this)
+        eventBus.registerHandlers(this)
     }
 
     override fun render(delta: Float) {
@@ -31,15 +31,13 @@ class LoadingScreenController(private val assets: AssetStorage, private val even
 
     override fun hide() {
         super.hide()
-        eventBus.deregisterHandler(this)
+        eventBus.unregisterHandlers(this)
     }
 
-    override suspend fun handle(event: AssetsLoadedEvent) {
-        logger.debug { "Handling asset loaded event" }
-
-        onRenderingThread {
-            logger.debug { "Loading complete, moving to main menu" }
-            eventBus.enqueueChangeScreen<MainMenuScreenController>()
-        }
+    @HandlesEvent
+    @Suppress("UnusedPrivateMember")
+    suspend fun handle(event: AssetsLoadedEvent) = onRenderingThread {
+        logger.debug { "Loading complete, moving to main menu" }
+        eventBus.enqueueChangeScreen<MainMenuScreenController>()
     }
 }

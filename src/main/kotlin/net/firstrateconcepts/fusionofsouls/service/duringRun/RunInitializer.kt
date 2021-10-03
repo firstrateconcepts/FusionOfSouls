@@ -4,11 +4,12 @@ import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import ktx.ashley.with
-import ktx.assets.async.AssetStorage
+import net.firstrateconcepts.fusionofsouls.model.BattleStatus
 import net.firstrateconcepts.fusionofsouls.model.component.ActiveComponent
 import net.firstrateconcepts.fusionofsouls.model.component.PositionComponent
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
+import net.firstrateconcepts.fusionofsouls.model.event.changeRunStatus
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.hero.DefaultHeroDefinition
@@ -20,7 +21,6 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 class RunInitializer(
     private val engine: PooledEngine,
     private val unitBuilder: UnitBuilder,
-    private val assets: AssetStorage,
     private val runServiceRegistry: RunServiceRegistry,
     private val eventBus: EventBus,
     private val runStateService: RunStateService
@@ -37,12 +37,13 @@ class RunInitializer(
 
         runServiceRegistry.startAll()
 
-        val unit = unitBuilder.buildUnit(hero.name, assets[hero.texture.assetFile], UnitType.HERO, UnitTeam.PLAYER) {
+        val unit = unitBuilder.buildUnit(hero.name, hero.texture, UnitType.HERO, UnitTeam.PLAYER) {
             with<ActiveComponent>()
             with<PositionComponent>(Vector2(0f, 0f))
         }
 
         eventBus.enqueueEventSync(AttributeRecalculateNeededEvent(unit.id))
+        eventBus.changeRunStatus(BattleStatus.BEFORE_BATTLE)
     }
 
     override fun dispose() {

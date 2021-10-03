@@ -11,14 +11,10 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import java.util.*
 
-class UnitActivationListener(override val eventBus: EventBus, override val engine: PooledEngine, registry: RunServiceRegistry) : EventPostingEntityListener {
+class UnitActivationListener(override val eventBus: EventBus, override val engine: PooledEngine) : EventPostingEntityListener() {
     override val logger = fosLogger()
     override val family: Family = allOf(ActiveComponent::class, UnitComponent::class).get()
 
     override fun entityAddedEvent(id: UUID) = UnitActivatedEvent(id)
     override fun entityRemovedEvent(id: UUID) = UnitDeactivatedEvent(id)
-
-    init {
-        registry.register(this)
-    }
 }

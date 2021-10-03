@@ -1,24 +1,17 @@
 package net.firstrateconcepts.fusionofsouls.service.duringRun
 
 import net.firstrateconcepts.fusionofsouls.model.RunState
+import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.model.event.RunStateUpdated
 import net.firstrateconcepts.fusionofsouls.model.event.RunStatusChanged
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import net.firstrateconcepts.fusionofsouls.util.framework.event.eventHandler
 
-class RunStateService(registry: RunServiceRegistry, private val eventBus: EventBus) : RunService {
+class RunStateService(private val eventBus: EventBus) : RunService() {
     private var runState: RunState? = null
 
-    private val runStatusHandler = eventHandler<RunStatusChanged> {
-        runState?.status = it.newStatus
-    }
-
-    init {
-        registry.register(this)
-    }
-
-    override fun start() {
-        eventBus.registerHandler(runStatusHandler)
+    @HandlesEvent
+    fun runStatusChanged(event: RunStatusChanged) = runOnServiceThread {
+        runState?.status = event.newStatus
     }
 
     fun load(): RunState {
@@ -29,15 +22,15 @@ class RunStateService(registry: RunServiceRegistry, private val eventBus: EventB
         return runState!!.copy()
     }
 
-    fun save(runState: RunState) {
-        if (runState == this.runState) return
-        this.runState = runState
-        eventBus.enqueueEventSync(RunStateUpdated(runState.copy()))
-        // TODO: This should also flush the current state to disk
+    fun save(runState: RunState) = runOnServiceThread {
+        if (runState != this@RunStateService.runState) {
+            this@RunStateService.runState = runState
+            eventBus.enqueueEvent(RunStateUpdated(runState.copy()))
+            // TODO: This should also flush the current state to disk
+        }
     }
 
-    override fun stop() {
+    override fun stopInternal() {
         runState = null
-        eventBus.deregisterHandler(runStatusHandler)
     }
 }

@@ -20,8 +20,8 @@ class MovementSystem(
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         entity.position.apply {
-            x += 0.01f
-            y += 0.005f
+            x += 0.05f
+            y += 0.01f
             eventBus.enqueueEventSync(UnitPositionUpdatedEvent(entity.id, this.cpy()))
         }
     }

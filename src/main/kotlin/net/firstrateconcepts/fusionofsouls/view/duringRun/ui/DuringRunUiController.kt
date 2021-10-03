@@ -1,31 +1,33 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.ui
 
-import net.firstrateconcepts.fusionofsouls.model.RunStatus
+import ktx.async.onRenderingThread
+import net.firstrateconcepts.fusionofsouls.model.BattleStatus
 import net.firstrateconcepts.fusionofsouls.model.event.RunStatusChanged
 import net.firstrateconcepts.fusionofsouls.model.event.changeRunStatus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import net.firstrateconcepts.fusionofsouls.util.framework.event.eventHandler
+import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 
 class DuringRunUiController(private val eventBus: EventBus) : Controller {
     override val vm = DuringRunUiViewModel()
     override val view = DuringRunUiView(this, vm)
 
-    private val runStatusHandler = eventHandler<RunStatusChanged> {
-        vm.isStartBattle(it.newStatus == RunStatus.BEFORE_BATTLE)
+    @HandlesEvent
+    suspend fun runStatusHandler(event: RunStatusChanged) = onRenderingThread {
+        vm.isStartBattle(event.newStatus == BattleStatus.BEFORE_BATTLE)
     }
 
     override fun load() {
-        eventBus.registerHandler(runStatusHandler)
+        eventBus.registerHandlers(this)
         super.load()
     }
 
     fun startBattle() {
-        eventBus.changeRunStatus(RunStatus.DURING_BATTLE)
+        eventBus.changeRunStatus(BattleStatus.DURING_BATTLE)
     }
 
     override fun dispose() {
-        eventBus.deregisterHandler(runStatusHandler)
+        eventBus.unregisterHandlers(this)
         super.dispose()
     }
 }

@@ -10,32 +10,36 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import java.util.*
 
-interface EventPostingEntityListener : EntityListener, RunService {
-    val logger: FosLogger
-    val eventBus: EventBus
-    val engine: PooledEngine
-    val family: Family
+abstract class EventPostingEntityListener : EntityListener, RunService() {
+    abstract val logger: FosLogger
+    abstract val eventBus: EventBus
+    abstract val engine: PooledEngine
+    abstract val family: Family
 
-    override fun start() {
+    override fun startInternal() {
         engine.addEntityListener(family, this)
     }
 
-    override fun stop() {
+    override fun stopInternal() {
         engine.removeEntityListener(this)
     }
 
     override fun entityAdded(entity: Entity) {
-        val event = entityAddedEvent(entity.id)
-        logger.info { "Entity [${entity.id}] added, posting ${event.name}" }
-        eventBus.enqueueEventSync(event)
+        runOnServiceThread {
+            val event = entityAddedEvent(entity.id)
+            logger.info { "Entity [${entity.id}] added, posting ${event.name}" }
+            eventBus.enqueueEvent(event)
+        }
     }
 
     override fun entityRemoved(entity: Entity) {
-        val event = entityRemovedEvent(entity.id)
-        logger.info { "Entity [${entity.id}] removed, posting ${event.name}" }
-        eventBus.enqueueEventSync(event)
+        runOnServiceThread {
+            val event = entityRemovedEvent(entity.id)
+            logger.info { "Entity [${entity.id}] removed, posting ${event.name}" }
+            eventBus.enqueueEvent(event)
+        }
     }
 
-    fun entityAddedEvent(id: UUID): Event
-    fun entityRemovedEvent(id: UUID): Event
+    abstract fun entityAddedEvent(id: UUID): Event
+    abstract fun entityRemovedEvent(id: UUID): Event
 }

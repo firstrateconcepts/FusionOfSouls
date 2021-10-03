@@ -14,7 +14,7 @@ data class RunState(
     var unitCap: Int = 3,
     var runeCap: Int = 2,
     var fusionCap: Int = 5,
-    var status: RunStatus = RunStatus.BEFORE_BATTLE
+    var status: BattleStatus = BattleStatus.BEFORE_BATTLE
 )
 
-enum class RunStatus { PAUSED, BEFORE_BATTLE, AFTER_BATTLE, DURING_BATTLE }
+enum class BattleStatus { BEFORE_BATTLE, AFTER_BATTLE, DURING_BATTLE }

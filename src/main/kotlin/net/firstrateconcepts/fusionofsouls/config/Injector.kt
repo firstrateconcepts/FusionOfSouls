@@ -8,12 +8,14 @@ import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
+import net.firstrateconcepts.fusionofsouls.service.duringRun.BattleManager
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.UnitActivationListener
-import net.firstrateconcepts.fusionofsouls.service.entity.AttributeCalculator
+import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
+import net.firstrateconcepts.fusionofsouls.service.entity.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.service.entity.UnitBuilder
 import net.firstrateconcepts.fusionofsouls.service.system.MovementSystem
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -67,6 +69,8 @@ object Injector : Context() {
         bindSingleton<AttributeCalculator>()
         bindSingleton<RandomizerService>()
         bindSingleton<RunInitializer>()
+        bindSingleton<EnemyGenerator>()
+        bindSingleton<BattleManager>()
 
         bindSingleton<DialogManager>()
         bindSingleton<LoadingScreenController>()
