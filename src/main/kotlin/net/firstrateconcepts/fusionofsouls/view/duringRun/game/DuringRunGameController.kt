@@ -3,10 +3,11 @@ package net.firstrateconcepts.fusionofsouls.view.duringRun.game
 import com.badlogic.ashley.core.Entity
 import ktx.ashley.oneOf
 import ktx.async.onRenderingThread
-import net.firstrateconcepts.fusionofsouls.model.component.PositionComponent
+import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.name
+import net.firstrateconcepts.fusionofsouls.model.component.rotation
 import net.firstrateconcepts.fusionofsouls.model.component.texture
 import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
@@ -17,12 +18,11 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.plusAssign
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.removeIf
-import java.util.*
 
 class DuringRunGameController(private val eventBus: EventBus, private val engine: AsyncPooledEngine) : Controller {
     override val vm = DuringRunGameViewModel()
     override val view = DuringRunGameView(this, vm)
-    private val positionFamily = oneOf(PositionComponent::class).get()
+    private val positionFamily = oneOf(SteerableComponent::class).get()
 
     @HandlesEvent
     suspend fun unitActivatedHandler(event: UnitActivatedEvent) = onRenderingThread { engine.findById(event.id)?.also { addNewUnit(it) } }
@@ -35,7 +35,7 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
     }
 
     private fun addNewUnit(entity: Entity): UnitViewModel {
-        val unit = entity.run { UnitViewModel(id, name, texture, currentPosition.cpy()) }
+        val unit = entity.run { UnitViewModel(id, name, texture, currentPosition.cpy(), rotation) }
         vm.units += unit
         return unit
     }
@@ -51,6 +51,7 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
         engine.getEntitiesFor(positionFamily).forEach { entity ->
             vm.units.get().find { it.id == entity.id }?.apply {
                 position(entity.currentPosition.cpy())
+                rotation(entity.rotation)
             }
         }
     }

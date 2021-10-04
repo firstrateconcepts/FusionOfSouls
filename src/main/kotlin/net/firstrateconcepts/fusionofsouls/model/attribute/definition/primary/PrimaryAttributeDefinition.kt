@@ -1,11 +1,13 @@
-package net.firstrateconcepts.fusionofsouls.model.attribute.definition
+package net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary
 
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributePriority
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeRandomRange
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.AttributeDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.displayName
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 
-sealed class PrimaryAttributeDefinition : AttributeDefinition {
+abstract class PrimaryAttributeDefinition : AttributeDefinition {
     override val priority = AttributePriority.PRIMARY
     override val description get() = "$baseDescription Affects ${affects.display()}"
     override val rangeForRandomizer = AttributeRandomRange(5f..10f, 10f..15f)

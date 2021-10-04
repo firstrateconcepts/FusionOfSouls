@@ -6,16 +6,19 @@ import ktx.ashley.oneOf
 import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.isAttacking
 import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.targetInfo
 import net.firstrateconcepts.fusionofsouls.model.component.unitInfo
+import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 val targetFamily = oneOf(TargetComponent::class).get()!!
 
 // TODO: Find out for sure on the performance of this. It might be a good idea to make this an interval system and only update a couple of times per second
-class TargetingSystem(engine: AsyncPooledEngine) : IteratingSystem(targetFamily) {
+class TargetingSystem(engine: AsyncPooledEngine, private val eventBus: EventBus) : IteratingSystem(targetFamily) {
     private val logger = fosLogger()
 
     init {
@@ -24,7 +27,7 @@ class TargetingSystem(engine: AsyncPooledEngine) : IteratingSystem(targetFamily)
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         val targetInfo = entity.targetInfo
-        if (!targetInfo.canChangeTarget) return
+        if (!targetInfo.canChangeTarget || entity.isAttacking) return
 
         val unitTeam = entity.unitInfo.team
         val closestTarget = entities
@@ -34,7 +37,9 @@ class TargetingSystem(engine: AsyncPooledEngine) : IteratingSystem(targetFamily)
 
         if (closestTarget != targetInfo.target) {
             logger.info { "Unit(${entity.id} | ${entity.name}} changing target to [$closestTarget]" }
+            val previousTarget = targetInfo.target
             targetInfo.target = closestTarget
+            eventBus.enqueueEventSync(TargetChangedEvent(entity.id, previousTarget, closestTarget))
         }
     }
 }

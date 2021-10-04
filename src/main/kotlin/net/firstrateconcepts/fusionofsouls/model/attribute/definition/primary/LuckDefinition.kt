@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.model.attribute.definition
+package net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary
 
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.CRIT_BONUS
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.CRIT_THRESHOLD

@@ -19,6 +19,7 @@ jobs:
         java-version: '16'
         distribution: 'adopt'
         cache: gradle
+    # TOOD: Make this not fail the build immediately so we can get the published results first
     - name: Execute tests
       run: ./gradlew --info --stacktrace test
     - name: Execute detekt

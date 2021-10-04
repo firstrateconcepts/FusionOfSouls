@@ -18,6 +18,7 @@ val attrsMapper = mapperFor<AttributesComponent>()
 val Entity.attrs get() = this[attrsMapper]!!
 val Entity.primaryAttrs get() = this.attrs.primary
 val Entity.secondaryAttrs get() = this.attrs.secondary
+val Entity.tertiaryAttrs get() = this.attrs.tertiary
 
 operator fun AttributesComponent.get(type: AttributeType): Attribute = attrs[type]!!
 val AttributesComponent.body get() = this[AttributeType.BODY]
@@ -33,5 +34,7 @@ val AttributesComponent.critThreshold get() = this[AttributeType.CRIT_THRESHOLD]
 val AttributesComponent.critBonus get() = this[AttributeType.CRIT_BONUS]
 val AttributesComponent.attacksPerSecond get() = this[AttributeType.ATTACKS_PER_SECOND]
 val AttributesComponent.cooldownReduction get() = this[AttributeType.COOLDOWN_REDUCTION]
+val AttributesComponent.attackRange get() = this[AttributeType.ATTACK_RANGE]
 val AttributesComponent.primary get() = filter { it.priority == AttributePriority.PRIMARY }
 val AttributesComponent.secondary get() = filter { it.priority == AttributePriority.SECONDARY }
+val AttributesComponent.tertiary get() = filter { it.priority == AttributePriority.TERTIARY }

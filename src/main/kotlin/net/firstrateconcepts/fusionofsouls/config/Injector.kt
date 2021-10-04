@@ -2,6 +2,7 @@ package net.firstrateconcepts.fusionofsouls.config
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.ai.GdxAI
 import ktx.inject.Context
 import ktx.inject.register
 import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
@@ -14,10 +15,10 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
-import net.firstrateconcepts.fusionofsouls.service.duringRun.UnitActivationListener
 import net.firstrateconcepts.fusionofsouls.service.entity.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.service.entity.UnitManager
-import net.firstrateconcepts.fusionofsouls.service.system.MovementSystem
+import net.firstrateconcepts.fusionofsouls.service.system.AttackingSystem
+import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TargetingSystem
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.DialogManager
@@ -58,17 +59,18 @@ object Injector : Context() {
     }
 
     fun initRunningDeps() = register {
-        bindSingleton { InputMultiplexer() }
+        bindSingleton(InputMultiplexer())
+        bindSingleton(GdxAI.getTimepiece())
 
         bindSingleton<AsyncPooledEngine>()
         bindSingleton<UnitManager>()
         bindSingleton<RunServiceRegistry>()
         bindSingleton<RunStateService>()
 
-        bindSingleton<MovementSystem>()
+        bindSingleton<SteeringSystem>()
         bindSingleton<TargetingSystem>()
+        bindSingleton<AttackingSystem>()
 
-        bindSingleton<UnitActivationListener>()
         bindSingleton<AttributeCalculator>()
         bindSingleton<RandomizerService>()
         bindSingleton<RunInitializer>()

@@ -8,14 +8,12 @@ import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
-class AsyncPooledEngine(private val eventBus: EventBus) : PooledEngine() {
+class AsyncPooledEngine(private val eventBus: EventBus) : PooledEngine(10, 100, 25, 1000) {
     private val asyncContext = newSingleThreadAsyncContext("Engine-Thread")
 
     fun runOnEngineThread(block: suspend CoroutineScope.() -> Unit) = KtxAsync.launch(asyncContext, block = block)
 
-    override fun update(deltaTime: Float) {
-        runOnEngineThread { super.update(deltaTime) }
-    }
+    override fun update(deltaTime: Float) { runOnEngineThread { super.update(deltaTime) } }
 
     override fun addSystem(system: EntitySystem) {
         eventBus.registerHandlers(system)

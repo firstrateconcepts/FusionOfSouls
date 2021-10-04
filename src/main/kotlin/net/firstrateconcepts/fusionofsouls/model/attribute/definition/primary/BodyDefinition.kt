@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.model.attribute.definition
+package net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary
 
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACKS_PER_SECOND
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.BASE_DAMAGE

@@ -1,5 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun
 
+import com.badlogic.gdx.ai.Timepiece
 import ktx.async.onRenderingThread
 import net.firstrateconcepts.fusionofsouls.model.BattleStatus
 import net.firstrateconcepts.fusionofsouls.model.event.GamePauseChanged
@@ -17,7 +18,8 @@ class DuringRunScreen(
     override val uiController: DuringRunUiController,
     private val engine: AsyncPooledEngine,
     private val runInitializer: RunInitializer,
-    private val eventBus: EventBus
+    private val eventBus: EventBus,
+    private val aiTimepiece: Timepiece
 ) : GameScreen(GAME_AREA_WIDTH, GAME_AREA_HEIGHT) {
     private var isRunning = false
     private var isPaused = false
@@ -37,6 +39,7 @@ class DuringRunScreen(
     override fun render(delta: Float) {
         if (isRunning && !isPaused) {
             engine.update(delta)
+            aiTimepiece.update(delta)
             gameController.render()
         }
         super.render(delta)
@@ -45,6 +48,8 @@ class DuringRunScreen(
     override fun hide() {
         eventBus.unregisterHandlers(this)
         runInitializer.dispose()
+        isRunning = false
+        isPaused = false
         super.hide()
     }
 }

@@ -7,7 +7,7 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import kotlin.math.roundToInt
 
-sealed interface AttributeDefinition {
+interface AttributeDefinition {
     val priority: AttributePriority
     // TODO: Convert shortName into icon
     val shortName: String

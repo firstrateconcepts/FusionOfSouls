@@ -1,9 +1,11 @@
-package net.firstrateconcepts.fusionofsouls.model.attribute.definition
+package net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary
 
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributePriority
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.AttributeDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.displayName
 
-sealed class SecondaryAttributeDefinition : AttributeDefinition {
+abstract class SecondaryAttributeDefinition : AttributeDefinition {
     override val priority = AttributePriority.SECONDARY
     override val description get() = "$baseDescription Affected by ${affectedBy.display()}"
 

@@ -12,9 +12,10 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.EventHandler
 
 @Suppress("LeakingThis")
 abstract class RunService : Disposable {
-    private val eventBus = inject<EventBus>()
-    protected val serviceContext = newSingleThreadAsyncContext("Service-Thread")
+    private val serviceContext = newSingleThreadAsyncContext("Service-Thread")
     val handlers = mutableListOf<EventHandler<Event>>()
+
+    abstract val eventBus: EventBus
 
     init {
         inject<RunServiceRegistry>().register(this)

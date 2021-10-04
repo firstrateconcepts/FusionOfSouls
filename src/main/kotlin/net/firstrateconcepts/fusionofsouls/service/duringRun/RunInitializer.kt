@@ -32,8 +32,10 @@ class RunInitializer(
 
         runServiceRegistry.startAll()
 
-        val unit = unitManager.buildUnit(hero.name, hero.texture, UnitType.HERO, UnitTeam.PLAYER)
-        unitManager.activateUnit(unit.id, Vector2(0f, 0f))
+        unitManager.buildUnit(hero.name, hero.texture, UnitType.HERO, UnitTeam.PLAYER) {
+            unitManager.activateUnit(entity.id, Vector2())
+        }
+
         eventBus.changeRunStatus(BattleStatus.BEFORE_BATTLE)
     }
 

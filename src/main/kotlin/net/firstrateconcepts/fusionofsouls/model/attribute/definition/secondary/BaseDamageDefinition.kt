@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.model.attribute.definition
+package net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary
 
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeRandomRange
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType

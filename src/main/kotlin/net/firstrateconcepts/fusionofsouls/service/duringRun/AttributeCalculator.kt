@@ -14,7 +14,7 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
-class AttributeCalculator(private val engine: AsyncPooledEngine, private val eventBus: EventBus) : RunService() {
+class AttributeCalculator(private val engine: AsyncPooledEngine, override val eventBus: EventBus) : RunService() {
     private val logger = fosLogger()
 
     @HandlesEvent

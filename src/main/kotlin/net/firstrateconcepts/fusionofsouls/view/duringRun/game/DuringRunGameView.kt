@@ -1,5 +1,6 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.game
 
+import com.badlogic.gdx.utils.Align
 import ktx.actors.centerPosition
 import ktx.scene2d.vis.KFloatingGroup
 import ktx.scene2d.vis.floatingGroup
@@ -23,8 +24,11 @@ class DuringRunGameView(override val controller: DuringRunGameController, overri
                 vm.units.get().forEach { unit ->
                     // TODO: This will end up needing to be its own UI component since it'll also have health bar/cooldown bar
                     visImage(unit.texture) {
-                        setSize(1f, 1f)
+                        setSize(0.75f, 0.75f)
+                        setBounds(0f, 0f, 0.75f, 0.75f)
+                        setOrigin(Align.center)
                         bindUpdatable(unit.position) { unit.position.get().apply { setPosition(x, y) } }
+                        bindUpdatable(unit.rotation) { unit.rotation.get().apply { rotation = this } }
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package net.firstrateconcepts.fusionofsouls.service.entity
 
-import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.EngineEntity
@@ -14,12 +13,15 @@ import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersCom
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
 import net.firstrateconcepts.fusionofsouls.model.component.NameComponent
-import net.firstrateconcepts.fusionofsouls.model.component.PositionComponent
+import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TextureComponent
 import net.firstrateconcepts.fusionofsouls.model.component.UnitComponent
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.team
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
@@ -27,7 +29,6 @@ import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import java.util.*
 
 class UnitManager(private val engine: AsyncPooledEngine, private val assets: AssetStorage, private val eventBus: EventBus) {
     fun buildUnit(
@@ -36,7 +37,7 @@ class UnitManager(private val engine: AsyncPooledEngine, private val assets: Ass
         type: UnitType,
         team: UnitTeam,
         config: EngineEntity.() -> Unit = {}
-    ): Entity {
+    ) = engine.runOnEngineThread {
         val unit = engine.entity {
             with<IdComponent>()
             with<UnitComponent>(type, team)
@@ -47,21 +48,28 @@ class UnitManager(private val engine: AsyncPooledEngine, private val assets: Ass
             config()
         }
 
-        eventBus.enqueueEventSync(AttributeRecalculateNeededEvent(unit.id))
-        return unit
+        eventBus.enqueueEvent(AttributeRecalculateNeededEvent(unit.id))
     }
 
-    fun activateUnit(id: Int, initialPosition: Vector2) = engine.findById(id)?.apply {
-        engine.configureEntity(this) {
-            with<ActiveComponent>()
-            with<TargetComponent>()
-            with<PositionComponent>(initialPosition)
+    fun activateUnit(id: Int, initialPosition: Vector2) = engine.runOnEngineThread {
+        engine.findById(id)?.apply {
+            engine.configureEntity(this) {
+                with<ActiveComponent>()
+                with<TargetComponent>()
+                with<SteerableComponent>(initialPosition, if (entity.team == UnitTeam.PLAYER) 270f else 90f)
+            }
+
+            eventBus.enqueueEvent(UnitActivatedEvent(id))
         }
     }
 
-    fun deactivateUnit(id: Int) = engine.findById(id)?.apply {
-        remove<ActiveComponent>()
-        remove<TargetComponent>()
-        remove<PositionComponent>()
+    fun deactivateUnit(id: Int) = engine.runOnEngineThread {
+        engine.findById(id)?.apply {
+            remove<ActiveComponent>()
+            remove<TargetComponent>()
+            remove<SteerableComponent>()
+        }
+
+        eventBus.enqueueEvent(UnitDeactivatedEvent(id))
     }
 }

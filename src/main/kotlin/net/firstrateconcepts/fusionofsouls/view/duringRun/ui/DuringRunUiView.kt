@@ -1,6 +1,7 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.ui
 
 import com.badlogic.gdx.graphics.Color
+import com.kotcrab.vis.ui.VisUI
 import ktx.actors.onChange
 import ktx.scene2d.textButton
 import ktx.scene2d.vis.visTable
@@ -8,6 +9,7 @@ import net.firstrateconcepts.fusionofsouls.util.ext.ui.bindVisible
 import net.firstrateconcepts.fusionofsouls.util.ext.ui.rectPixmapTexture
 import net.firstrateconcepts.fusionofsouls.util.ext.ui.toDrawable
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.view.ScreenView
+import net.firstrateconcepts.fusionofsouls.view.FpsLabel
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.topBar.topBar
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitBench.unitBench
 
@@ -27,6 +29,7 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
                 onChange { controller.startBattle() }
                 bindVisible(vm.isStartBattle, true)
             }
+            addActor(FpsLabel("FPS: ", VisUI.getSkin()))
         }.cell(grow = true, row = true)
 
         unitBench {

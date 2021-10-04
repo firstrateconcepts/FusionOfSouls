@@ -7,7 +7,7 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
-class RunStateService(private val eventBus: EventBus) : RunService() {
+class RunStateService(override val eventBus: EventBus) : RunService() {
     private val logger = fosLogger()
     private var runState: RunState? = null
 

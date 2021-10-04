@@ -10,6 +10,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import ktx.ashley.entity
 import ktx.ashley.with
+import net.firstrateconcepts.fusionofsouls.config.Injector
 import net.firstrateconcepts.fusionofsouls.model.attribute.Attribute
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACKS_PER_SECOND
@@ -49,6 +50,8 @@ import net.firstrateconcepts.fusionofsouls.model.component.skillMulti
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -59,6 +62,7 @@ class AttributeCalculatorTest {
 
     @BeforeEach
     fun setup() {
+        Injector.bindSingleton(mockk<RunServiceRegistry>(relaxed = true))
         engine = AsyncPooledEngine(mockk(relaxed = true))
         attrCalculator = AttributeCalculator(engine, mockk(relaxed = true))
         Gdx.app = mockk(relaxed = true)
@@ -70,7 +74,12 @@ class AttributeCalculatorTest {
         }
     }
 
-    private fun recalculate() = runBlocking { attrCalculator.handle(AttributeRecalculateNeededEvent(entity.id)) }
+    @AfterEach
+    fun tearDown() {
+        Injector.clear()
+    }
+
+    private fun recalculate() = runBlocking { attrCalculator.handle(AttributeRecalculateNeededEvent(entity.id)).join() }
     private fun Assert<Attribute>.isEqualTo(value: Float) = this.transform { it() }.isCloseTo(value, 0.01f)
     private fun assertAttrs(vararg attrPairs: Pair<AttributeType, Float>) = attrPairs.forEach { assertThat(entity.attrs[it.first]).isEqualTo(it.second) }
 
