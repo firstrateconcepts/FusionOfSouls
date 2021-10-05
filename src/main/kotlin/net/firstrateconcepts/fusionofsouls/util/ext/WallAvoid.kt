@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2
 import net.firstrateconcepts.fusionofsouls.view.duringRun.GAME_HEIGHT
 import net.firstrateconcepts.fusionofsouls.view.duringRun.GAME_WIDTH
 
+// TODO: Unit tests. Also probably could use some fine-tuning
 @Suppress("ComplexCondition")
 class WallAvoid(owner: Steerable<Vector2>) : SteeringBehavior<Vector2>(owner) {
     override fun calculateRealSteering(steering: SteeringAcceleration<Vector2>): SteeringAcceleration<Vector2> {

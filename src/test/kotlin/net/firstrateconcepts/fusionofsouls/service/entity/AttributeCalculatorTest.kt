@@ -1,6 +1,5 @@
 package net.firstrateconcepts.fusionofsouls.service.entity
 
-import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.isCloseTo
 import assertk.assertions.isEqualTo
@@ -11,7 +10,6 @@ import kotlinx.coroutines.runBlocking
 import ktx.ashley.entity
 import ktx.ashley.with
 import net.firstrateconcepts.fusionofsouls.config.Injector
-import net.firstrateconcepts.fusionofsouls.model.attribute.Attribute
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACKS_PER_SECOND
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.BASE_DAMAGE
@@ -31,29 +29,19 @@ import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersCom
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
 import net.firstrateconcepts.fusionofsouls.model.component.addModifier
-import net.firstrateconcepts.fusionofsouls.model.component.attacksPerSecond
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
-import net.firstrateconcepts.fusionofsouls.model.component.baseDamage
-import net.firstrateconcepts.fusionofsouls.model.component.body
-import net.firstrateconcepts.fusionofsouls.model.component.cooldownReduction
-import net.firstrateconcepts.fusionofsouls.model.component.critBonus
-import net.firstrateconcepts.fusionofsouls.model.component.critThreshold
-import net.firstrateconcepts.fusionofsouls.model.component.defense
-import net.firstrateconcepts.fusionofsouls.model.component.evasion
 import net.firstrateconcepts.fusionofsouls.model.component.get
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.instinct
-import net.firstrateconcepts.fusionofsouls.model.component.luck
-import net.firstrateconcepts.fusionofsouls.model.component.maxHp
-import net.firstrateconcepts.fusionofsouls.model.component.mind
-import net.firstrateconcepts.fusionofsouls.model.component.skillMulti
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 class AttributeCalculatorTest {
     private lateinit var engine: AsyncPooledEngine
@@ -80,178 +68,247 @@ class AttributeCalculatorTest {
     }
 
     private fun recalculate() = runBlocking { attrCalculator.handle(AttributeRecalculateNeededEvent(entity.id)).join() }
-    private fun Assert<Attribute>.isEqualTo(value: Float) = this.transform { it() }.isCloseTo(value, 0.01f)
-    private fun assertAttrs(vararg attrPairs: Pair<AttributeType, Float>) = attrPairs.forEach { assertThat(entity.attrs[it.first]).isEqualTo(it.second) }
+    private fun assertAttr(attr: AttributeType, value: Float) = assertThat(entity.attrs[attr]).transform { it() }.isCloseTo(value, 0.01f)
 
-    @Test
-    fun `Test no modifiers is base value`() {
-        recalculate()
-        assertAttrs(
-            BODY to 100f,
-            MIND to 100f,
-            INSTINCT to 100f,
-            LUCK to 100f,
-            MAX_HP to 150f,
-            BASE_DAMAGE to 50f,
-            SKILL_MULTI to 1.41f,
-            DEFENSE to 19.84f,
-            EVASION to 5f,
-            CRIT_THRESHOLD to 90f,
-            CRIT_BONUS to 1.41f,
-            ATTACKS_PER_SECOND to 0.5f,
-            COOLDOWN_REDUCTION to 1f
+    companion object {
+        @JvmStatic
+        fun baseValueArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 100f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 150f),
+            Arguments.of(BASE_DAMAGE, 50f),
+            Arguments.of(SKILL_MULTI, 1.41f),
+            Arguments.of(DEFENSE, 19.84f),
+            Arguments.of(EVASION, 5f),
+            Arguments.of(CRIT_THRESHOLD, 90f),
+            Arguments.of(CRIT_BONUS, 1.41f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.5f),
+            Arguments.of(COOLDOWN_REDUCTION, 1f)
+        )
+
+        @JvmStatic
+        fun positiveFlatArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 150f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 200f),
+            Arguments.of(BASE_DAMAGE, 62.5f),
+            Arguments.of(SKILL_MULTI, 1.41f),
+            Arguments.of(DEFENSE, 21.79f),
+            Arguments.of(EVASION, 5f),
+            Arguments.of(CRIT_THRESHOLD, 90f),
+            Arguments.of(CRIT_BONUS, 1.5f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.63f),
+            Arguments.of(COOLDOWN_REDUCTION, 1f)
+        )
+
+        @JvmStatic
+        fun positivePercentArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 133f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 183f),
+            Arguments.of(BASE_DAMAGE, 58.25f),
+            Arguments.of(SKILL_MULTI, 1.41f),
+            Arguments.of(DEFENSE, 21.17f),
+            Arguments.of(EVASION, 5f),
+            Arguments.of(CRIT_THRESHOLD, 90f),
+            Arguments.of(CRIT_BONUS, 1.47f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.58f),
+            Arguments.of(COOLDOWN_REDUCTION, 1f)
+        )
+
+        @JvmStatic
+        fun positiveFlatAndPercentArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 199.5f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 249.50f),
+            Arguments.of(BASE_DAMAGE, 74.88f),
+            Arguments.of(SKILL_MULTI, 1.41f),
+            Arguments.of(DEFENSE, 23.41f),
+            Arguments.of(EVASION, 5f),
+            Arguments.of(CRIT_THRESHOLD, 90f),
+            Arguments.of(CRIT_BONUS, 1.58f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.75f),
+            Arguments.of(COOLDOWN_REDUCTION, 1f)
+        )
+
+        @JvmStatic
+        fun negativeFlatAndPercentArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 33.5f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 83.5f),
+            Arguments.of(BASE_DAMAGE, 33.38f),
+            Arguments.of(SKILL_MULTI, 1.41f),
+            Arguments.of(DEFENSE, 16.19f),
+            Arguments.of(EVASION, 5f),
+            Arguments.of(CRIT_THRESHOLD, 90f),
+            Arguments.of(CRIT_BONUS, 1.29f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.33f),
+            Arguments.of(COOLDOWN_REDUCTION, 1f)
+        )
+
+        @JvmStatic
+        fun mindArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 100f),
+            Arguments.of(MIND, 199.5f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 199.75f),
+            Arguments.of(BASE_DAMAGE, 50f),
+            Arguments.of(SKILL_MULTI, 1.73f),
+            Arguments.of(DEFENSE, 19.84f),
+            Arguments.of(EVASION, 5f),
+            Arguments.of(CRIT_THRESHOLD, 87.51f),
+            Arguments.of(CRIT_BONUS, 1.41f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.75f),
+            Arguments.of(COOLDOWN_REDUCTION, 1.26f)
+        )
+
+        @JvmStatic
+        fun instinctArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 100f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 199.5f),
+            Arguments.of(LUCK, 100f),
+            Arguments.of(MAX_HP, 150f),
+            Arguments.of(BASE_DAMAGE, 74.88f),
+            Arguments.of(SKILL_MULTI, 1.73f),
+            Arguments.of(DEFENSE, 19.84f),
+            Arguments.of(EVASION, 6f),
+            Arguments.of(CRIT_THRESHOLD, 90f),
+            Arguments.of(CRIT_BONUS, 1.41f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.5f),
+            Arguments.of(COOLDOWN_REDUCTION, 1.18f)
+        )
+
+        @JvmStatic
+        fun luckArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 100f),
+            Arguments.of(MIND, 100f),
+            Arguments.of(INSTINCT, 100f),
+            Arguments.of(LUCK, 199.5f),
+            Arguments.of(MAX_HP, 150f),
+            Arguments.of(BASE_DAMAGE, 50f),
+            Arguments.of(SKILL_MULTI, 1.41f),
+            Arguments.of(DEFENSE, 24.45f),
+            Arguments.of(EVASION, 8.98f),
+            Arguments.of(CRIT_THRESHOLD, 82.54f),
+            Arguments.of(CRIT_BONUS, 1.87f),
+            Arguments.of(ATTACKS_PER_SECOND, 0.5f),
+            Arguments.of(COOLDOWN_REDUCTION, 1f)
+        )
+
+        @JvmStatic
+        fun variousModsArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, 112.5f),
+            Arguments.of(MIND, 247f),
+            Arguments.of(INSTINCT, 253.75f),
+            Arguments.of(LUCK, 165f),
+            Arguments.of(MAX_HP, 715f),
+            Arguments.of(BASE_DAMAGE, 115.13f),
+            Arguments.of(SKILL_MULTI, 2.75f),
+            Arguments.of(DEFENSE, 30.98f),
+            Arguments.of(EVASION, 10.58f),
+            Arguments.of(CRIT_THRESHOLD, 80.27f),
+            Arguments.of(CRIT_BONUS, 2.3f),
+            Arguments.of(ATTACKS_PER_SECOND, 1.8f),
+            Arguments.of(COOLDOWN_REDUCTION, 1.41f)
+        )
+
+        @JvmStatic
+        fun descriptionArgs(): Stream<Arguments> = Stream.of(
+            Arguments.of(BODY, "Represents the physical prowess of this unit. Affects Max HP, Base Damage, Defense, Crit Bonus, Attacks / Second"),
+            Arguments.of(MIND, "Represents the mental capacity of this unit. Affects Max HP, Skill Multiplier, Crit Threshold, Attacks / Second, Cooldown Reduction"),
+            Arguments.of(INSTINCT, "Represents the innate focus and reactions of this unit. Affects Base Damage, Skill Multiplier, Evasion, Cooldown Reduction"),
+            Arguments.of(LUCK, "Represents how much randomness favors this unit. Affects Defense, Evasion, Crit Threshold, Crit Bonus"),
+
+            Arguments.of(MAX_HP, "How much damage the unit can take before it dies. Affected by Body and Mind"),
+            Arguments.of(BASE_DAMAGE, "The base amount of damage done by attacks and skills. Reduced by enemy Defense. Affected by Body and Instinct"),
+            Arguments.of(SKILL_MULTI, "Skill damage is multiplied by this amount. Affected by Mind and Instinct"),
+            Arguments.of(DEFENSE, "Incoming damage is reduced by this percentage. Affected by Body and Luck"),
+            Arguments.of(EVASION, "Reduces enemy attack rolls by a flat amount, potentially causing them to miss. Affected by Instinct and Luck"),
+            Arguments.of(CRIT_THRESHOLD, "Attack rolls over this amount are crits. Attack rolls proportional to this add or reduce potential damage. Affected by Mind and Luck"),
+            Arguments.of(CRIT_BONUS, "Critical hits multiply their damage by this amount. Affected by Body and Luck"),
+            Arguments.of(ATTACKS_PER_SECOND, "How many times per second this unit will attack. Affected by Body and Mind"),
+            Arguments.of(COOLDOWN_REDUCTION, "This unit's skill cooldown is divided by this amount. Affected by Mind and Instinct")
         )
     }
 
-    @Test
-    fun `Test Positive flat modifier`() {
+    @ParameterizedTest
+    @MethodSource("baseValueArgs")
+    fun `Test no modifiers is base value`(attr: AttributeType, value: Float) {
+        recalculate()
+        assertAttr(attr, value)
+    }
+
+    @ParameterizedTest
+    @MethodSource("positiveFlatArgs")
+    fun `Test Positive flat modifier`(attr: AttributeType, value: Float) {
         entity.addModifier(BODY, flatModifier = 50f)
         recalculate()
-        assertAttrs(
-            BODY to 150f,
-            MIND to 100f,
-            INSTINCT to 100f,
-            LUCK to 100f,
-            MAX_HP to 200f,
-            BASE_DAMAGE to 62.5f,
-            SKILL_MULTI to 1.41f,
-            DEFENSE to 21.79f,
-            EVASION to 5f,
-            CRIT_THRESHOLD to 90f,
-            CRIT_BONUS to 1.5f,
-            ATTACKS_PER_SECOND to 0.63f,
-            COOLDOWN_REDUCTION to 1f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test Positive percent modifier`() {
+    @ParameterizedTest
+    @MethodSource("positivePercentArgs")
+    fun `Test Positive percent modifier`(attr: AttributeType, value: Float) {
         entity.addModifier(BODY, percentModifier = 33f)
         recalculate()
-        assertAttrs(
-            BODY to 133f,
-            MIND to 100f,
-            INSTINCT to 100f,
-            LUCK to 100f,
-            MAX_HP to 183f,
-            BASE_DAMAGE to 58.25f,
-            SKILL_MULTI to 1.41f,
-            DEFENSE to 21.17f,
-            EVASION to 5f,
-            CRIT_THRESHOLD to 90f,
-            CRIT_BONUS to 1.47f,
-            ATTACKS_PER_SECOND to 0.58f,
-            COOLDOWN_REDUCTION to 1f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test Positive flat + percent modifiers`() {
+    @ParameterizedTest
+    @MethodSource("positiveFlatAndPercentArgs")
+    fun `Test Positive flat + percent modifiers`(attr: AttributeType, value: Float) {
         entity.addModifier(BODY, flatModifier = 50f, percentModifier = 33f)
         recalculate()
-        assertAttrs(
-            BODY to 199.5f,
-            MIND to 100f,
-            INSTINCT to 100f,
-            LUCK to 100f,
-            MAX_HP to 249.50f,
-            BASE_DAMAGE to 74.88f,
-            SKILL_MULTI to 1.41f,
-            DEFENSE to 23.41f,
-            EVASION to 5f,
-            CRIT_THRESHOLD to 90f,
-            CRIT_BONUS to 1.58f,
-            ATTACKS_PER_SECOND to 0.75f,
-            COOLDOWN_REDUCTION to 1f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test Negative flat + percent modifiers`() {
+    @ParameterizedTest
+    @MethodSource("negativeFlatAndPercentArgs")
+    fun `Test Negative flat + percent modifiers`(attr: AttributeType, value: Float) {
         entity.addModifier(BODY, flatModifier = -50f, percentModifier = -33f)
         recalculate()
-        assertAttrs(
-            BODY to 33.5f,
-            MIND to 100f,
-            INSTINCT to 100f,
-            LUCK to 100f,
-            MAX_HP to 83.5f,
-            BASE_DAMAGE to 33.38f,
-            SKILL_MULTI to 1.41f,
-            DEFENSE to 16.19f,
-            EVASION to 5f,
-            CRIT_THRESHOLD to 90f,
-            CRIT_BONUS to 1.29f,
-            ATTACKS_PER_SECOND to 0.33f,
-            COOLDOWN_REDUCTION to 1f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test Mind with modifiers`() {
+    @ParameterizedTest
+    @MethodSource("mindArgs")
+    fun `Test Mind with modifiers`(attr: AttributeType, value: Float) {
         entity.addModifier(MIND, flatModifier = 50f, percentModifier = 33f)
         recalculate()
-        assertAttrs(
-            BODY to 100f,
-            MIND to 199.5f,
-            INSTINCT to 100f,
-            LUCK to 100f,
-            MAX_HP to 199.75f,
-            BASE_DAMAGE to 50f,
-            SKILL_MULTI to 1.73f,
-            DEFENSE to 19.84f,
-            EVASION to 5f,
-            CRIT_THRESHOLD to 87.51f,
-            CRIT_BONUS to 1.41f,
-            ATTACKS_PER_SECOND to 0.75f,
-            COOLDOWN_REDUCTION to 1.26f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test Instinct with modifiers`() {
+    @ParameterizedTest
+    @MethodSource("instinctArgs")
+    fun `Test Instinct with modifiers`(attr: AttributeType, value: Float) {
         entity.addModifier(INSTINCT, flatModifier = 50f, percentModifier = 33f)
         recalculate()
-        assertAttrs(
-            BODY to 100f,
-            MIND to 100f,
-            INSTINCT to 199.5f,
-            LUCK to 100f,
-            MAX_HP to 150f,
-            BASE_DAMAGE to 74.88f,
-            SKILL_MULTI to 1.73f,
-            DEFENSE to 19.84f,
-            EVASION to 6f,
-            CRIT_THRESHOLD to 90f,
-            CRIT_BONUS to 1.41f,
-            ATTACKS_PER_SECOND to 0.5f,
-            COOLDOWN_REDUCTION to 1.18f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test Luck with modifiers`() {
+    @ParameterizedTest
+    @MethodSource("luckArgs")
+    fun `Test Luck with modifiers`(attr: AttributeType, value: Float) {
         entity.addModifier(LUCK, flatModifier = 50f, percentModifier = 33f)
         recalculate()
-        assertAttrs(
-            BODY to 100f,
-            MIND to 100f,
-            INSTINCT to 100f,
-            LUCK to 199.5f,
-            MAX_HP to 150f,
-            BASE_DAMAGE to 50f,
-            SKILL_MULTI to 1.41f,
-            DEFENSE to 24.45f,
-            EVASION to 8.98f,
-            CRIT_THRESHOLD to 82.54f,
-            CRIT_BONUS to 1.87f,
-            ATTACKS_PER_SECOND to 0.5f,
-            COOLDOWN_REDUCTION to 1f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test with various modifiers to everything`() {
+    @ParameterizedTest
+    @MethodSource("variousModsArgs")
+    fun `Test with various modifiers to everything`(attr: AttributeType, value: Float) {
         entity.addModifier(BODY, flatModifier = 25f, percentModifier = -10f)
         entity.addModifier(MIND, flatModifier = -5f, percentModifier = 160f)
         entity.addModifier(INSTINCT, flatModifier = 75f, percentModifier = 45f)
@@ -267,41 +324,13 @@ class AttributeCalculatorTest {
         entity.addModifier(COOLDOWN_REDUCTION, flatModifier = -0.015f, percentModifier = -10f)
 
         recalculate()
-        assertAttrs(
-            BODY to 112.5f,
-            MIND to 247f,
-            INSTINCT to 253.75f,
-            LUCK to 165f,
-            MAX_HP to 715f,
-            BASE_DAMAGE to 115.13f,
-            SKILL_MULTI to 2.75f,
-            DEFENSE to 30.98f,
-            EVASION to 10.58f,
-            CRIT_THRESHOLD to 80.27f,
-            CRIT_BONUS to 2.3f,
-            ATTACKS_PER_SECOND to 1.8f,
-            COOLDOWN_REDUCTION to 1.41f
-        )
+        assertAttr(attr, value)
     }
 
-    @Test
-    fun `Test attribute descriptions`() {
+    @ParameterizedTest
+    @MethodSource("descriptionArgs")
+    fun `Test attribute descriptions`(attr: AttributeType, value: String) {
         recalculate()
-        with(entity.attrs) {
-            assertThat(body.description).isEqualTo("Represents the physical prowess of this unit. Affects Max HP, Base Damage, Defense, Crit Bonus, Attacks / Second")
-            assertThat(mind.description).isEqualTo("Represents the mental capacity of this unit. Affects Max HP, Skill Multiplier, Crit Threshold, Attacks / Second, Cooldown Reduction")
-            assertThat(instinct.description).isEqualTo("Represents the innate focus and reactions of this unit. Affects Base Damage, Skill Multiplier, Evasion, Cooldown Reduction")
-            assertThat(luck.description).isEqualTo("Represents how much randomness favors this unit. Affects Defense, Evasion, Crit Threshold, Crit Bonus")
-
-            assertThat(maxHp.description).isEqualTo("How much damage the unit can take before it dies. Affected by Body and Mind")
-            assertThat(baseDamage.description).isEqualTo("The base amount of damage done by attacks and skills. Reduced by enemy Defense. Affected by Body and Instinct")
-            assertThat(skillMulti.description).isEqualTo("Skill damage is multiplied by this amount. Affected by Mind and Instinct")
-            assertThat(defense.description).isEqualTo("Incoming damage is reduced by this percentage. Affected by Body and Luck")
-            assertThat(evasion.description).isEqualTo("Reduces enemy attack rolls by a flat amount, potentially causing them to miss. Affected by Instinct and Luck")
-            assertThat(critThreshold.description).isEqualTo("Attack rolls over this amount are crits. Attack rolls proportional to this add or reduce potential damage. Affected by Mind and Luck")
-            assertThat(critBonus.description).isEqualTo("Critical hits multiply their damage by this amount. Affected by Body and Luck")
-            assertThat(attacksPerSecond.description).isEqualTo("How many times per second this unit will attack. Affected by Body and Mind")
-            assertThat(cooldownReduction.description).isEqualTo("This unit's skill cooldown is divided by this amount. Affected by Mind and Instinct")
-        }
+        assertThat(entity.attrs[attr].description).isEqualTo(value)
     }
 }
