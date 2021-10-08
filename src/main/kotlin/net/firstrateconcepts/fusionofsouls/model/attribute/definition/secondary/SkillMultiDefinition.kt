@@ -5,7 +5,6 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.instinct
 import net.firstrateconcepts.fusionofsouls.model.component.mind
-import kotlin.math.sqrt
 
 object SkillMultiDefinition : SecondaryAttributeDefinition() {
     override val shortName = "SkMul"
@@ -14,6 +13,6 @@ object SkillMultiDefinition : SecondaryAttributeDefinition() {
     override val affectedBy get() = AttributeType.MIND to AttributeType.INSTINCT
     override val rangeForRandomizer = AttributeRandomRange(0.1f..0.15f, 5f..10f)
 
-    override fun getBaseValue(attrs: AttributesComponent) = attrs.run { sqrt(mind() + instinct()) / 10 }
+    override fun getBaseValue(attrs: AttributesComponent) = attrs.run { 3f - (100f / mind() + 100f / instinct()) / (1 + 1f / 3f) }
     override fun getDisplayValue(value: Float) = value.displayMultiplier()
 }

@@ -21,7 +21,7 @@ val targetMapper = mapperFor<TargetComponent>()
 val Entity.targetInfo get() = this[targetMapper]!!
 val Entity.currentTarget get() = targetInfo.target
 
-class AttackingComponent(var attackCooldownRemaining: Float = 0f) : Component
+class AttackingComponent(var attackTimer: Float = 0f, var attackTimerReady: Float = 0f) : Component
 val attackMapper = mapperFor<AttackingComponent>()
 val Entity.attackInfo get() = this[attackMapper]
 val Entity.isAttacking get() = attackInfo != null

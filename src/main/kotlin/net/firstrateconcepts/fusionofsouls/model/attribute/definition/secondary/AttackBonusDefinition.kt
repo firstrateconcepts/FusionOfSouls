@@ -6,13 +6,13 @@ import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.luck
 import net.firstrateconcepts.fusionofsouls.model.component.mind
 
-object CritThresholdDefinition : SecondaryAttributeDefinition() {
-    override val shortName = "Crit"
-    override val displayName = "Crit Threshold"
-    override val baseDescription = "Attack rolls over this amount are crits. Attack rolls proportional to this add or reduce potential damage."
+object AttackBonusDefinition : SecondaryAttributeDefinition() {
+    override val shortName = "Atk"
+    override val displayName = "Attack Bonus"
+    override val baseDescription = "Flat amount added to attack rolls, countered by Evasion."
     override val affectedBy get() = AttributeType.MIND to AttributeType.LUCK
-    override val rangeForRandomizer = AttributeRandomRange(-2f..-1f, -5f..-3f)
+    override val rangeForRandomizer = AttributeRandomRange(1f..2f, 10f..20f)
 
-    override fun getBaseValue(attrs: AttributesComponent) = attrs.run { 100f - (mind() * 0.025f + luck() * 0.075f) }
+    override fun getBaseValue(attrs: AttributesComponent) = attrs.run { (mind() * 0.02f) + (luck() * 0.03f) }
     override fun getDisplayValue(value: Float) = value.displayInt()
 }

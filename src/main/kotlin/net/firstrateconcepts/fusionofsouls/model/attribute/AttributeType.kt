@@ -5,11 +5,11 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.Bo
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.InstinctDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.LuckDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.MindDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AttackBonusDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AttacksPerSecondDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.BaseDamageDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.CooldownReductionDefinition
-import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.CritBonusDefinition
-import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.CritThresholdDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.CritMultiplier
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.DefenseDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.EvasionDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.MaxHpDefinition
@@ -29,8 +29,8 @@ enum class AttributeType(val definition: AttributeDefinition) {
     SKILL_MULTI(SkillMultiDefinition),
     DEFENSE(DefenseDefinition),
     EVASION(EvasionDefinition),
-    CRIT_THRESHOLD(CritThresholdDefinition),
-    CRIT_BONUS(CritBonusDefinition),
+    ATTACK_BONUS(AttackBonusDefinition),
+    CRIT_MULTI(CritMultiplier),
     ATTACKS_PER_SECOND(AttacksPerSecondDefinition),
     COOLDOWN_REDUCTION(CooldownReductionDefinition),
 

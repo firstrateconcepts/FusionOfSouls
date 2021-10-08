@@ -11,8 +11,8 @@ object MaxHpDefinition : SecondaryAttributeDefinition() {
     override val displayName = "Max HP"
     override val baseDescription = "How much damage the unit can take before it dies."
     override val affectedBy get() = AttributeType.BODY to AttributeType.MIND
-    override val rangeForRandomizer = AttributeRandomRange(15f..25f, 10f..20f)
+    override val rangeForRandomizer = AttributeRandomRange(50f..100f, 10f..20f)
 
-    override fun getBaseValue(attrs: AttributesComponent) = attrs.run { body() * 1f + mind() * 0.5f }
+    override fun getBaseValue(attrs: AttributesComponent) = attrs.run { body() * 7.5f + mind() * 2.5f }
     override fun getDisplayValue(value: Float) = value.displayInt()
 }

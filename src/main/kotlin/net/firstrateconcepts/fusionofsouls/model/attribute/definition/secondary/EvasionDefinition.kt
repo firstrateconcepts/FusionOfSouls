@@ -9,7 +9,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.luck
 object EvasionDefinition : SecondaryAttributeDefinition() {
     override val shortName = "Eva"
     override val displayName = "Evasion"
-    override val baseDescription = "Reduces enemy attack rolls by a flat amount, potentially causing them to miss."
+    override val baseDescription = "Reduces enemy attack rolls by a flat amount, countered by Attack Bonus."
     override val affectedBy get() = AttributeType.INSTINCT to AttributeType.LUCK
     override val rangeForRandomizer = AttributeRandomRange(1f..2f, 5f..10f)
 
