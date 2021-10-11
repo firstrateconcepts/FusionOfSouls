@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.service.entity
+package net.firstrateconcepts.fusionofsouls.service.unit
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2

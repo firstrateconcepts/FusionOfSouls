@@ -32,7 +32,7 @@ val AttributesComponent.defense get() = this[AttributeType.DEFENSE]
 val AttributesComponent.skillMulti get() = this[AttributeType.SKILL_MULTI]
 val AttributesComponent.critThreshold get() = this[AttributeType.ATTACK_BONUS]
 val AttributesComponent.critBonus get() = this[AttributeType.CRIT_MULTI]
-val AttributesComponent.attacksPerSecond get() = this[AttributeType.ATTACKS_PER_SECOND]
+val AttributesComponent.attackSpeed get() = this[AttributeType.ATTACK_SPEED]
 val AttributesComponent.cooldownReduction get() = this[AttributeType.COOLDOWN_REDUCTION]
 val AttributesComponent.attackRange get() = this[AttributeType.ATTACK_RANGE]
 val AttributesComponent.primary get() = filter { it.priority == AttributePriority.PRIMARY }

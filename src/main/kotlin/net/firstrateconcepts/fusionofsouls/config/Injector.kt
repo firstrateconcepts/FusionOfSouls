@@ -15,11 +15,11 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
-import net.firstrateconcepts.fusionofsouls.service.entity.EnemyGenerator
-import net.firstrateconcepts.fusionofsouls.service.entity.UnitManager
 import net.firstrateconcepts.fusionofsouls.service.system.AttackingSystem
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TargetingSystem
+import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitManager
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.DialogManager
 import net.firstrateconcepts.fusionofsouls.view.duringRun.DuringRunScreen

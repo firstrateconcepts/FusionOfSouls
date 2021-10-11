@@ -4,8 +4,8 @@ import net.firstrateconcepts.fusionofsouls.model.BattleStatus
 import net.firstrateconcepts.fusionofsouls.model.component.steerable
 import net.firstrateconcepts.fusionofsouls.model.event.RunStatusChanged
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.entity.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.service.system.steeringFamily
+import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent

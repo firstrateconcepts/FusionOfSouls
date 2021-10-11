@@ -10,7 +10,7 @@ import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.hero.DefaultHeroDefinition
 import net.firstrateconcepts.fusionofsouls.model.unit.hero.getHeroDefinitionForId
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.entity.UnitManager
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitManager
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 class RunInitializer(

@@ -6,7 +6,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.body
 import net.firstrateconcepts.fusionofsouls.model.component.mind
 
-object AttacksPerSecondDefinition : SecondaryAttributeDefinition() {
+object AttackSpeedDefinition : SecondaryAttributeDefinition() {
     override val shortName = "ApS"
     override val displayName = "Attack Speed"
     override val baseDescription = "How many times per second this unit will attack."

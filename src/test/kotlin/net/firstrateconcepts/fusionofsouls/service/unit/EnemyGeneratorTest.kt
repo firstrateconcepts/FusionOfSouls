@@ -1,4 +1,4 @@
-package net.firstrateconcepts.fusionofsouls.service.entity
+package net.firstrateconcepts.fusionofsouls.service.unit
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
