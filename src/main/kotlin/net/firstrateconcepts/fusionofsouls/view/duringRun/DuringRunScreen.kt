@@ -2,9 +2,10 @@ package net.firstrateconcepts.fusionofsouls.view.duringRun
 
 import com.badlogic.gdx.ai.Timepiece
 import ktx.async.onRenderingThread
-import net.firstrateconcepts.fusionofsouls.model.BattleStatus
+import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.GamePauseChanged
-import net.firstrateconcepts.fusionofsouls.model.event.RunStatusChanged
+import net.firstrateconcepts.fusionofsouls.model.event.NewBattleEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -24,8 +25,9 @@ class DuringRunScreen(
     private var isRunning = false
     private var isPaused = false
 
-    @HandlesEvent
-    suspend fun statusChanged(event: RunStatusChanged) = onRenderingThread { isRunning = event.newStatus == BattleStatus.DURING_BATTLE }
+    @HandlesEvent(NewBattleEvent::class) suspend fun newBattle() = onRenderingThread { isRunning = false }
+    @HandlesEvent(BattleStartedEvent::class) suspend fun battleStart() = onRenderingThread { isRunning = true }
+    @HandlesEvent(BattleCompletedEvent::class) suspend fun battleComplete() = onRenderingThread { isRunning = false }
 
     @HandlesEvent
     suspend fun pauseResume(event: GamePauseChanged) = onRenderingThread { isPaused = event.isPaused }
@@ -38,8 +40,8 @@ class DuringRunScreen(
 
     override fun render(delta: Float) {
         if (isRunning && !isPaused) {
-            engine.update(delta)
             aiTimepiece.update(delta)
+            engine.update(delta)
             gameController.render()
         }
         super.render(delta)

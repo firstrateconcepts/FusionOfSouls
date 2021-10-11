@@ -6,8 +6,12 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 class RunStateUpdated(val newState: RunState) : Event
-class RunStatusChanged(val newStatus: BattleStatus) : Event
-fun EventBus.changeRunStatus(status: BattleStatus) = enqueueEventSync(RunStatusChanged(status))
+class NewBattleEvent : Event
+class BattleStartedEvent : Event
+class BattleCompletedEvent : Event
+fun EventBus.newBattle() = enqueueEventSync(NewBattleEvent())
+fun EventBus.battleStarted() = enqueueEventSync(BattleStartedEvent())
+fun EventBus.battleComplete() = enqueueEventSync(BattleCompletedEvent())
 
 class GamePauseChanged(val isPaused: Boolean) : Event
 fun EventBus.pauseGame() = enqueueEventSync(GamePauseChanged(true))

@@ -8,6 +8,7 @@ import ktx.ashley.entity
 import ktx.ashley.remove
 import ktx.ashley.with
 import ktx.assets.async.AssetStorage
+import net.firstrateconcepts.fusionofsouls.model.component.ActionsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.ActiveComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
@@ -16,6 +17,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.NameComponent
 import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TextureComponent
+import net.firstrateconcepts.fusionofsouls.model.component.TimersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.UnitComponent
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.team
@@ -55,8 +57,9 @@ class UnitManager(private val engine: AsyncPooledEngine, private val assets: Ass
         engine.findById(id)?.apply {
             engine.configureEntity(this) {
                 with<ActiveComponent>()
-                with<TargetComponent>()
                 with<SteerableComponent>(initialPosition, if (entity.team == UnitTeam.PLAYER) 270f else 90f)
+                with<TimersComponent>()
+                with<ActionsComponent>()
             }
 
             eventBus.enqueueEvent(UnitActivatedEvent(id))

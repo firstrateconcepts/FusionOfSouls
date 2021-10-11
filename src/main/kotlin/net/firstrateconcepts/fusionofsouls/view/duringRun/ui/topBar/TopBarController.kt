@@ -3,9 +3,10 @@ package net.firstrateconcepts.fusionofsouls.view.duringRun.ui.topBar
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
-import net.firstrateconcepts.fusionofsouls.model.BattleStatus
+import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.NewBattleEvent
 import net.firstrateconcepts.fusionofsouls.model.event.RunStateUpdated
-import net.firstrateconcepts.fusionofsouls.model.event.RunStatusChanged
 import net.firstrateconcepts.fusionofsouls.model.event.enqueueShowDialog
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
@@ -31,8 +32,9 @@ class TopBarController(private val eventBus: EventBus) : Controller {
         }
     }
 
-    @HandlesEvent
-    suspend fun runStatusHandler(event: RunStatusChanged) = onRenderingThread { vm.isDuringBattle(event.newStatus == BattleStatus.DURING_BATTLE) }
+    @HandlesEvent(NewBattleEvent::class) suspend fun newBattle() = onRenderingThread { vm.isDuringBattle(false) }
+    @HandlesEvent(BattleStartedEvent::class) suspend fun battleStart() = onRenderingThread { vm.isDuringBattle(true) }
+    @HandlesEvent(BattleCompletedEvent::class) suspend fun battleComplete() = onRenderingThread { vm.isDuringBattle(false) }
 
     override fun load() {
         eventBus.registerHandlers(this)

@@ -5,6 +5,7 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.Bo
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.InstinctDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.LuckDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.MindDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AbilityMultiDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AttackBonusDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AttackSpeedDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.BaseDamageDefinition
@@ -13,7 +14,6 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.DefenseDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.EvasionDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.MaxHpDefinition
-import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.SkillMultiDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.tertiary.AttackRangeDefinition
 
 enum class AttributeType(val definition: AttributeDefinition) {
@@ -26,7 +26,7 @@ enum class AttributeType(val definition: AttributeDefinition) {
     // Secondary
     MAX_HP(MaxHpDefinition),
     BASE_DAMAGE(BaseDamageDefinition),
-    SKILL_MULTI(SkillMultiDefinition),
+    ABILITY_MULTI(AbilityMultiDefinition),
     DEFENSE(DefenseDefinition),
     EVASION(EvasionDefinition),
     ATTACK_BONUS(AttackBonusDefinition),

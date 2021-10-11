@@ -6,10 +6,10 @@ import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.instinct
 import net.firstrateconcepts.fusionofsouls.model.component.mind
 
-object SkillMultiDefinition : SecondaryAttributeDefinition() {
-    override val shortName = "SkMul"
-    override val displayName = "Skill Multiplier"
-    override val baseDescription = "Skill damage is multiplied by this amount."
+object AbilityMultiDefinition : SecondaryAttributeDefinition() {
+    override val shortName = "A(x)"
+    override val displayName = "Ability Multiplier"
+    override val baseDescription = "Ability damage is multiplied by this amount."
     override val affectedBy get() = AttributeType.MIND to AttributeType.INSTINCT
     override val rangeForRandomizer = AttributeRandomRange(0.1f..0.15f, 5f..10f)
 

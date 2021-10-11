@@ -9,7 +9,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.mind
 object CooldownReductionDefinition : SecondaryAttributeDefinition() {
     override val shortName = "CDR"
     override val displayName = "Cooldown Reduction"
-    override val baseDescription = "This unit's skill cooldown is divided by this amount."
+    override val baseDescription = "This unit's ability cooldown is divided by this amount."
     override val affectedBy get() = AttributeType.MIND to AttributeType.INSTINCT
     override val rangeForRandomizer = AttributeRandomRange(0.05f..0.1f, 5f..10f)
 

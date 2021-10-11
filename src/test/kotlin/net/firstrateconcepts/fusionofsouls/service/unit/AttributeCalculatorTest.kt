@@ -11,8 +11,9 @@ import ktx.ashley.entity
 import ktx.ashley.with
 import net.firstrateconcepts.fusionofsouls.config.Injector
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
-import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACK_SPEED
+import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ABILITY_MULTI
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACK_BONUS
+import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ATTACK_SPEED
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.BASE_DAMAGE
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.BODY
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.COOLDOWN_REDUCTION
@@ -23,7 +24,6 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.INSTINC
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.LUCK
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.MAX_HP
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.MIND
-import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.SKILL_MULTI
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.description
 import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
@@ -79,7 +79,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 1000f),
             Arguments.of(BASE_DAMAGE, 100f),
-            Arguments.of(SKILL_MULTI, 1.5f),
+            Arguments.of(ABILITY_MULTI, 1.5f),
             Arguments.of(DEFENSE, 1f),
             Arguments.of(EVASION, 5f),
             Arguments.of(ATTACK_BONUS, 5f),
@@ -96,7 +96,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 1375f),
             Arguments.of(BASE_DAMAGE, 125f),
-            Arguments.of(SKILL_MULTI, 1.5f),
+            Arguments.of(ABILITY_MULTI, 1.5f),
             Arguments.of(DEFENSE, 1.13f),
             Arguments.of(EVASION, 5f),
             Arguments.of(ATTACK_BONUS, 5f),
@@ -113,7 +113,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 1247.5f),
             Arguments.of(BASE_DAMAGE, 116.50f),
-            Arguments.of(SKILL_MULTI, 1.5f),
+            Arguments.of(ABILITY_MULTI, 1.5f),
             Arguments.of(DEFENSE, 1.09f),
             Arguments.of(EVASION, 5f),
             Arguments.of(ATTACK_BONUS, 5f),
@@ -130,7 +130,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 1746.25f),
             Arguments.of(BASE_DAMAGE, 149.75f),
-            Arguments.of(SKILL_MULTI, 1.5f),
+            Arguments.of(ABILITY_MULTI, 1.5f),
             Arguments.of(DEFENSE, 1.19f),
             Arguments.of(EVASION, 5f),
             Arguments.of(ATTACK_BONUS, 5f),
@@ -147,7 +147,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 501.25f),
             Arguments.of(BASE_DAMAGE, 66.75f),
-            Arguments.of(SKILL_MULTI, 1.5f),
+            Arguments.of(ABILITY_MULTI, 1.5f),
             Arguments.of(DEFENSE, 0.26f),
             Arguments.of(EVASION, 5f),
             Arguments.of(ATTACK_BONUS, 5f),
@@ -164,7 +164,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 1248.75f),
             Arguments.of(BASE_DAMAGE, 100f),
-            Arguments.of(SKILL_MULTI, 1.87f),
+            Arguments.of(ABILITY_MULTI, 1.87f),
             Arguments.of(DEFENSE, 1f),
             Arguments.of(EVASION, 5f),
             Arguments.of(ATTACK_BONUS, 6.99f),
@@ -181,7 +181,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 100f),
             Arguments.of(MAX_HP, 1000f),
             Arguments.of(BASE_DAMAGE, 149.75f),
-            Arguments.of(SKILL_MULTI, 1.87f),
+            Arguments.of(ABILITY_MULTI, 1.87f),
             Arguments.of(DEFENSE, 1f),
             Arguments.of(EVASION, 6f),
             Arguments.of(ATTACK_BONUS, 5f),
@@ -198,7 +198,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 199.5f),
             Arguments.of(MAX_HP, 1000f),
             Arguments.of(BASE_DAMAGE, 100f),
-            Arguments.of(SKILL_MULTI, 1.5f),
+            Arguments.of(ABILITY_MULTI, 1.5f),
             Arguments.of(DEFENSE, 1.31f),
             Arguments.of(EVASION, 8.98f),
             Arguments.of(ATTACK_BONUS, 7.99f),
@@ -215,7 +215,7 @@ class AttributeCalculatorTest {
             Arguments.of(LUCK, 165f),
             Arguments.of(MAX_HP, 4403.13f),
             Arguments.of(BASE_DAMAGE, 230.26f),
-            Arguments.of(SKILL_MULTI, 2.93f),
+            Arguments.of(ABILITY_MULTI, 2.93f),
             Arguments.of(DEFENSE, 3.16f),
             Arguments.of(EVASION, 10.58f),
             Arguments.of(ATTACK_BONUS, 29.84f),
@@ -227,19 +227,19 @@ class AttributeCalculatorTest {
         @JvmStatic
         fun descriptionArgs(): Stream<Arguments> = Stream.of(
             Arguments.of(BODY, "Represents the physical prowess of this unit. Affects Max HP, Base Damage, Defense, Crit Multiplier, Attack Speed"),
-            Arguments.of(MIND, "Represents the mental capacity of this unit. Affects Max HP, Skill Multiplier, Attack Bonus, Attack Speed, Cooldown Reduction"),
-            Arguments.of(INSTINCT, "Represents the innate focus and reactions of this unit. Affects Base Damage, Skill Multiplier, Evasion, Cooldown Reduction"),
+            Arguments.of(MIND, "Represents the mental capacity of this unit. Affects Max HP, Ability Multiplier, Attack Bonus, Attack Speed, Cooldown Reduction"),
+            Arguments.of(INSTINCT, "Represents the innate focus and reactions of this unit. Affects Base Damage, Ability Multiplier, Evasion, Cooldown Reduction"),
             Arguments.of(LUCK, "Represents how much randomness favors this unit. Affects Defense, Evasion, Attack Bonus, Crit Multiplier"),
 
             Arguments.of(MAX_HP, "How much damage the unit can take before it dies. Affected by Body and Mind"),
-            Arguments.of(BASE_DAMAGE, "The base amount of damage done by attacks and skills. Reduced by enemy Defense. Affected by Body and Instinct"),
-            Arguments.of(SKILL_MULTI, "Skill damage is multiplied by this amount. Affected by Mind and Instinct"),
+            Arguments.of(BASE_DAMAGE, "The base amount of damage done by attacks and abilities. Reduced by enemy Defense. Affected by Body and Instinct"),
+            Arguments.of(ABILITY_MULTI, "Ability damage is multiplied by this amount. Affected by Mind and Instinct"),
             Arguments.of(DEFENSE, "Incoming damage divided by this amount. Affected by Body and Luck"),
             Arguments.of(EVASION, "Reduces enemy attack rolls by a flat amount, countered by Attack Bonus. Affected by Instinct and Luck"),
             Arguments.of(ATTACK_BONUS, "Flat amount added to attack rolls, countered by Evasion. Affected by Mind and Luck"),
             Arguments.of(CRIT_MULTI, "Critical hits multiply their damage by this amount. Affected by Body and Luck"),
             Arguments.of(ATTACK_SPEED, "How many times per second this unit will attack. Affected by Body and Mind"),
-            Arguments.of(COOLDOWN_REDUCTION, "This unit's skill cooldown is divided by this amount. Affected by Mind and Instinct")
+            Arguments.of(COOLDOWN_REDUCTION, "This unit's ability cooldown is divided by this amount. Affected by Mind and Instinct")
         )
     }
 
@@ -315,7 +315,7 @@ class AttributeCalculatorTest {
         entity.addModifier(LUCK, flatModifier = 10f, percentModifier = 50f)
         entity.addModifier(MAX_HP, flatModifier = 300f, percentModifier = 150f)
         entity.addModifier(BASE_DAMAGE, flatModifier = -10f, percentModifier = 33f)
-        entity.addModifier(SKILL_MULTI, flatModifier = 0.26f, percentModifier = 10f)
+        entity.addModifier(ABILITY_MULTI, flatModifier = 0.26f, percentModifier = 10f)
         entity.addModifier(DEFENSE, flatModifier = 1.24f, percentModifier = 25f)
         entity.addModifier(EVASION, flatModifier = 2f, percentModifier = -5f)
         entity.addModifier(ATTACK_BONUS, flatModifier = 10f, percentModifier = 50f)

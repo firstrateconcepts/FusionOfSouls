@@ -2,44 +2,59 @@ package net.firstrateconcepts.fusionofsouls.service.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
-import ktx.ashley.oneOf
+import ktx.ashley.configureEntity
 import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
+import net.firstrateconcepts.fusionofsouls.model.component.hasTarget
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.isAttacking
 import net.firstrateconcepts.fusionofsouls.model.component.name
-import net.firstrateconcepts.fusionofsouls.model.component.targetInfo
+import net.firstrateconcepts.fusionofsouls.model.component.target
+import net.firstrateconcepts.fusionofsouls.model.component.unitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.unitInfo
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
+import net.firstrateconcepts.fusionofsouls.model.unit.action.TargetAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
+import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
+import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
+import net.firstrateconcepts.fusionofsouls.service.unit.action.actionProcessor
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
-val targetFamily = oneOf(TargetComponent::class).get()!!
-
 // TODO: Find out for sure on the performance of this. It might be a good idea to make this an interval system and only update a couple of times per second
-class TargetingSystem(engine: AsyncPooledEngine, private val eventBus: EventBus) : IteratingSystem(targetFamily) {
+class TargetingSystem(
+    private val engine: AsyncPooledEngine,
+    private val eventBus: EventBus,
+    private val actionQueueBus: ActionQueueBus,
+    private val attackService: AttackService
+) : IteratingSystem(unitFamily) {
     private val logger = fosLogger()
+
+    private val actionHandler = actionProcessor<TargetAction> { entity, action ->
+        val newTarget = action.newTarget
+        logger.info { "Unit(${entity.id} | ${entity.name}} changing target to [$newTarget]" }
+        val previousTarget = entity.target
+        engine.configureEntity(entity) { with<TargetComponent>(newTarget) }
+        eventBus.enqueueEventSync(TargetChangedEvent(entity.id, previousTarget, newTarget))
+    }
 
     init {
         engine.addSystem(this)
+        actionQueueBus.registerProcessor(actionHandler)
     }
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        val targetInfo = entity.targetInfo
-        if (!targetInfo.canChangeTarget || entity.isAttacking) return
+        // If entity has a target and can attack said target, no reason to try to switch targets
+        if (entity.hasTarget && attackService.canEntityAttack(entity)) return
 
         val unitTeam = entity.unitInfo.team
         val closestTarget = entities
-            .filter { it.unitInfo.team != unitTeam && it.targetInfo.isTargetable }
+            // TOOD: Handle untargetable, i.e. stealth
+            .filter { it.unitInfo.team != unitTeam }
             .minByOrNull { it.currentPosition.dst(entity.currentPosition) }?.id
-            ?: targetInfo.target
 
-        if (closestTarget != targetInfo.target) {
-            logger.info { "Unit(${entity.id} | ${entity.name}} changing target to [$closestTarget]" }
-            val previousTarget = targetInfo.target
-            targetInfo.target = closestTarget
-            eventBus.enqueueEventSync(TargetChangedEvent(entity.id, previousTarget, closestTarget))
+        if (closestTarget != null && closestTarget != entity.target) {
+            actionQueueBus.addAction(TargetAction(entity.id, closestTarget))
         }
     }
 }

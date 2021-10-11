@@ -9,6 +9,7 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -90,9 +91,14 @@ class EventBus : Disposable {
             val handlers = mutableMapOf<KClass<out Event>, EventHandler<Event>>()
 
             obj::class.declaredMembers.filter { it.hasAnnotation<HandlesEvent>() }.forEach { fn ->
-                val eventParam = fn.valueParameters.first()
-                handlers[eventParam.type.jvmErasure as KClass<Event>] = eventHandler { event ->
-                    if (fn.isSuspend) fn.callSuspend(obj, event) else fn.call(obj, event)
+                val params = fn.valueParameters
+
+                if (params.isEmpty()) {
+                    handlers[fn.findAnnotation<HandlesEvent>()!!.eventType] = eventHandler { if (fn.isSuspend) fn.callSuspend(obj) else fn.call(obj) }
+                } else {
+                    handlers[params.first().type.jvmErasure as KClass<Event>] = eventHandler { event ->
+                        if (fn.isSuspend) fn.callSuspend(obj, event) else fn.call(obj, event)
+                    }
                 }
             }
 

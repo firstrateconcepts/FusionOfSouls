@@ -15,11 +15,15 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
+import net.firstrateconcepts.fusionofsouls.service.system.AbilitySystem
 import net.firstrateconcepts.fusionofsouls.service.system.AttackingSystem
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TargetingSystem
+import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
+import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
 import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.service.unit.UnitManager
+import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.DialogManager
 import net.firstrateconcepts.fusionofsouls.view.duringRun.DuringRunScreen
@@ -66,10 +70,14 @@ object Injector : Context() {
         bindSingleton<UnitManager>()
         bindSingleton<RunServiceRegistry>()
         bindSingleton<RunStateService>()
+        bindSingleton<ActionQueueBus>()
+        bindSingleton<AttackService>()
 
         bindSingleton<SteeringSystem>()
         bindSingleton<TargetingSystem>()
         bindSingleton<AttackingSystem>()
+        bindSingleton<TimersSystem>()
+        bindSingleton<AbilitySystem>()
 
         bindSingleton<AttributeCalculator>()
         bindSingleton<RandomizerService>()

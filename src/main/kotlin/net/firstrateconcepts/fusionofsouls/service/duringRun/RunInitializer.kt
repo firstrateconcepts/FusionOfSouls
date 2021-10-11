@@ -2,9 +2,8 @@ package net.firstrateconcepts.fusionofsouls.service.duringRun
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
-import net.firstrateconcepts.fusionofsouls.model.BattleStatus
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.event.changeRunStatus
+import net.firstrateconcepts.fusionofsouls.model.event.newBattle
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.hero.DefaultHeroDefinition
@@ -36,7 +35,7 @@ class RunInitializer(
             unitManager.activateUnit(entity.id, Vector2())
         }
 
-        eventBus.changeRunStatus(BattleStatus.BEFORE_BATTLE)
+        eventBus.newBattle()
     }
 
     override fun dispose() {

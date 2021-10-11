@@ -13,6 +13,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.findById
+import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller

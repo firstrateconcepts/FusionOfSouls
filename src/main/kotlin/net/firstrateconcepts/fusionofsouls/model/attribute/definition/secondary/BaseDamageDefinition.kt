@@ -9,7 +9,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.instinct
 object BaseDamageDefinition : SecondaryAttributeDefinition() {
     override val shortName = "Dmg"
     override val displayName = "Base Damage"
-    override val baseDescription = "The base amount of damage done by attacks and skills. Reduced by enemy Defense."
+    override val baseDescription = "The base amount of damage done by attacks and abilities. Reduced by enemy Defense."
     override val affectedBy get() = AttributeType.BODY to AttributeType.INSTINCT
     override val rangeForRandomizer = AttributeRandomRange(5f..10f, 10f..15f)
 
