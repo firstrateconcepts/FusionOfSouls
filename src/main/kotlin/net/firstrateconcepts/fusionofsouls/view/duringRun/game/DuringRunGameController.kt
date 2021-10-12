@@ -25,7 +25,7 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
     private val children = mutableListOf<Controller>()
 
     @HandlesEvent
-    suspend fun unitActivatedHandler(event: UnitActivatedEvent) = onRenderingThread { engine.withUnit(event.unitId) { addNewUnit(this) } }
+    suspend fun unitActivatedHandler(event: UnitActivatedEvent) = engine.withUnit(event.unitId) { onRenderingThread { addNewUnit(this@withUnit) } }
 
     @HandlesEvent
     suspend fun unitDeactivatedHandler(event: UnitDeactivatedEvent) = onRenderingThread { removeUnit(event.unitId) }

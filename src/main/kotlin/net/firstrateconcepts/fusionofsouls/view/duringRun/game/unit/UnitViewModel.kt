@@ -9,6 +9,9 @@ class UnitViewModel(val id: Int, val name: String, val texture: Texture, initial
     val position = Binding(initialPosition)
     val rotation = Binding(initialRotation)
     val actorActions = Binding(mutableListOf<Action>())
+    val hpPercent = Binding(1f)
+    val attackTimerPercent = Binding(0f)
+    val abilityTimerPercent = Binding(0f)
 
     override fun toString() = "Unit($id | $name)"
 }

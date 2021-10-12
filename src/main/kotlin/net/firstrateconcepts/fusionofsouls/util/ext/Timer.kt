@@ -4,6 +4,7 @@ import kotlin.math.min
 
 class Timer(var targetTime: Float) {
     private var elapsedTime = 0f
+    val percentComplete get() = elapsedTime / targetTime
     val isReady get() = elapsedTime >= targetTime && !isPaused
     var isPaused = false
 

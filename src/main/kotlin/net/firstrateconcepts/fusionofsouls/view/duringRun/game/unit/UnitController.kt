@@ -6,12 +6,15 @@ import ktx.actors.then
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
+import net.firstrateconcepts.fusionofsouls.model.component.abilityTimer
+import net.firstrateconcepts.fusionofsouls.model.component.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.rotation
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
+import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
 import net.firstrateconcepts.fusionofsouls.util.ext.degRad
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
@@ -27,7 +30,12 @@ fun <S> KWidget<S>.unit(unit: UnitViewModel, init: UnitView.(S) -> Unit = {}) = 
     this.vm = unit
 }, init)
 
-class UnitController(private val engine: AsyncPooledEngine, private val eventBus: EventBus, private val steeringSystem: SteeringSystem) : Controller {
+class UnitController(
+    private val engine: AsyncPooledEngine,
+    private val eventBus: EventBus,
+    private val steeringSystem: SteeringSystem,
+    private val timersSystem: TimersSystem
+) : Controller {
     private val logger = fosLogger()
     override lateinit var vm: UnitViewModel
     override val view by lazy { UnitView(this, vm) }
@@ -35,9 +43,15 @@ class UnitController(private val engine: AsyncPooledEngine, private val eventBus
 
     override fun load() {
         eventBus.registerHandlers(this)
+
         steeringSystem.onUnitMove(unitId) {
             vm.position(currentPosition.cpy())
             vm.rotation(rotation)
+        }
+
+        timersSystem.onTimerTick(unitId) {
+            vm.attackTimerPercent(attackTimer.percentComplete)
+            vm.abilityTimerPercent(abilityTimer.percentComplete)
         }
     }
 
