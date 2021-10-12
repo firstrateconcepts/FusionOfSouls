@@ -14,8 +14,8 @@ import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import kotlin.reflect.KClass
@@ -32,7 +32,7 @@ class ActionQueueBus(override val eventBus: EventBus, private val engine: AsyncP
         queueLoopMap[it.id] = unitJob(it)
     }
 
-    fun addAction(action: UnitAction) = KtxAsync.launch { engine.findById(action.unitId)?.apply { actions.queue.send(action) } }
+    fun addAction(action: UnitAction) = KtxAsync.launch { engine.withUnit(action.unitId) { actions.queue.send(action) } }
 
     @HandlesEvent(BattleCompletedEvent::class)
     fun battleStop() {

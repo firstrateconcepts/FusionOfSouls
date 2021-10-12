@@ -48,4 +48,5 @@ val steerableMapper = mapperFor<SteerableComponent>()
 val Entity.steerable get() = this[steerableMapper]!!
 val Entity.currentPosition get() = steerable.position
 val Entity.rotation get() = steerable.rotation
+val Entity.isInRangeOfTarget get() = steerable.steeringBehavior.target?.let { it.position.dst(this.currentPosition) <= attrs.attackRange() } ?: false
 

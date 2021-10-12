@@ -9,8 +9,8 @@ import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
@@ -20,8 +20,10 @@ class AttributeCalculator(private val engine: AsyncPooledEngine, override val ev
     @HandlesEvent
     fun handle(event: AttributeRecalculateNeededEvent) = runOnServiceThread {
         logger.info { "Recalculating attributes for unit [${event.unitId}]" }
-        engine.findById(event.unitId)?.run { attrs.forEach { it.recalculate(attrs, attrMods) } }
-        eventBus.enqueueEventSync(AttributesChangedEvent(event.unitId))
+        engine.withUnit(event.unitId) {
+            attrs.forEach { it.recalculate(attrs, attrMods) }
+            eventBus.enqueueEventSync(AttributesChangedEvent(event.unitId))
+        }
     }
 
     private fun Attribute.recalculate(attrs: AttributesComponent, mods: Set<AttributeModifier>) {

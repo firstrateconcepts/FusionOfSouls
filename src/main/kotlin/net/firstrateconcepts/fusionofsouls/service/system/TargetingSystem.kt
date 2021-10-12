@@ -32,7 +32,7 @@ class TargetingSystem(
 
     private val actionHandler = actionProcessor<TargetAction> { entity, action ->
         val newTarget = action.newTarget
-        logger.info { "Unit(${entity.id} | ${entity.name}} changing target to [$newTarget]" }
+        logger.info { "Unit(${entity.id} | ${entity.name}) changing target to [$newTarget]" }
         val previousTarget = entity.target
         engine.configureEntity(entity) { with<TargetComponent>(newTarget) }
         eventBus.enqueueEventSync(TargetChangedEvent(entity.id, previousTarget, newTarget))

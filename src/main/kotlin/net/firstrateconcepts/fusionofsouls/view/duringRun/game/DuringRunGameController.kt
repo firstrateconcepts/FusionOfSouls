@@ -1,9 +1,8 @@
 package net.firstrateconcepts.fusionofsouls.view.duringRun.game
 
 import com.badlogic.ashley.core.Entity
-import ktx.ashley.oneOf
+import com.badlogic.gdx.utils.Disposable
 import ktx.async.onRenderingThread
-import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.name
@@ -12,24 +11,24 @@ import net.firstrateconcepts.fusionofsouls.model.component.texture
 import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
-import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.plusAssign
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.removeIf
+import net.firstrateconcepts.fusionofsouls.view.duringRun.game.unit.UnitViewModel
 
 class DuringRunGameController(private val eventBus: EventBus, private val engine: AsyncPooledEngine) : Controller {
     override val vm = DuringRunGameViewModel()
     override val view = DuringRunGameView(this, vm)
-    private val positionFamily = oneOf(SteerableComponent::class).get()
+    private val children = mutableListOf<Controller>()
 
     @HandlesEvent
-    suspend fun unitActivatedHandler(event: UnitActivatedEvent) = onRenderingThread { engine.findById(event.id)?.also { addNewUnit(it) } }
+    suspend fun unitActivatedHandler(event: UnitActivatedEvent) = onRenderingThread { engine.withUnit(event.unitId) { addNewUnit(this) } }
 
     @HandlesEvent
-    suspend fun unitDeactivatedHandler(event: UnitDeactivatedEvent) = onRenderingThread { removeUnit(event.id) }
+    suspend fun unitDeactivatedHandler(event: UnitDeactivatedEvent) = onRenderingThread { removeUnit(event.unitId) }
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -48,12 +47,10 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
         super.dispose()
     }
 
-    fun render() {
-        engine.getEntitiesFor(positionFamily).forEach { entity ->
-            vm.units.get().find { it.id == entity.id }?.apply {
-                position(entity.currentPosition.cpy())
-                rotation(entity.rotation)
-            }
-        }
+    fun clearChildren() {
+        children.forEach(Disposable::dispose)
+        children.clear()
     }
+
+    fun addChild(controller: Controller) = children.add(controller)
 }

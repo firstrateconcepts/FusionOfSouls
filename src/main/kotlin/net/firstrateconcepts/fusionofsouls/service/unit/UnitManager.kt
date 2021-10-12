@@ -28,8 +28,8 @@ import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.with
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 class UnitManager(private val engine: AsyncPooledEngine, private val assets: AssetStorage, private val eventBus: EventBus) {
@@ -54,7 +54,7 @@ class UnitManager(private val engine: AsyncPooledEngine, private val assets: Ass
     }
 
     fun activateUnit(id: Int, initialPosition: Vector2) = engine.runOnEngineThread {
-        engine.findById(id)?.apply {
+        engine.withUnit(id) {
             engine.configureEntity(this) {
                 with<ActiveComponent>()
                 with<SteerableComponent>(initialPosition, if (entity.team == UnitTeam.PLAYER) 270f else 90f)
@@ -67,12 +67,13 @@ class UnitManager(private val engine: AsyncPooledEngine, private val assets: Ass
     }
 
     fun deactivateUnit(id: Int) = engine.runOnEngineThread {
-        engine.findById(id)?.apply {
+        engine.withUnit(id) {
             remove<ActiveComponent>()
             remove<TargetComponent>()
             remove<SteerableComponent>()
+
+            eventBus.enqueueEvent(UnitDeactivatedEvent(id))
         }
 
-        eventBus.enqueueEvent(UnitDeactivatedEvent(id))
     }
 }

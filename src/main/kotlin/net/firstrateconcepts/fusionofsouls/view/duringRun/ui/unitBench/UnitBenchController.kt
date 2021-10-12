@@ -6,7 +6,7 @@ import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controll
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.uiComponent
 
 @Scene2dDsl
-inline fun <S> KWidget<S>.unitBench(init: UnitBenchView.(S) -> Unit = {}) = uiComponent<S, UnitBenchController, UnitBenchView>(init)
+fun <S> KWidget<S>.unitBench(init: UnitBenchView.(S) -> Unit = {}) = uiComponent<S, UnitBenchController, UnitBenchView>(init = init)
 
 class UnitBenchController : Controller {
     override val vm = UnitBenchViewModel()

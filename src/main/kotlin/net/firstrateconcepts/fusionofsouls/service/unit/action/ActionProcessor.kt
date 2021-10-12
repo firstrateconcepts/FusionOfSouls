@@ -4,13 +4,13 @@ import com.badlogic.ashley.core.Entity
 import net.firstrateconcepts.fusionofsouls.config.inject
 import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 
 abstract class ActionProcessor<A : UnitAction> {
     private val engine = inject<AsyncPooledEngine>()
 
     fun process(action: A) {
-        engine.findById(action.unitId)?.run { processInternal(this, action) }
+        engine.withUnit(action.unitId) { processInternal(this, action) }
     }
 
     protected abstract fun processInternal(entity: Entity, action: A)

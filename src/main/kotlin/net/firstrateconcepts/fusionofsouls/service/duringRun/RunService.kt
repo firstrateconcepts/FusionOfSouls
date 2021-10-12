@@ -6,15 +6,11 @@ import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 import net.firstrateconcepts.fusionofsouls.config.inject
-import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import net.firstrateconcepts.fusionofsouls.util.framework.event.EventHandler
 
 @Suppress("LeakingThis")
 abstract class RunService : Disposable {
     private val serviceContext = newSingleThreadAsyncContext("Service-Thread")
-    val handlers = mutableListOf<EventHandler<Event>>()
-
     abstract val eventBus: EventBus
 
     init {

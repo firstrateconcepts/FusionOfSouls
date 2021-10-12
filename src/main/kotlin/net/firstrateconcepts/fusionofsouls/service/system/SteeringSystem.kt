@@ -15,9 +15,9 @@ import net.firstrateconcepts.fusionofsouls.model.unit.action.MovementAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.radDeg
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
 val steeringFamily = oneOf(SteerableComponent::class).get()!!
@@ -29,11 +29,18 @@ class SteeringSystem(
     private val attackService: AttackService
 ) : IteratingSystem(steeringFamily) {
     private val logger = fosLogger()
+    private val unitMoveCallbacks = mutableMapOf<Int, Entity.() -> Unit>()
 
     init {
         engine.addSystem(this)
-        actionQueueBus.registerProcessor<MovementAction> { entity, action -> entity.steerable.applySteering(action.deltaTime, action.steeringOutput) }
+        actionQueueBus.registerProcessor<MovementAction> { entity, action ->
+            entity.steerable.applySteering(action.deltaTime, action.steeringOutput)
+            unitMoveCallbacks[entity.id]?.invoke(entity)
+        }
     }
+
+    fun onUnitMove(unitId: Int, callback: Entity.() -> Unit) { unitMoveCallbacks[unitId] = callback }
+    fun removeUnitMoveCallback(unitId: Int) = unitMoveCallbacks.remove(unitId)
 
     @HandlesEvent(BattleCompletedEvent::class)
     fun battleComplete() = engine.runOnEngineThread {
@@ -47,16 +54,18 @@ class SteeringSystem(
 
     @HandlesEvent
     fun targetChanged(event: TargetChangedEvent) = engine.runOnEngineThread {
-        engine.findById(event.unitId)?.let { entity ->
+        engine.withUnit(event.unitId) {
+            val entity = this
             val behavior = entity.steerable.steeringBehavior
 
             if (event.newTarget == null) {
                 logger.info { "Setting ${entity.name} to wander only" }
                 behavior.resetToWanderOnly()
-                return@let
+                return@withUnit
             }
 
-            engine.findById(event.newTarget)?.let { target ->
+            engine.withUnit(event.newTarget) {
+                val target = this
                 logger.info { "Setting ${entity.name} to target ${target.name}" }
                 val targetSteerable = target.steerable
                 behavior.changeTarget(targetSteerable)

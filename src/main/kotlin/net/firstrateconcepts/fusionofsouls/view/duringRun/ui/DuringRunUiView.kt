@@ -21,6 +21,7 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
         val vm = vm
 
         topBar {
+            controller.addChild(this.controller)
             background(rectPixmapTexture(1, 40, Color.SLATE).toDrawable())
         }.cell(growX = true, height = 40f, row = true)
 
@@ -33,6 +34,7 @@ class DuringRunUiView(override val controller: DuringRunUiController, override v
         }.cell(grow = true, row = true)
 
         unitBench {
+            controller.addChild(this.controller)
             background(rectPixmapTexture(1, 60, Color.SLATE).toDrawable())
         }.cell(growX = true, height = 60f)
     }

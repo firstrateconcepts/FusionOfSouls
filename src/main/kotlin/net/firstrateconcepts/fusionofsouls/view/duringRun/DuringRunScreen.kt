@@ -42,7 +42,6 @@ class DuringRunScreen(
         if (isRunning && !isPaused) {
             aiTimepiece.update(delta)
             engine.update(delta)
-            gameController.render()
         }
         super.render(delta)
     }

@@ -2,8 +2,10 @@ package net.firstrateconcepts.fusionofsouls.model.event
 
 import net.firstrateconcepts.fusionofsouls.util.framework.event.Event
 
-class UnitActivatedEvent(val id: Int) : Event
-class UnitDeactivatedEvent(val id: Int) : Event
-class AttributeRecalculateNeededEvent(val unitId: Int) : Event
-class AttributesChangedEvent(val unitId: Int) : Event
-class TargetChangedEvent(val unitId: Int, val previousTarget: Int?, val newTarget: Int?) : Event
+interface UnitEvent : Event { val unitId: Int }
+class UnitActivatedEvent(override val unitId: Int) : UnitEvent
+class UnitDeactivatedEvent(override val unitId: Int) : UnitEvent
+class AttributeRecalculateNeededEvent(override val unitId: Int) : UnitEvent
+class AttributesChangedEvent(override val unitId: Int) : UnitEvent
+class TargetChangedEvent(override val unitId: Int, val previousTarget: Int?, val newTarget: Int?) : UnitEvent
+class UnitAttackingEvent(override val unitId: Int) : UnitEvent

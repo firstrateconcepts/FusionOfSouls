@@ -8,23 +8,27 @@ import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.unitFamily
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.AttackAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.service.unit.action.actionProcessor
-import net.firstrateconcepts.fusionofsouls.util.ext.findById
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
+import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
 class AttackingSystem(
-    engine: AsyncPooledEngine,
+    private val engine: AsyncPooledEngine,
+    private val eventBus: EventBus,
     private val actionQueueBus: ActionQueueBus,
     private val attackService: AttackService
 ) : IteratingSystem(unitFamily) {
     private val logger = fosLogger()
-    private val attackProcessor = actionProcessor<AttackAction> { entity, action ->
+    private val attackProcessor = actionProcessor<AttackAction> { entity, _ ->
         logger.info { "Processing attack for ${entity.id}" }
+        eventBus.enqueueEventSync(UnitAttackingEvent(entity.id))
         entity.attackTimer.reset()
         entity.attackTimer.resume()
     }
@@ -35,7 +39,7 @@ class AttackingSystem(
     }
 
     @HandlesEvent
-    fun updateAttackTimer(event: AttributesChangedEvent) = engine.findById(event.unitId)?.apply { attackTimer.targetTime = 1f / attrs.attackSpeed() }
+    fun updateAttackTimer(event: AttributesChangedEvent) = engine.withUnit(event.unitId) { attackTimer.targetTime = 1f / attrs.attackSpeed() }
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         if (entity.attackTimer.isReady && attackService.canEntityAttack(entity)) {
