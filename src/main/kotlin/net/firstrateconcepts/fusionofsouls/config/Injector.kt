@@ -9,7 +9,7 @@ import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
-import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
+import net.firstrateconcepts.fusionofsouls.service.unit.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.duringRun.BattleManager
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
@@ -67,9 +67,12 @@ object Injector : Context() {
         bindSingleton(GdxAI.getTimepiece())
 
         bindSingleton<AsyncPooledEngine>()
-        bindSingleton<UnitManager>()
         bindSingleton<RunServiceRegistry>()
+
+        bindSingleton<AttributeCalculator>()
+        bindSingleton<UnitManager>()
         bindSingleton<RunStateService>()
+        bindSingleton<RandomizerService>()
         bindSingleton<ActionQueueBus>()
         bindSingleton<AttackService>()
 
@@ -79,8 +82,6 @@ object Injector : Context() {
         bindSingleton<TimersSystem>()
         bindSingleton<AbilitySystem>()
 
-        bindSingleton<AttributeCalculator>()
-        bindSingleton<RandomizerService>()
         bindSingleton<RunInitializer>()
         bindSingleton<EnemyGenerator>()
         bindSingleton<BattleManager>()

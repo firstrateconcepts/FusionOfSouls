@@ -6,7 +6,6 @@ import assertk.assertions.isEqualTo
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.Gdx
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
 import ktx.ashley.entity
 import ktx.ashley.with
 import net.firstrateconcepts.fusionofsouls.config.Injector
@@ -31,10 +30,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
 import net.firstrateconcepts.fusionofsouls.model.component.addModifier
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.get
-import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.event.AttributeRecalculateNeededEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.duringRun.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -52,7 +48,7 @@ class AttributeCalculatorTest {
     fun setup() {
         Injector.bindSingleton(mockk<RunServiceRegistry>(relaxed = true))
         engine = AsyncPooledEngine(mockk(relaxed = true))
-        attrCalculator = AttributeCalculator(engine, mockk(relaxed = true))
+        attrCalculator = AttributeCalculator(mockk(relaxed = true))
         Gdx.app = mockk(relaxed = true)
 
         entity = engine.entity {
@@ -67,7 +63,7 @@ class AttributeCalculatorTest {
         Injector.clear()
     }
 
-    private fun recalculate() = runBlocking { attrCalculator.handle(AttributeRecalculateNeededEvent(entity.id)).join() }
+    private fun recalculate() = attrCalculator.recalculate(entity)
     private fun assertAttr(attr: AttributeType, value: Float) = assertThat(entity.attrs[attr]).transform { it() }.isCloseTo(value, 0.01f)
 
     companion object {

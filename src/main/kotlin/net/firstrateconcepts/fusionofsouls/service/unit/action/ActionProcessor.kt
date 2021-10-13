@@ -10,7 +10,7 @@ abstract class ActionProcessor<A : UnitAction> {
     private val engine = inject<AsyncPooledEngine>()
 
     fun process(action: A) {
-        engine.withUnit(action.unitId) { processInternal(this, action) }
+        engine.withUnit(action.unitId) { processInternal(it, action) }
     }
 
     protected abstract fun processInternal(entity: Entity, action: A)

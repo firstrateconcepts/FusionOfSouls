@@ -17,7 +17,7 @@ class SteerableComponent(val initialPosition: Vector2, val initialRotation: Floa
     private val position = initialPosition.cpy()!!
     var rotation: Float = initialRotation
     private val linearVelocity = Vector2()
-    private val maxLinearSpeed = 0.75f
+    private val maxLinearSpeed = 1f
     private val maxLinearAcceleration = maxLinearSpeed * 2f
     private val maxAngularSpeed = 8f
     private val maxAngularAcceleration = maxAngularSpeed * 2f

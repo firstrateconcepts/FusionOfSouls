@@ -9,8 +9,13 @@ import ktx.scene2d.Scene2dDsl
 import net.firstrateconcepts.fusionofsouls.model.component.abilityTimer
 import net.firstrateconcepts.fusionofsouls.model.component.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
+import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.rotation
+import net.firstrateconcepts.fusionofsouls.model.event.HpChangedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.KillUnitEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackAnimationComplete
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitDiedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
@@ -56,6 +61,24 @@ class UnitController(
     }
 
     @HandlesEvent
+    fun hpChanged(event: HpChangedEvent) {
+        if (!filterEvent(event)) return
+        vm.hpPercent(event.hpPercent)
+    }
+
+    @HandlesEvent
+    fun unitDied(event: KillUnitEvent) {
+        if (!filterEvent(event)) return
+
+        withUnit {
+            val action = Actions.fadeOut(0.5f) then Actions.run {
+                eventBus.enqueueEventSync(UnitDiedEvent(id))
+            } then Actions.removeActor()
+            vm.actorActions(mutableListOf(action))
+        }
+    }
+
+    @HandlesEvent
     suspend fun unitAttacking(event: UnitAttackingEvent) {
         if (!filterEvent(event)) return
 
@@ -64,7 +87,9 @@ class UnitController(
             withUnit {
                 val xMove = cos((rotation + 90f).degRad) * 0.1f
                 val yMove = sin((rotation + 90f).degRad) * 0.1f
-                val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveTo(currentPosition.x, currentPosition.y, 0.15f)
+                val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveTo(currentPosition.x, currentPosition.y, 0.15f) then Actions.run {
+                    eventBus.enqueueEventSync(UnitAttackAnimationComplete(id))
+                }
                 vm.actorActions(mutableListOf(action))
             }
         }
@@ -78,5 +103,5 @@ class UnitController(
     }
 
     private fun filterEvent(event: UnitEvent) = event.unitId == vm.id
-    private fun withUnit(callback: suspend Entity.() -> Unit) = engine.withUnit(unitId) { onRenderingThread { callback() } }
+    private fun withUnit(callback: suspend Entity.() -> Unit) = engine.withUnit(unitId) { entity -> onRenderingThread { entity.callback() } }
 }

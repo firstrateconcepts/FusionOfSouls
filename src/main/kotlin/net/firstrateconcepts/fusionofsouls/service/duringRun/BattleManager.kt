@@ -1,13 +1,14 @@
 package net.firstrateconcepts.fusionofsouls.service.duringRun
 
-import net.firstrateconcepts.fusionofsouls.model.component.steerable
-import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
-import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
+import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
+import net.firstrateconcepts.fusionofsouls.model.component.team
 import net.firstrateconcepts.fusionofsouls.model.event.NewBattleEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitDiedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.battleComplete
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.system.steeringFamily
 import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
@@ -20,21 +21,19 @@ class BattleManager(private val enemyGenerator: EnemyGenerator, override val eve
         enemyGenerator.generateEnemies()
     }
 
-    @HandlesEvent(BattleStartedEvent::class)
-    fun battleStarted() {
-        logger.info { "Starting battle" }
-        val steerables = engine.getEntitiesFor(steeringFamily).map { it.steerable }
-        steerables.forEach { steer ->
-            val notMe = steerables.filter { it != steer }
-            steer.steeringBehavior.proximityAgents.apply {
-                clear()
-                addAll(notMe)
+    @HandlesEvent
+    fun unitDied(event: UnitDiedEvent) {
+        engine.withUnit(event.unitId) { entity ->
+            runOnServiceThread {
+                if (engine.getEntitiesFor(aliveUnitFamily).none { it.team == entity.team }) {
+                    battleComplete()
+                }
             }
         }
     }
 
-    @HandlesEvent(BattleCompletedEvent::class)
-    fun battleComplete() {
+    private fun battleComplete() {
         logger.info { "Battle complete" }
+        eventBus.battleComplete()
     }
 }

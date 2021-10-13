@@ -25,10 +25,10 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
     private val children = mutableListOf<Controller>()
 
     @HandlesEvent
-    suspend fun unitActivatedHandler(event: UnitActivatedEvent) = engine.withUnit(event.unitId) { onRenderingThread { addNewUnit(this@withUnit) } }
+    suspend fun unitActivatedHandler(event: UnitActivatedEvent) = engine.withUnit(event.unitId) { entity -> onRenderingThread { addNewUnit(entity) } }
 
     @HandlesEvent
-    suspend fun unitDeactivatedHandler(event: UnitDeactivatedEvent) = onRenderingThread { removeUnit(event.unitId) }
+    suspend fun unitDeactivatedHandler(event: UnitDeactivatedEvent) = removeUnit(event.unitId)
 
     override fun load() {
         eventBus.registerHandlers(this)
@@ -40,7 +40,7 @@ class DuringRunGameController(private val eventBus: EventBus, private val engine
         return unit
     }
 
-    private fun removeUnit(id: Int) = vm.units.removeIf { it.id == id }
+    private suspend fun removeUnit(id: Int) = onRenderingThread { vm.units.removeIf { it.id == id } }
 
     override fun dispose() {
         eventBus.unregisterHandlers(this)

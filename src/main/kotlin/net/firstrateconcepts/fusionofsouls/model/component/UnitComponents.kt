@@ -3,6 +3,7 @@ package net.firstrateconcepts.fusionofsouls.model.component
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
 import kotlinx.coroutines.channels.Channel
+import ktx.ashley.allOf
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.oneOf
@@ -47,3 +48,18 @@ class ActionsComponent : Component {
 }
 val actionsMapper = mapperFor<ActionsComponent>()
 val Entity.actions get() = this[actionsMapper]!!
+
+class BattleDataComponent(maxHp: Float) : Component {
+    var currentHp = maxHp
+}
+val battleDataMapper = mapperFor<BattleDataComponent>()
+val Entity.battleData get() = this[battleDataMapper]!!
+var Entity.currentHp
+    get() = battleData.currentHp
+    set(value) { battleData.currentHp = value }
+
+class AliveComponent : Component
+val aliveMapper = mapperFor<AliveComponent>()
+val Entity.alive get() = this[aliveMapper]
+val Entity.isAlive get() = alive != null
+val aliveUnitFamily = allOf(UnitComponent::class, AliveComponent::class).get()!!

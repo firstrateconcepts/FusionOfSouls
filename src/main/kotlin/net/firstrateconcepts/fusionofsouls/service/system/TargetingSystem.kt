@@ -4,12 +4,12 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.configureEntity
 import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
+import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.hasTarget
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.target
-import net.firstrateconcepts.fusionofsouls.model.component.unitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.unitInfo
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.TargetAction
@@ -27,7 +27,7 @@ class TargetingSystem(
     private val eventBus: EventBus,
     private val actionQueueBus: ActionQueueBus,
     private val attackService: AttackService
-) : IteratingSystem(unitFamily) {
+) : IteratingSystem(aliveUnitFamily) {
     private val logger = fosLogger()
 
     private val actionHandler = actionProcessor<TargetAction> { entity, action ->

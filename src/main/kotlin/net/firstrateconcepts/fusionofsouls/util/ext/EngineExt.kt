@@ -8,7 +8,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.idFamily
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 
-fun AsyncPooledEngine.withUnit(id: Int, callback: suspend Entity.() -> Unit) = runOnEngineThread { getEntitiesFor(idFamily).find { it.id == id }?.callback() }
+fun AsyncPooledEngine.withUnit(id: Int, callback: suspend (Entity) -> Unit) = runOnEngineThread { getEntitiesFor(idFamily).find { it.id == id }?.apply { callback(this) } }
 
 inline fun <reified T : Component> EngineEntity.with(vararg params: Any): T {
     val constructor = reflect<T>().constructor

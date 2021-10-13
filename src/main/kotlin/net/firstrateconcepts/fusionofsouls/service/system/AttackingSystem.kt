@@ -2,12 +2,13 @@ package net.firstrateconcepts.fusionofsouls.service.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.attackSpeed
 import net.firstrateconcepts.fusionofsouls.model.component.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.unitFamily
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackAnimationComplete
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.AttackAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
@@ -24,13 +25,12 @@ class AttackingSystem(
     private val eventBus: EventBus,
     private val actionQueueBus: ActionQueueBus,
     private val attackService: AttackService
-) : IteratingSystem(unitFamily) {
+) : IteratingSystem(aliveUnitFamily) {
     private val logger = fosLogger()
+
     private val attackProcessor = actionProcessor<AttackAction> { entity, _ ->
         logger.info { "Processing attack for ${entity.id}" }
         eventBus.enqueueEventSync(UnitAttackingEvent(entity.id))
-        entity.attackTimer.reset()
-        entity.attackTimer.resume()
     }
 
     init {
@@ -39,7 +39,15 @@ class AttackingSystem(
     }
 
     @HandlesEvent
-    fun updateAttackTimer(event: AttributesChangedEvent) = engine.withUnit(event.unitId) { attackTimer.targetTime = 1f / attrs.attackSpeed() }
+    fun updateAttackTimer(event: AttributesChangedEvent) = engine.withUnit(event.unitId) { it.attackTimer.targetTime = 1f / it.attrs.attackSpeed() }
+
+    @HandlesEvent
+    fun processAttack(event: UnitAttackAnimationComplete) = engine.withUnit(event.unitId) { entity ->
+        logger.info { "Processing attack for ${entity.id}" }
+        attackService.processEntityAttack(entity)
+        entity.attackTimer.reset()
+        entity.attackTimer.resume()
+    }
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         if (entity.attackTimer.isReady && attackService.canEntityAttack(entity)) {

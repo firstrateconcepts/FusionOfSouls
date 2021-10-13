@@ -40,13 +40,13 @@ class EnemyGenerator(
 
         (0 until count).forEach {
             val position = availablePositions.removeFirst()
-            unitManager.buildUnit("Enemy $it", UnitTexture.ENEMY, UnitType.BASIC, UnitTeam.ENEMY) {
+            val entity = unitManager.buildUnit("Enemy $it", UnitTexture.ENEMY, UnitType.BASIC, UnitTeam.ENEMY) {
                 // TODO: Randomize enemy stats more than just the strength mods to their base attrs
                 AttributeType.values().filter { v -> v.priority == AttributePriority.PRIMARY }.forEach { type ->
                     entity.attrMods.add(AttributeModifier(type, percentModifier = strength.toFloat()))
                 }
-                unitManager.activateUnit(entity.id, position)
             }
+            unitManager.activateUnit(entity.id, position)
         }
     }
 }

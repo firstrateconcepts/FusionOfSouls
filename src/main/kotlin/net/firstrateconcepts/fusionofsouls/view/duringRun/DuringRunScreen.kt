@@ -8,6 +8,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.GamePauseChanged
 import net.firstrateconcepts.fusionofsouls.model.event.NewBattleEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
+import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.core.GameScreen
@@ -22,12 +23,16 @@ class DuringRunScreen(
     private val eventBus: EventBus,
     private val aiTimepiece: Timepiece
 ) : GameScreen(GAME_AREA_WIDTH, GAME_AREA_HEIGHT) {
+    private val logger = fosLogger()
     private var isRunning = false
     private var isPaused = false
 
     @HandlesEvent(NewBattleEvent::class) suspend fun newBattle() = onRenderingThread { isRunning = false }
     @HandlesEvent(BattleStartedEvent::class) suspend fun battleStart() = onRenderingThread { isRunning = true }
-    @HandlesEvent(BattleCompletedEvent::class) suspend fun battleComplete() = onRenderingThread { isRunning = false }
+    @HandlesEvent(BattleCompletedEvent::class) suspend fun battleComplete() = onRenderingThread {
+        logger.info { "Battle ended, pausing render" }
+        isRunning = false
+    }
 
     @HandlesEvent
     suspend fun pauseResume(event: GamePauseChanged) = onRenderingThread { isPaused = event.isPaused }
