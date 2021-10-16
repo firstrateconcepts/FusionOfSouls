@@ -3,6 +3,7 @@ package net.firstrateconcepts.fusionofsouls.model.loot.passive
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.name
+import net.firstrateconcepts.fusionofsouls.model.loot.Rarity
 import net.firstrateconcepts.fusionofsouls.model.unit.beforeDamage
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 
@@ -19,5 +20,6 @@ object Ravenous : PassiveDefinition {
     override val id = 1
     override val name = "Ravenous"
     override val description = "Attacks deal additional base damage equal to ${percentHp}% of the defender's Max HP."
+    override val rarity = Rarity.COMMON
     override val strategy = InterceptorPassiveStrategy(InterceptorTarget.UNIT to interceptor)
 }
