@@ -31,7 +31,7 @@ class RunInitializer(
 
         runServiceRegistry.startAll()
 
-        val entity = unitManager.buildUnit(hero.name, hero.texture, hero.ability, UnitType.HERO, UnitTeam.PLAYER) {
+        val entity = unitManager.buildUnit(hero.name, hero.texture, hero.ability, hero.passive, UnitType.HERO, UnitTeam.PLAYER) {
             // TODO: This is not real, please remember to remove this
 //            entity.attrMods.add(AttributeModifier(AttributeType.BASE_DAMAGE, percentModifier = 200f))
         }

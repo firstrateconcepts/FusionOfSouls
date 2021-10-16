@@ -21,10 +21,11 @@ import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TargetingSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
 import net.firstrateconcepts.fusionofsouls.service.unit.AbilityService
-import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
 import net.firstrateconcepts.fusionofsouls.service.unit.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.unit.EffectService
 import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
+import net.firstrateconcepts.fusionofsouls.service.unit.PassiveService
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitInteractionService
 import net.firstrateconcepts.fusionofsouls.service.unit.UnitManager
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -73,12 +74,13 @@ object Injector : Context() {
         bindSingleton<RunServiceRegistry>()
 
         bindSingleton<AttributeCalculator>()
+        bindSingleton<EffectService>()
+        bindSingleton<PassiveService>()
         bindSingleton<UnitManager>()
         bindSingleton<RunStateService>()
         bindSingleton<RandomizerService>()
         bindSingleton<ActionQueueBus>()
-        bindSingleton<AttackService>()
-        bindSingleton<EffectService>()
+        bindSingleton<UnitInteractionService>()
         bindSingleton<AbilityService>()
 
         bindSingleton<SteeringSystem>()

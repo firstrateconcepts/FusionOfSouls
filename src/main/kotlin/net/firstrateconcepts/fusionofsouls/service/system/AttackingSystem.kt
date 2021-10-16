@@ -12,7 +12,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackAnimationComple
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.AttackAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitInteractionService
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.service.unit.action.actionProcessor
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
@@ -24,7 +24,7 @@ class AttackingSystem(
     private val engine: AsyncPooledEngine,
     private val eventBus: EventBus,
     private val actionQueueBus: ActionQueueBus,
-    private val attackService: AttackService
+    private val interactionService: UnitInteractionService
 ) : IteratingSystem(aliveUnitFamily) {
     private val logger = fosLogger()
 
@@ -44,13 +44,13 @@ class AttackingSystem(
     @HandlesEvent
     fun processAttack(event: UnitAttackAnimationComplete) = engine.withUnit(event.unitId) { entity ->
         logger.info { "Processing attack for ${entity.id}" }
-        attackService.processEntityAttack(entity)
+        interactionService.processEntityAttack(entity)
         entity.attackTimer.reset()
         entity.attackTimer.resume()
     }
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        if (entity.attackTimer.isReady && attackService.canEntityAttack(entity)) {
+        if (entity.attackTimer.isReady && interactionService.canEntityAttack(entity)) {
             actionQueueBus.addAction(AttackAction(entity.id))
             entity.attackTimer.pause()
         }

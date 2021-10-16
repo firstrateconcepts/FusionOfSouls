@@ -5,10 +5,15 @@ import net.firstrateconcepts.fusionofsouls.model.component.ability
 import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.attackBonus
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
+import net.firstrateconcepts.fusionofsouls.model.component.currentHp
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
+import net.firstrateconcepts.fusionofsouls.model.component.evasion
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.team
+import net.firstrateconcepts.fusionofsouls.model.unit.DamageRequest
+import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.AbilityUsage
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.DamageAction
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.EffectAction
@@ -26,7 +31,7 @@ class AbilityService(
     override val eventBus: EventBus,
     private val engine: AsyncPooledEngine,
     private val randomizer: RandomizerService,
-    private val attackService: AttackService,
+    private val interactionService: UnitInteractionService,
     private val effectService: EffectService
 ) : RunService() {
     private val logger = fosLogger()
@@ -56,8 +61,12 @@ class AbilityService(
         val rawRoll = randomizer.attackRoll()
         val attackBonus = entity.attrs.attackBonus()
         targets.forEach { target ->
-            // TODO: Add in damage multiplier
-            attackService.doAttack(entity, target, rawRoll, attackBonus.toInt())
+            val evasion = target.attrs.evasion()
+            val hitResult = interactionService.hitCheck(entity, target, HitCheck(rawRoll, attackBonus, evasion))
+            if (!hitResult.isHit) return@forEach
+            val damageRequest = DamageRequest(hitResult).apply { addDamageMultiplier(action.damageMultiplier) }
+            val damage = interactionService.damage(entity, target, damageRequest)
+            logger.info { "[${entity.name} -> ${target.name}] ability damage: [${damage.finalDamage} | Defender HP: ${target.currentHp} / ${target.attrs.maxHp()}]" }
         }
     }
 

@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import ktx.actors.then
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.definition.StunDefinition
 
-object GroundSlamDefinition : AbilityDefinition {
+object GroundSlam : AbilityDefinition {
     private val usage = AbilityUsage(
         area = 1f,
         targets = 0,

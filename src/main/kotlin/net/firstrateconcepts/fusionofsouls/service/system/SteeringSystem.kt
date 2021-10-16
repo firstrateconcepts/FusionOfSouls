@@ -15,7 +15,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.MovementAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitInteractionService
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.radDeg
@@ -28,7 +28,7 @@ val steeringFamily = allOf(SteerableComponent::class, AliveComponent::class).get
 class SteeringSystem(
     private val engine: AsyncPooledEngine,
     private val actionQueueBus: ActionQueueBus,
-    private val attackService: AttackService
+    private val interactionService: UnitInteractionService
 ) : IteratingSystem(steeringFamily) {
     private val logger = fosLogger()
     private val unitMoveCallbacks = mutableMapOf<Int, Entity.() -> Unit>()
@@ -92,7 +92,7 @@ class SteeringSystem(
         val steerable = entity.steerable
         val behavior = steerable.steeringBehavior
 
-        if (attackService.canEntityAttack(entity)) {
+        if (interactionService.canEntityAttack(entity)) {
             behavior.toggleMovement(false)
             steerable.linearVelocity.setZero()
         } else {

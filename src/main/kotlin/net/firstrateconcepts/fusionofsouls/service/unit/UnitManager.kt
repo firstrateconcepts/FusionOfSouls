@@ -17,7 +17,9 @@ import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.BattleDataComponent
 import net.firstrateconcepts.fusionofsouls.model.component.EffectsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
+import net.firstrateconcepts.fusionofsouls.model.component.InterceptorsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.NameComponent
+import net.firstrateconcepts.fusionofsouls.model.component.PassivesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TextureComponent
@@ -34,6 +36,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.HpChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.KillUnitEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
+import net.firstrateconcepts.fusionofsouls.model.loot.passive.PassiveDefinition
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
@@ -50,7 +53,8 @@ class UnitManager(
     private val engine: AsyncPooledEngine,
     private val assets: AssetStorage,
     override val eventBus: EventBus,
-    private val attributeCalculator: AttributeCalculator
+    private val attributeCalculator: AttributeCalculator,
+    private val passiveService: PassiveService
 ) : RunService() {
     private val logger = fosLogger()
 
@@ -58,6 +62,7 @@ class UnitManager(
         name: String,
         texture: UnitTexture,
         ability: AbilityDefinition,
+        passive: PassiveDefinition,
         type: UnitType,
         team: UnitTeam,
         config: EngineEntity.() -> Unit = {}
@@ -65,6 +70,8 @@ class UnitManager(
         val unit = engine.entity {
             with<IdComponent>()
             with<UnitComponent>(type, team, ability)
+            with<PassivesComponent>()
+            with<InterceptorsComponent>()
             with<NameComponent>(name)
             with<TextureComponent>(assets.get<Texture>(texture.assetFile))
             with<AttributesComponent>()
@@ -73,6 +80,7 @@ class UnitManager(
         }
 
         attributeCalculator.recalculate(unit)
+        passiveService.addPassive(unit, passive)
         return unit
     }
 
@@ -102,7 +110,7 @@ class UnitManager(
         }
     }
 
-    fun updateUnitHp(unitId: Int, hpDiff: Float) {
+    fun updateUnitHp(unitId: Int, hpDiff: Int) {
         engine.withUnit(unitId) { entity ->
             entity.currentHp += hpDiff
             if (entity.currentHp <= 0) killUnit(entity)

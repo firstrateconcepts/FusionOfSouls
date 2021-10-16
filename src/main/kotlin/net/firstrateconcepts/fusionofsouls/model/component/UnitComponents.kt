@@ -7,6 +7,10 @@ import ktx.ashley.allOf
 import ktx.ashley.get
 import ktx.ashley.mapperFor
 import ktx.ashley.oneOf
+import net.firstrateconcepts.fusionofsouls.model.loot.passive.PassiveDefinition
+import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorHook
+import net.firstrateconcepts.fusionofsouls.model.unit.UnitInteraction
+import net.firstrateconcepts.fusionofsouls.model.unit.UnitInterceptor
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.AbilityDefinition
@@ -21,6 +25,31 @@ val unitMapper = mapperFor<UnitComponent>()
 val Entity.unitInfo get() = this[unitMapper]!!
 val Entity.team get() = unitInfo.team
 val Entity.ability get() = unitInfo.ability
+
+class PassivesComponent : Component {
+    val passives = mutableListOf<PassiveDefinition>()
+}
+val passivesMapper = mapperFor<PassivesComponent>()
+val Entity.passives get() = this[passivesMapper]!!.passives
+
+class InterceptorsComponent : Component {
+    val asUnitInterceptors = mutableMapOf<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>()
+    val asTargetInterceptors = mutableMapOf<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>()
+    
+    @Suppress("UNCHECKED_CAST")
+    private fun MutableMap<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>.addInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) =
+        computeIfAbsent(interceptor.hook) { mutableListOf() }.add(interceptor as UnitInterceptor<UnitInteraction>)
+    
+    fun addUnitInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asUnitInterceptors.addInterceptor(interceptor)
+    fun addTargetInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asTargetInterceptors.addInterceptor(interceptor)
+    fun removeUnitInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asUnitInterceptors[interceptor.hook]?.remove(interceptor)
+    fun removeTargetInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asTargetInterceptors[interceptor.hook]?.remove(interceptor)
+}
+val interceptorsMapper = mapperFor<InterceptorsComponent>()
+val Entity.interceptors get() = this[interceptorsMapper]!!
+
+fun <I: UnitInteraction> Entity.interceptAsUnit(hook: InterceptorHook, target: Entity, interaction: I) = interceptors.asUnitInterceptors[hook]?.forEach { it.intercept(this, target, interaction) }
+fun <I: UnitInteraction> Entity.interceptAsTarget(hook: InterceptorHook, unit: Entity, interaction: I) = interceptors.asTargetInterceptors[hook]?.forEach { it.intercept(unit, this, interaction) }
 
 class TimersComponent : Component {
     var timerSequence = STARTING_SEQUENCE
