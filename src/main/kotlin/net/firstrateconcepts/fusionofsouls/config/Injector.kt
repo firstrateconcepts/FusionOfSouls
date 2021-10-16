@@ -9,7 +9,6 @@ import net.firstrateconcepts.fusionofsouls.FusionOfSoulsGame
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.asset.AssetLoader
 import net.firstrateconcepts.fusionofsouls.service.asset.SkinLoader
-import net.firstrateconcepts.fusionofsouls.service.unit.AttributeCalculator
 import net.firstrateconcepts.fusionofsouls.service.duringRun.BattleManager
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
@@ -17,10 +16,14 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.service.system.AbilitySystem
 import net.firstrateconcepts.fusionofsouls.service.system.AttackingSystem
+import net.firstrateconcepts.fusionofsouls.service.system.EffectsSystem
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TargetingSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
+import net.firstrateconcepts.fusionofsouls.service.unit.AbilityService
 import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
+import net.firstrateconcepts.fusionofsouls.service.unit.AttributeCalculator
+import net.firstrateconcepts.fusionofsouls.service.unit.EffectService
 import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
 import net.firstrateconcepts.fusionofsouls.service.unit.UnitManager
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
@@ -75,12 +78,15 @@ object Injector : Context() {
         bindSingleton<RandomizerService>()
         bindSingleton<ActionQueueBus>()
         bindSingleton<AttackService>()
+        bindSingleton<EffectService>()
+        bindSingleton<AbilityService>()
 
         bindSingleton<SteeringSystem>()
         bindSingleton<TargetingSystem>()
         bindSingleton<AttackingSystem>()
         bindSingleton<TimersSystem>()
         bindSingleton<AbilitySystem>()
+        bindSingleton<EffectsSystem>()
 
         bindSingleton<RunInitializer>()
         bindSingleton<EnemyGenerator>()

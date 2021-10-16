@@ -6,6 +6,7 @@ import ktx.actors.then
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
+import net.firstrateconcepts.fusionofsouls.model.component.ability
 import net.firstrateconcepts.fusionofsouls.model.component.abilityTimer
 import net.firstrateconcepts.fusionofsouls.model.component.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
@@ -13,10 +14,12 @@ import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.rotation
 import net.firstrateconcepts.fusionofsouls.model.event.HpChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.KillUnitEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitAbilityAnimationComplete
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackAnimationComplete
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDiedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitUsingAbilityEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
@@ -74,7 +77,7 @@ class UnitController(
             val action = Actions.fadeOut(0.5f) then Actions.run {
                 eventBus.enqueueEventSync(UnitDiedEvent(id))
             } then Actions.removeActor()
-            vm.actorActions(mutableListOf(action))
+            vm.addActorAction(ActorActionTarget.UNIT, action)
         }
     }
 
@@ -87,10 +90,25 @@ class UnitController(
             withUnit {
                 val xMove = cos((rotation + 90f).degRad) * 0.1f
                 val yMove = sin((rotation + 90f).degRad) * 0.1f
-                val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveTo(currentPosition.x, currentPosition.y, 0.15f) then Actions.run {
+                val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveBy(-xMove, -yMove, 0.15f) then Actions.run {
                     eventBus.enqueueEventSync(UnitAttackAnimationComplete(id))
                 }
-                vm.actorActions(mutableListOf(action))
+                vm.addActorAction(ActorActionTarget.IMAGE, action)
+            }
+        }
+    }
+
+    @HandlesEvent
+    suspend fun unitUsingAbility(event: UnitUsingAbilityEvent) {
+        if (!filterEvent(event)) return
+
+        onRenderingThread {
+            logger.info { "Performing unit ability animation for [${event.unitId}]" }
+            withUnit {
+                val action = ability.animation then Actions.run {
+                    eventBus.enqueueEventSync(UnitAbilityAnimationComplete(id))
+                }
+                vm.addActorAction(ActorActionTarget.IMAGE, action)
             }
         }
     }

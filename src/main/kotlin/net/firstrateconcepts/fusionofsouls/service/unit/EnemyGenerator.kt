@@ -11,6 +11,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
+import net.firstrateconcepts.fusionofsouls.model.unit.ability.GroundSlamDefinition
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.util.ext.sqrt
@@ -40,7 +41,9 @@ class EnemyGenerator(
 
         (0 until count).forEach {
             val position = availablePositions.removeFirst()
-            val entity = unitManager.buildUnit("Enemy $it", UnitTexture.ENEMY, UnitType.BASIC, UnitTeam.ENEMY) {
+            // TODO: Ability pool random etc
+            val ability = GroundSlamDefinition
+            val entity = unitManager.buildUnit("Enemy $it", UnitTexture.ENEMY, ability, UnitType.BASIC, UnitTeam.ENEMY) {
                 // TODO: Randomize enemy stats more than just the strength mods to their base attrs
                 AttributeType.values().filter { v -> v.priority == AttributePriority.PRIMARY }.forEach { type ->
                     entity.attrMods.add(AttributeModifier(type, percentModifier = strength.toFloat()))

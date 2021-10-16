@@ -57,12 +57,13 @@ class ActionQueueBus(override val eventBus: EventBus, private val engine: AsyncP
         while (!actions.queue.isClosedForReceive && this.isActive) {
             actions.queue.receiveCatching().apply {
                 if (isFailure) {
+                    logger.error { "Entity [${entity.id}] action from queue errored out: ${exceptionOrNull()}" }
                     return@apply
                 }
 
                 val action = getOrThrow()
                 if (actions.blockers.any { action::class.isSubclassOf(it.action) }) {
-                    actions.queue.send(action)
+                    addAction(action)
                     return@apply
                 }
 

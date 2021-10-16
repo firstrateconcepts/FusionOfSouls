@@ -15,6 +15,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.AliveComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.BattleDataComponent
+import net.firstrateconcepts.fusionofsouls.model.component.EffectsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
 import net.firstrateconcepts.fusionofsouls.model.component.NameComponent
 import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
@@ -36,6 +37,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
+import net.firstrateconcepts.fusionofsouls.model.unit.ability.AbilityDefinition
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
@@ -55,13 +57,14 @@ class UnitManager(
     fun buildUnit(
         name: String,
         texture: UnitTexture,
+        ability: AbilityDefinition,
         type: UnitType,
         team: UnitTeam,
         config: EngineEntity.() -> Unit = {}
     ): Entity {
         val unit = engine.entity {
             with<IdComponent>()
-            with<UnitComponent>(type, team)
+            with<UnitComponent>(type, team, ability)
             with<NameComponent>(name)
             with<TextureComponent>(assets.get<Texture>(texture.assetFile))
             with<AttributesComponent>()
@@ -82,6 +85,7 @@ class UnitManager(
                 with<ActionsComponent>()
                 with<BattleDataComponent>(entity.attrs.maxHp())
                 with<AliveComponent>()
+                with<EffectsComponent>()
             }
 
             eventBus.enqueueEvent(UnitActivatedEvent(id))

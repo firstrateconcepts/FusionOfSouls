@@ -24,11 +24,6 @@ class UnitView(override val controller: UnitController, override val vm: UnitVie
         setBounds(0f, 0f, 0.75f, 0.75f)
         setOrigin(Align.center)
         bindUpdatable(vm.position) { vm.position.get().apply { setPosition(x, y) } }
-        bindUpdatable(vm.actorActions) {
-            this@UnitView.logger.debug { "Adding actor action for unit [${vm.id}]" }
-            val actions = vm.actorActions.get()
-            while (actions.isNotEmpty()) this@UnitView.addAction(actions.removeFirst())
-        }
 
         visTable {
             setRound(false)
@@ -51,10 +46,23 @@ class UnitView(override val controller: UnitController, override val vm: UnitVie
             unitProgressBar(Color.BLUE, vm.abilityTimerPercent)
         }
 
-        visImage(vm.texture) {
+        val image = visImage(vm.texture) {
             setSize(0.75f, 0.75f)
             setOrigin(Align.center)
             bindUpdatable(vm.rotation) { vm.rotation.get().apply { rotation = this } }
+        }
+
+        bindUpdatable(vm.actorActions) {
+            this@UnitView.logger.debug { "Adding actor action for unit [${vm.id}]" }
+            val actions = vm.actorActions.get()
+            while (actions.isNotEmpty()) {
+                val actionDef = actions.removeFirst()
+                if (actionDef.target == ActorActionTarget.IMAGE) {
+                    image.addAction(actionDef.action)
+                } else {
+                    this@UnitView.addAction(actionDef.action)
+                }
+            }
         }
     }
 

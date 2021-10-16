@@ -2,9 +2,6 @@ package net.firstrateconcepts.fusionofsouls.service.duringRun
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
-import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeModifier
-import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
-import net.firstrateconcepts.fusionofsouls.model.component.attrMods
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.event.newBattle
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
@@ -34,9 +31,9 @@ class RunInitializer(
 
         runServiceRegistry.startAll()
 
-        val entity = unitManager.buildUnit(hero.name, hero.texture, UnitType.HERO, UnitTeam.PLAYER) {
+        val entity = unitManager.buildUnit(hero.name, hero.texture, hero.ability, UnitType.HERO, UnitTeam.PLAYER) {
             // TODO: This is not real, please remember to remove this
-            entity.attrMods.add(AttributeModifier(AttributeType.BASE_DAMAGE, percentModifier = 200f))
+//            entity.attrMods.add(AttributeModifier(AttributeType.BASE_DAMAGE, percentModifier = 200f))
         }
         unitManager.activateUnit(entity.id, Vector2())
 

@@ -44,40 +44,52 @@ class AttackService(
             runOnServiceThread {
                 val rawRoll = randomizer.rng.nextInt(0, 100)
                 val attackBonus = attacker.attrs.attackBonus()
-                val evasion = defender.attrs.evasion()
-                val attackDiff = attackBonus - evasion
-                val finalRoll = rawRoll + attackDiff
-
-                val tag = "[${attacker.name} -> ${defender.name}]: "
-                val combatStr = StringBuilder(tag)
-                combatStr.append("Rolled [$rawRoll] | $attackBonus Bonus vs $evasion Evasion | Total Roll [$finalRoll]: ")
-                if (finalRoll < 0) {
-                    combatStr.append("Attack missed!")
-                    logger.info { combatStr.toString() }
-                    return@runOnServiceThread
-                }
-                combatStr.append("Attack hits! ")
-
-                val isCrit = finalRoll > 100
-                val expectedRoll = 50 + attackDiff
-                val damageScale = 1 + ((finalRoll - expectedRoll) / 200)
-                val critMulti = attacker.attrs.critBonus()
-                val totalDamageMulti = if (isCrit) {
-                    combatStr.append("CRITICAL HIT! Crit multi [${critMulti}] ")
-                    damageScale * critMulti
-                } else {
-                    combatStr.append("No crit. ")
-                    damageScale
-                }
-
-                val baseDamage = attacker.attrs.baseDamage()
-                val defense = defender.attrs.defense()
-                val rawDamage = baseDamage * totalDamageMulti
-                val finalDamage = rawDamage / defense
-                unitManager.updateUnitHp(defender.id, -finalDamage)
-                combatStr.append("Damage Data: [Damage Scale: $damageScale | Raw Damage: $rawDamage | Defense: $defense | Final: $finalDamage | Defender HP: ${defender.currentHp} / ${defender.attrs.maxHp()}]")
-                logger.info { combatStr.toString() }
+                doAttack(attacker, defender, rawRoll, attackBonus.toInt())
             }
         }
+    }
+
+    fun doAttack(attacker: Entity, defender: Entity, rawRoll: Int, attackBonus: Int) {
+        val tag = "[${attacker.name} -> ${defender.name}]: "
+        val combatStr = StringBuilder(tag)
+
+        val evasion = defender.attrs.evasion()
+        val attackDiff = attackBonus - evasion
+        val finalRoll = rawRoll + attackDiff
+
+
+        combatStr.append("Rolled [$rawRoll] | $attackBonus Bonus vs $evasion Evasion | Total Roll [$finalRoll]: ")
+
+        if (finalRoll < 0) {
+            combatStr.append("Attack missed!")
+            logger.info { combatStr.toString() }
+            return
+        }
+
+        combatStr.append("Attack hits! ")
+
+        val isCrit = finalRoll > 100
+
+        val expectedRoll = 50 + attackDiff
+        val damageScale = 1 + ((finalRoll - expectedRoll) / 200)
+
+        val critMulti = attacker.attrs.critBonus()
+        val totalDamageMulti = if (isCrit) {
+            combatStr.append("CRITICAL HIT! Crit multi [${critMulti}] ")
+            damageScale * critMulti
+        } else {
+            combatStr.append("No crit. ")
+            damageScale
+        }
+
+        val baseDamage = attacker.attrs.baseDamage()
+        val defense = defender.attrs.defense()
+        val rawDamage = baseDamage * totalDamageMulti
+        val finalDamage = rawDamage / defense
+
+        unitManager.updateUnitHp(defender.id, -finalDamage)
+
+        combatStr.append("Damage Data: [Damage Scale: $damageScale | Raw Damage: $rawDamage | Defense: $defense | Final: $finalDamage | Defender HP: ${defender.currentHp} / ${defender.attrs.maxHp()}]")
+        logger.info { combatStr.toString() }
     }
 }
