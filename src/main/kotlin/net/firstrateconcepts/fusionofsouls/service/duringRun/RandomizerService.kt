@@ -13,5 +13,6 @@ class RandomizerService(private val runStateService: RunStateService, override v
 
     fun <T> randomize(action: (Random) -> T) = action(rng)
 
-    fun percentChance(percentChance: Float) = randomize { rng.nextFloat() <= percentChance }
+    fun percentChance(percentChance: Float) = randomize { it.nextFloat() <= percentChance }
+    fun attackRoll() = randomize { it.nextInt(0, 100) }
 }

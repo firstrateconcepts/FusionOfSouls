@@ -20,6 +20,8 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
+// TODO: Mix strategy + factory for the action types, splitting out the "do" methods into individual classes
+// TODO: Unit test individual strategy classes
 class AbilityService(
     override val eventBus: EventBus,
     private val engine: AsyncPooledEngine,
@@ -51,7 +53,7 @@ class AbilityService(
 
     private fun doDamage(entity: Entity, targets: List<Entity>, action: DamageAction) {
         logger.info { "Doing damage from [${entity.name}] against [${targets.joinToString(",") { it.name }}] using action [$action]" }
-        val rawRoll = randomizer.rng.nextInt(0, 100)
+        val rawRoll = randomizer.attackRoll()
         val attackBonus = entity.attrs.attackBonus()
         targets.forEach { target ->
             // TODO: Add in damage multiplier

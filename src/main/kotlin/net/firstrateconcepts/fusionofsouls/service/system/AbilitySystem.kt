@@ -50,7 +50,8 @@ class AbilitySystem(
         entity.abilityTimer.resume()
     }
 
-    // NB: Ability "can use" likely needs to be a strategy pattern based on things like "InRangeStrategy" or "AllyInRangeStrategy"
+    // TODO: Ability "can use" likely needs to be a strategy pattern based on things like "InRangeStrategy" or "AllyInRangeStrategy"
+    //  Might just work as "has valid targets" based on AbilityService#findTargets
     
     override fun processEntity(entity: Entity, deltaTime: Float) {
         if (entity.abilityTimer.isReady) {

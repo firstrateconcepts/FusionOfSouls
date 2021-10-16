@@ -1,7 +1,7 @@
 package net.firstrateconcepts.fusionofsouls.model.unit.ability
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction
-import net.firstrateconcepts.fusionofsouls.model.unit.effect.EffectDefinition
+import net.firstrateconcepts.fusionofsouls.model.unit.effect.definition.EffectDefinition
 
 // TODO: Area should actually be area type because cone is an option
 // TODO: Targeting needs to be a targeting strategy for things like "lowest health enemies" or "two lowest HP allies"

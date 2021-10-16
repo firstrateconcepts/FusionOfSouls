@@ -1,6 +1,7 @@
-package net.firstrateconcepts.fusionofsouls.model.unit.effect
+package net.firstrateconcepts.fusionofsouls.model.unit.effect.definition
 
 import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
+import net.firstrateconcepts.fusionofsouls.model.unit.effect.ActionBlockerEffectStrategy
 
 object StunDefinition : EffectDefinition {
     override val name = "Stun"

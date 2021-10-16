@@ -9,12 +9,14 @@ import net.firstrateconcepts.fusionofsouls.model.unit.action.ActionBlocker
 import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.ActionBlockerEffectStrategy
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.Effect
-import net.firstrateconcepts.fusionofsouls.model.unit.effect.EffectDefinition
+import net.firstrateconcepts.fusionofsouls.model.unit.effect.definition.EffectDefinition
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import kotlin.reflect.KClass
 
+// TODO: Mix strategy + factory for the action types, splitting out the "apply/remove" methods into individual classes
+// TODO: Unit test individual strategy classes
 class EffectService(override val eventBus: EventBus) : RunService() {
     private val logger = fosLogger()
 
@@ -38,7 +40,6 @@ class EffectService(override val eventBus: EventBus) : RunService() {
                 is ActionBlockerEffectStrategy -> removeActionBlockers(entity, effect)
             }
         }
-
     }
 
     private fun applyActionBlockers(entity: Entity, effect: Effect, actions: Array<out KClass<out UnitAction>>) =

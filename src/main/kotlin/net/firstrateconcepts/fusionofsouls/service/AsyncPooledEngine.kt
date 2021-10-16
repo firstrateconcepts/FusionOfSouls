@@ -8,6 +8,7 @@ import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
+// TODO: Looks like we need a thread-safe version of the Family Manager
 class AsyncPooledEngine(private val eventBus: EventBus) : PooledEngine(10, 100, 25, 1000) {
     private val asyncContext = newSingleThreadAsyncContext("Engine-Thread")
 

@@ -2,14 +2,14 @@ package net.firstrateconcepts.fusionofsouls.model.unit.ability
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import ktx.actors.then
-import net.firstrateconcepts.fusionofsouls.model.unit.effect.StunDefinition
+import net.firstrateconcepts.fusionofsouls.model.unit.effect.definition.StunDefinition
 
 object GroundSlamDefinition : AbilityDefinition {
     private val usage = AbilityUsage(
-            area = 1f,
-            targets = 0,
-            targetTypes = setOf(TargetType.ENEMY),
-            actions = listOf(DamageAction(1.25f), EffectAction(StunDefinition, 1.5f, 0.25f))
+        area = 1f,
+        targets = 0,
+        targetTypes = setOf(TargetType.ENEMY),
+        actions = listOf(DamageAction(1.25f), EffectAction(StunDefinition, 1.5f, 0.25f))
     )
     private const val radius = 1
 

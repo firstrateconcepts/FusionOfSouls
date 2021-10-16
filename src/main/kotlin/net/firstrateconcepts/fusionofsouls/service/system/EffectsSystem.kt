@@ -14,7 +14,7 @@ import net.firstrateconcepts.fusionofsouls.service.unit.EffectService
 
 val effectsFamily = allOf(UnitComponent::class, AliveComponent::class, EffectsComponent::class).get()!!
 
-class EffectsSystem(private val engine: AsyncPooledEngine, private val effectService: EffectService) : IteratingSystem(effectsFamily) {
+class EffectsSystem(engine: AsyncPooledEngine, private val effectService: EffectService) : IteratingSystem(effectsFamily) {
     init {
         engine.addSystem(this)
     }

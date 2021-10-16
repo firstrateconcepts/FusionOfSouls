@@ -42,7 +42,7 @@ class AttackService(
 
         engine.withUnit(attacker.target!!) { defender ->
             runOnServiceThread {
-                val rawRoll = randomizer.rng.nextInt(0, 100)
+                val rawRoll = randomizer.attackRoll()
                 val attackBonus = attacker.attrs.attackBonus()
                 doAttack(attacker, defender, rawRoll, attackBonus.toInt())
             }
@@ -56,7 +56,6 @@ class AttackService(
         val evasion = defender.attrs.evasion()
         val attackDiff = attackBonus - evasion
         val finalRoll = rawRoll + attackDiff
-
 
         combatStr.append("Rolled [$rawRoll] | $attackBonus Bonus vs $evasion Evasion | Total Roll [$finalRoll]: ")
 

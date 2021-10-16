@@ -4,12 +4,13 @@ import com.badlogic.ashley.core.Entity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import ktx.ashley.oneOf
+import ktx.ashley.allOf
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
 import net.firstrateconcepts.fusionofsouls.model.component.ActionsComponent
+import net.firstrateconcepts.fusionofsouls.model.component.AliveComponent
+import net.firstrateconcepts.fusionofsouls.model.component.UnitComponent
 import net.firstrateconcepts.fusionofsouls.model.component.actions
-import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
@@ -23,7 +24,7 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
-private val actionsFamily = oneOf(ActionsComponent::class).get()!!
+private val actionsFamily = allOf(UnitComponent::class, AliveComponent::class, ActionsComponent::class).get()!!
 
 class ActionQueueBus(override val eventBus: EventBus, private val engine: AsyncPooledEngine) : RunService() {
     private val logger = fosLogger()
@@ -32,7 +33,7 @@ class ActionQueueBus(override val eventBus: EventBus, private val engine: AsyncP
     val actionProcessors = mutableMapOf<KClass<out UnitAction>, ActionProcessor<in UnitAction>>()
 
     @HandlesEvent(BattleStartedEvent::class)
-    fun initialize() = engine.getEntitiesFor(aliveUnitFamily).forEach {
+    fun initialize() = engine.getEntitiesFor(actionsFamily).forEach {
         queueLoopMap[it.id] = unitJob(it)
     }
 
