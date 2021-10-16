@@ -8,12 +8,12 @@ import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.currentHp
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.evasion
-import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.team
 import net.firstrateconcepts.fusionofsouls.model.unit.DamageRequest
 import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
+import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorScope
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.AbilityUsage
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.DamageAction
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.EffectAction
@@ -38,7 +38,6 @@ class AbilityService(
 
     fun processEntityAbility(entity: Entity) {
         runOnServiceThread {
-            logger.info { "Processing entity ability for entity [${entity.id}]" }
             with(entity.ability) {
                 actions.forEach { usage ->
                     val targets = findTargets(entity, usage)
@@ -62,10 +61,10 @@ class AbilityService(
         val attackBonus = entity.attrs.attackBonus()
         targets.forEach { target ->
             val evasion = target.attrs.evasion()
-            val hitResult = interactionService.hitCheck(entity, target, HitCheck(rawRoll, attackBonus, evasion))
+            val hitResult = interactionService.hitCheck(InterceptorScope.ABILITY, entity, target, HitCheck(rawRoll, attackBonus, evasion))
             if (!hitResult.isHit) return@forEach
             val damageRequest = DamageRequest(hitResult).apply { addDamageMultiplier(action.damageMultiplier) }
-            val damage = interactionService.damage(entity, target, damageRequest)
+            val damage = interactionService.damage(InterceptorScope.ABILITY, entity, target, damageRequest)
             logger.info { "[${entity.name} -> ${target.name}] ability damage: [${damage.finalDamage} | Defender HP: ${target.currentHp} / ${target.attrs.maxHp()}]" }
         }
     }

@@ -38,6 +38,7 @@ fun <S> KWidget<S>.unit(unit: UnitViewModel, init: UnitView.(S) -> Unit = {}) = 
     this.vm = unit
 }, init)
 
+// TODO: Runnable action is somehow getting reset somewhere sometimes that causes an NPE
 class UnitController(
     private val engine: AsyncPooledEngine,
     private val eventBus: EventBus,
@@ -74,9 +75,7 @@ class UnitController(
         if (!filterEvent(event)) return
 
         withUnit {
-            val action = Actions.fadeOut(0.5f) then Actions.run {
-                eventBus.enqueueEventSync(UnitDiedEvent(id))
-            } then Actions.removeActor()
+            val action = Actions.fadeOut(0.5f) then Actions.run { eventBus.enqueueEventSync(UnitDiedEvent(id)) } then Actions.removeActor()
             vm.addActorAction(ActorActionTarget.UNIT, action)
         }
     }
@@ -86,7 +85,6 @@ class UnitController(
         if (!filterEvent(event)) return
 
         onRenderingThread {
-            logger.info { "Performing unit attack animation for [${event.unitId}]" }
             withUnit {
                 val xMove = cos((rotation + 90f).degRad) * 0.1f
                 val yMove = sin((rotation + 90f).degRad) * 0.1f
@@ -103,7 +101,6 @@ class UnitController(
         if (!filterEvent(event)) return
 
         onRenderingThread {
-            logger.info { "Performing unit ability animation for [${event.unitId}]" }
             withUnit {
                 val action = ability.animation then Actions.run {
                     eventBus.enqueueEventSync(UnitAbilityAnimationComplete(id))

@@ -29,7 +29,6 @@ class AttackingSystem(
     private val logger = fosLogger()
 
     private val attackProcessor = actionProcessor<AttackAction> { entity, _ ->
-        logger.info { "Processing attack for ${entity.id}" }
         eventBus.enqueueEventSync(UnitAttackingEvent(entity.id))
     }
 

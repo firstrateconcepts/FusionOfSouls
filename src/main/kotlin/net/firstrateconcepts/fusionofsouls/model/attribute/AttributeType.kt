@@ -6,7 +6,7 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.In
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.LuckDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.primary.MindDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AbilityMultiDefinition
-import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AttackBonusDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AccuracyDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.AttackSpeedDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.BaseDamageDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.CooldownReductionDefinition
@@ -29,7 +29,7 @@ enum class AttributeType(val definition: AttributeDefinition) {
     ABILITY_MULTI(AbilityMultiDefinition),
     DEFENSE(DefenseDefinition),
     EVASION(EvasionDefinition),
-    ATTACK_BONUS(AttackBonusDefinition),
+    ACCURACY(AccuracyDefinition),
     CRIT_MULTI(CritMultiplier),
     ATTACK_SPEED(AttackSpeedDefinition),
     COOLDOWN_REDUCTION(CooldownReductionDefinition),

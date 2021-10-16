@@ -11,37 +11,28 @@ enum class InterceptorHook {
     AFTER_DAMAGE
 }
 
+enum class InterceptorScope {
+    ATTACK, ABILITY, BOTH;
+
+    fun matches(scope: InterceptorScope) = this == BOTH || this == scope
+}
+
 interface UnitInterceptor<I : UnitInteraction> {
     val hook: InterceptorHook
+    val scope: InterceptorScope
     fun intercept(unit: Entity, target: Entity, interaction: I)
 }
 
-fun hitCheck(intercept: (Entity, Entity, HitCheck) -> Unit) = object : UnitInterceptor<HitCheck> {
-    override val hook = InterceptorHook.HIT_CHECK
-    override fun intercept(unit: Entity, target: Entity, interaction: HitCheck) = intercept(unit, target, interaction)
+fun <I : UnitInteraction> intercept(scope: InterceptorScope, hook: InterceptorHook, intercept: (Entity, Entity, I) -> Unit) = object : UnitInterceptor<I> {
+    override val hook = hook
+    override val scope = scope
+
+    override fun intercept(unit: Entity, target: Entity, interaction: I) = intercept(unit, target, interaction)
 }
 
-fun onHit(intercept: (Entity, Entity, HitResult) -> Unit) = object : UnitInterceptor<HitResult> {
-    override val hook = InterceptorHook.ON_HIT
-    override fun intercept(unit: Entity, target: Entity, interaction: HitResult) = intercept(unit, target, interaction)
-}
-
-fun onMiss(intercept: (Entity, Entity, HitResult) -> Unit) = object : UnitInterceptor<HitResult> {
-    override val hook = InterceptorHook.ON_MISS
-    override fun intercept(unit: Entity, target: Entity, interaction: HitResult) = intercept(unit, target, interaction)
-}
-
-fun onCrit(intercept: (Entity, Entity, HitResult) -> Unit) = object : UnitInterceptor<HitResult> {
-    override val hook = InterceptorHook.ON_CRIT
-    override fun intercept(unit: Entity, target: Entity, interaction: HitResult) = intercept(unit, target, interaction)
-}
-
-fun beforeDamage(intercept: (Entity, Entity, DamageRequest) -> Unit) = object : UnitInterceptor<DamageRequest> {
-    override val hook = InterceptorHook.DAMAGE_CALC
-    override fun intercept(unit: Entity, target: Entity, interaction: DamageRequest) = intercept(unit, target, interaction)
-}
-
-fun afterDamage(intercept: (Entity, Entity, DamageResult) -> Unit) = object : UnitInterceptor<DamageResult> {
-    override val hook = InterceptorHook.AFTER_DAMAGE
-    override fun intercept(unit: Entity, target: Entity, interaction: DamageResult) = intercept(unit, target, interaction)
-}
+fun hitCheck(scope: InterceptorScope, intercept: (Entity, Entity, HitCheck) -> Unit) = intercept(scope, InterceptorHook.HIT_CHECK, intercept)
+fun onHit(scope: InterceptorScope, intercept: (Entity, Entity, HitResult) -> Unit) = intercept(scope, InterceptorHook.ON_HIT, intercept)
+fun onMiss(scope: InterceptorScope, intercept: (Entity, Entity, HitResult) -> Unit) = intercept(scope, InterceptorHook.ON_MISS, intercept)
+fun onCrit(scope: InterceptorScope, intercept: (Entity, Entity, HitResult) -> Unit) = intercept(scope, InterceptorHook.ON_CRIT, intercept)
+fun beforeDamage(scope: InterceptorScope, intercept: (Entity, Entity, DamageRequest) -> Unit) = intercept(scope, InterceptorHook.DAMAGE_CALC, intercept)
+fun afterDamage(scope: InterceptorScope, intercept: (Entity, Entity, DamageResult) -> Unit) = intercept(scope, InterceptorHook.AFTER_DAMAGE, intercept)

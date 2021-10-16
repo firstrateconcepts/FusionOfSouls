@@ -30,7 +30,6 @@ class AbilitySystem(
     private val logger = fosLogger()
 
     private val abilityProcessor = actionProcessor<AbilityAction> { entity, _ ->
-        logger.info { "Processing ability ${entity.ability.name} for ${entity.id}" }
         eventBus.enqueueEventSync(UnitUsingAbilityEvent(entity.id))
     }
 

@@ -9,6 +9,7 @@ import ktx.ashley.mapperFor
 import ktx.ashley.oneOf
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.PassiveDefinition
 import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorHook
+import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorScope
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitInteraction
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitInterceptor
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
@@ -39,7 +40,7 @@ class InterceptorsComponent : Component {
     @Suppress("UNCHECKED_CAST")
     private fun MutableMap<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>.addInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) =
         computeIfAbsent(interceptor.hook) { mutableListOf() }.add(interceptor as UnitInterceptor<UnitInteraction>)
-    
+
     fun addUnitInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asUnitInterceptors.addInterceptor(interceptor)
     fun addTargetInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asTargetInterceptors.addInterceptor(interceptor)
     fun removeUnitInterceptor(interceptor: UnitInterceptor<out UnitInteraction>) = asUnitInterceptors[interceptor.hook]?.remove(interceptor)
@@ -48,8 +49,18 @@ class InterceptorsComponent : Component {
 val interceptorsMapper = mapperFor<InterceptorsComponent>()
 val Entity.interceptors get() = this[interceptorsMapper]!!
 
-fun <I: UnitInteraction> Entity.interceptAsUnit(hook: InterceptorHook, target: Entity, interaction: I) = interceptors.asUnitInterceptors[hook]?.forEach { it.intercept(this, target, interaction) }
-fun <I: UnitInteraction> Entity.interceptAsTarget(hook: InterceptorHook, unit: Entity, interaction: I) = interceptors.asTargetInterceptors[hook]?.forEach { it.intercept(unit, this, interaction) }
+private fun <I : UnitInteraction> MutableMap<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>.intercept(
+    scope: InterceptorScope,
+    hook: InterceptorHook,
+    unit: Entity,
+    target: Entity,
+    interaction: I
+) = this[hook]?.filter { it.scope.matches(scope) }?.forEach { it.intercept(unit, target, interaction) }
+
+fun <I: UnitInteraction> Entity.interceptAsUnit(scope: InterceptorScope, hook: InterceptorHook, target: Entity, interaction: I) =
+    interceptors.asUnitInterceptors.intercept(scope, hook, this, target, interaction)
+fun <I: UnitInteraction> Entity.interceptAsTarget(scope: InterceptorScope, hook: InterceptorHook, unit: Entity, interaction: I) =
+    interceptors.asTargetInterceptors.intercept(scope, hook, unit, this, interaction)
 
 class TimersComponent : Component {
     var timerSequence = STARTING_SEQUENCE

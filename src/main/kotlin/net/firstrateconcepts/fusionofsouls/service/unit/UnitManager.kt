@@ -84,38 +84,32 @@ class UnitManager(
         return unit
     }
 
-    fun activateUnit(id: Int, initialPosition: Vector2) = engine.runOnEngineThread {
-        engine.withUnit(id) {
-            engine.configureEntity(it) {
-                with<ActiveComponent>()
-                with<SteerableComponent>(initialPosition, if (entity.team == UnitTeam.PLAYER) 270f else 90f)
-                with<TimersComponent>()
-                with<ActionsComponent>()
-                with<BattleDataComponent>(entity.attrs.maxHp())
-                with<AliveComponent>()
-                with<EffectsComponent>()
-            }
-
-            eventBus.enqueueEvent(UnitActivatedEvent(id))
+    fun activateUnit(id: Int, initialPosition: Vector2) = engine.withUnit(id) {
+        engine.configureEntity(it) {
+            with<ActiveComponent>()
+            with<SteerableComponent>(initialPosition, if (entity.team == UnitTeam.PLAYER) 270f else 90f)
+            with<TimersComponent>()
+            with<ActionsComponent>()
+            with<BattleDataComponent>(entity.attrs.maxHp())
+            with<AliveComponent>()
+            with<EffectsComponent>()
         }
+
+        eventBus.enqueueEvent(UnitActivatedEvent(id))
     }
 
-    fun deactivateUnit(id: Int) = engine.runOnEngineThread {
-        engine.withUnit(id) {
-            it.remove<ActiveComponent>()
-            it.remove<TargetComponent>()
-            it.remove<SteerableComponent>()
+    fun deactivateUnit(id: Int) = engine.withUnit(id) {
+        it.remove<ActiveComponent>()
+        it.remove<TargetComponent>()
+        it.remove<SteerableComponent>()
 
-            eventBus.enqueueEvent(UnitDeactivatedEvent(id))
-        }
+        eventBus.enqueueEvent(UnitDeactivatedEvent(id))
     }
 
-    fun updateUnitHp(unitId: Int, hpDiff: Int) {
-        engine.withUnit(unitId) { entity ->
-            entity.currentHp += hpDiff
-            if (entity.currentHp <= 0) killUnit(entity)
-            eventBus.enqueueEvent(HpChangedEvent(unitId, entity.currentHp, entity.attrs.maxHp()))
-        }
+    fun updateUnitHp(unitId: Int, hpDiff: Int) = engine.withUnit(unitId) { entity ->
+        entity.currentHp += hpDiff
+        if (entity.currentHp <= 0) killUnit(entity)
+        eventBus.enqueueEvent(HpChangedEvent(unitId, entity.currentHp, entity.attrs.maxHp()))
     }
 
     private fun killUnit(entity: Entity) {

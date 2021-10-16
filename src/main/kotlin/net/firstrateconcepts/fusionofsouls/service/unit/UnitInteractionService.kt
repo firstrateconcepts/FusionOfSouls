@@ -21,6 +21,7 @@ import net.firstrateconcepts.fusionofsouls.model.unit.DamageResult
 import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
 import net.firstrateconcepts.fusionofsouls.model.unit.HitResult
 import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorHook
+import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorScope
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitInteraction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
@@ -62,7 +63,7 @@ class UnitInteractionService(
         val combatStr = StringBuilder(tag)
 
         val evasion = defender.attrs.evasion()
-        val hitResult = hitCheck(attacker, defender, HitCheck(rawRoll, attackBonus, evasion))
+        val hitResult = hitCheck(InterceptorScope.ATTACK, attacker, defender, HitCheck(rawRoll, attackBonus, evasion))
 
         combatStr.append("Rolled [$rawRoll] | $attackBonus Bonus vs $evasion Evasion | Total Roll [${hitResult.finalRoll}]: ")
 
@@ -77,14 +78,14 @@ class UnitInteractionService(
             combatStr.append("CRITICAL HIT! Crit multi [${attacker.attrs.critBonus()}] ")
         }
 
-        val damage = damage(attacker, defender, DamageRequest(hitResult))
+        val damage = damage(InterceptorScope.ATTACK, attacker, defender, DamageRequest(hitResult))
 
         combatStr.append("Damage Data: [Damage Scale: ${hitResult.damageScale} | Raw Damage: ${damage.rawDamage} | Defense: ${defender.attrs.defense} | Final: ${damage.finalDamage} | Defender HP: ${defender.currentHp} / ${defender.attrs.maxHp()}]")
         logger.info { combatStr.toString() }
     }
 
-    fun hitCheck(unit: Entity, target: Entity, request: HitCheck): HitResult {
-        intercept(InterceptorHook.HIT_CHECK, unit, target, request)
+    fun hitCheck(scope: InterceptorScope, unit: Entity, target: Entity, request: HitCheck): HitResult {
+        intercept(scope, InterceptorHook.HIT_CHECK, unit, target, request)
 
         val finalRoll = request.rawRoll + request.attackBonus - request.evasion
         val expectedRoll = 50 + request.attackBonus - request.evasion
@@ -92,14 +93,14 @@ class UnitInteractionService(
         val result = HitResult(request.rawRoll, finalRoll.roundToInt(), damageScale)
 
         val hitHook = if (result.isHit) InterceptorHook.ON_HIT else InterceptorHook.ON_MISS
-        intercept(hitHook, unit, target, result)
-        if (result.isCrit) intercept(InterceptorHook.ON_CRIT, unit, target, result)
+        intercept(scope, hitHook, unit, target, result)
+        if (result.isCrit) intercept(scope, InterceptorHook.ON_CRIT, unit, target, result)
 
         return result
     }
 
-    fun damage(unit: Entity, target: Entity, request: DamageRequest): DamageResult {
-        intercept(InterceptorHook.DAMAGE_CALC, unit, target, request)
+    fun damage(scope: InterceptorScope, unit: Entity, target: Entity, request: DamageRequest): DamageResult {
+        intercept(scope, InterceptorHook.DAMAGE_CALC, unit, target, request)
         val critMulti = unit.attrs.critBonus()
         var damageMulti = request.hit.damageScale * request.additionalDamageMultiplier
         if (request.hit.isCrit) damageMulti *= critMulti
@@ -111,12 +112,12 @@ class UnitInteractionService(
 
         unitManager.updateUnitHp(target.id, -finalDamage)
         val result = DamageResult(rawDamage.roundToInt(), finalDamage)
-        intercept(InterceptorHook.AFTER_DAMAGE, unit, target, result)
+        intercept(scope, InterceptorHook.AFTER_DAMAGE, unit, target, result)
         return result
     }
 
-    inline fun <reified I: UnitInteraction> intercept(hook: InterceptorHook, unit: Entity, target: Entity, interaction: I) {
-        unit.interceptAsUnit(hook, target, interaction)
-        target.interceptAsTarget(hook, unit, interaction)
+    inline fun <reified I: UnitInteraction> intercept(scope: InterceptorScope, hook: InterceptorHook, unit: Entity, target: Entity, interaction: I) {
+        unit.interceptAsUnit(scope, hook, target, interaction)
+        target.interceptAsTarget(scope, hook, unit, interaction)
     }
 }
