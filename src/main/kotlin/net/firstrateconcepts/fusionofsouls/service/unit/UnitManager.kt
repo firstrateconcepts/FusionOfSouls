@@ -18,6 +18,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.TextureComponent
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.lifesteal
 import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.unit.ActionsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
@@ -49,13 +50,14 @@ import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
+import kotlin.math.roundToInt
 
 class UnitManager(
     private val engine: AsyncPooledEngine,
     private val assets: AssetStorage,
     private val eventBus: EventBus,
     registry: RunServiceRegistry,
-    private val attributeCalculator: AttributeCalculator,
+    private val attributeService: AttributeService,
     private val passiveService: PassiveService
 ) : RunService(eventBus, registry) {
     private val logger = fosLogger()
@@ -83,7 +85,7 @@ class UnitManager(
             config()
         }
 
-        attributeCalculator.recalculate(unit)
+        attributeService.recalculateAll(unit)
         passiveService.addPassive(unit, passive)
         return unit
     }
@@ -110,10 +112,16 @@ class UnitManager(
         eventBus.enqueueEvent(UnitDeactivatedEvent(id))
     }
 
-    fun updateUnitHp(unitId: Int, hpDiff: Int) = engine.withUnit(unitId) { entity ->
+    fun updateUnitHp(entity: Entity, hpDiff: Int) {
+        if (hpDiff == 0) return
         entity.currentHp += hpDiff
         if (entity.currentHp <= 0) killUnit(entity)
-        eventBus.enqueueEvent(HpChangedEvent(unitId, entity.currentHp, entity.attrs.maxHp()))
+        eventBus.enqueueEventSync(HpChangedEvent(entity.id, entity.currentHp, entity.attrs.maxHp()))
+    }
+
+    fun lifesteal(unit: Entity, finalDamage: Int, isAbility: Boolean) {
+        val lifestealAmount = finalDamage * (unit.attrs.lifesteal() / 100f) * (if (isAbility) 0.25f else 1f)
+        updateUnitHp(unit, lifestealAmount.roundToInt())
     }
 
     private fun killUnit(entity: Entity) {

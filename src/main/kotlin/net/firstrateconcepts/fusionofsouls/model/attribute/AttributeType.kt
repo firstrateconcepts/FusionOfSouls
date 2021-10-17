@@ -15,6 +15,8 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.EvasionDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.secondary.MaxHpDefinition
 import net.firstrateconcepts.fusionofsouls.model.attribute.definition.tertiary.AttackRangeDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.tertiary.HpRegenDefinition
+import net.firstrateconcepts.fusionofsouls.model.attribute.definition.tertiary.LifestealDefinition
 
 enum class AttributeType(val definition: AttributeDefinition) {
     // Primary
@@ -35,7 +37,9 @@ enum class AttributeType(val definition: AttributeDefinition) {
     COOLDOWN_REDUCTION(CooldownReductionDefinition),
 
     // Tertiary
-    ATTACK_RANGE(AttackRangeDefinition)
+    ATTACK_RANGE(AttackRangeDefinition),
+    LIFESTEAL(LifestealDefinition),
+    HP_REGEN(HpRegenDefinition),
 }
 
 enum class AttributePriority { PRIMARY, SECONDARY, TERTIARY }

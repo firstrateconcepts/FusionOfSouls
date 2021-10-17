@@ -13,9 +13,9 @@ import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
 import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
-import net.firstrateconcepts.fusionofsouls.model.unit.action.MovementAction
+import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitActionType
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.unit.UnitInteractionService
+import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.radDeg
@@ -28,17 +28,13 @@ val steeringFamily = allOf(SteerableComponent::class, AliveComponent::class).get
 class SteeringSystem(
     private val engine: AsyncPooledEngine,
     private val actionQueueBus: ActionQueueBus,
-    private val interactionService: UnitInteractionService
+    private val attackService: AttackService
 ) : IteratingSystem(steeringFamily) {
     private val logger = fosLogger()
     private val unitMoveCallbacks = mutableMapOf<Int, Entity.() -> Unit>()
 
     init {
         engine.addSystem(this)
-        actionQueueBus.registerProcessor<MovementAction> { entity, action ->
-            entity.steerable.applySteering(action.deltaTime, action.steeringOutput)
-            unitMoveCallbacks[entity.id]?.invoke(entity)
-        }
     }
 
     fun onUnitMove(unitId: Int, callback: Entity.() -> Unit) { unitMoveCallbacks[unitId] = callback }
@@ -92,7 +88,7 @@ class SteeringSystem(
         val steerable = entity.steerable
         val behavior = steerable.steeringBehavior
 
-        if (interactionService.canEntityAttack(entity)) {
+        if (attackService.canEntityAttack(entity)) {
             behavior.toggleMovement(false)
             steerable.linearVelocity.setZero()
         } else {
@@ -102,7 +98,10 @@ class SteeringSystem(
         val steeringOutput = SteeringAcceleration(Vector2())
         behavior.calculateSteering(steeringOutput)
         if (!steeringOutput.isZero) {
-            actionQueueBus.addAction(MovementAction(entity.id, steeringOutput, deltaTime))
+            actionQueueBus.addAction(entity, UnitActionType.MOVEMENT) {
+                entity.steerable.applySteering(deltaTime, steeringOutput)
+                unitMoveCallbacks[entity.id]?.invoke(entity)
+            }
         }
     }
 

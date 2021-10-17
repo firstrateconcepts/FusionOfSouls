@@ -35,7 +35,7 @@ class UnitView(override val controller: UnitController, override val vm: UnitVie
 
                 bindUpdatable(binding) { value = binding.get() }
 
-                setAnimateDuration(0.25f)
+                setAnimateDuration(0.1f)
                 setSize(0.75f, 0.1f)
                 setOrigin(Align.center)
                 setRound(false)

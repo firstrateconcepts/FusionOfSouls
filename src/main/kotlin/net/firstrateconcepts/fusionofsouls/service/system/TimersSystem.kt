@@ -5,37 +5,61 @@ import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.allOf
 import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.TimersComponent
-import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.unit.timers
 import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
+import net.firstrateconcepts.fusionofsouls.model.event.UnitDeactivatedEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
 val timersFamily = allOf(TimersComponent::class, AliveComponent::class).get()!!
 
 class TimersSystem(private val engine: AsyncPooledEngine) : IteratingSystem(timersFamily) {
     private val logger = fosLogger()
-    private val timerCallbacks = mutableMapOf<Int, Entity.() -> Unit>()
+    private val timerTickCallbacks = mutableMapOf<Int, Entity.() -> Unit>()
+    private val timerReadyCallbacks = mutableMapOf<Int, Entity.() -> Unit>()
 
     init {
         engine.addSystem(this)
     }
 
-    fun onTimerTick(unitId: Int, callback: Entity.() -> Unit) { timerCallbacks[unitId] = callback }
-    fun removeTimerTickCallback(unitId: Int) = timerCallbacks.remove(unitId)
+    fun onTimerTick(timerId: Int, callback: Entity.() -> Unit) {
+        timerTickCallbacks[timerId] = callback
+    }
+
+    fun removeTimerTickCallback(timerId: Int) = timerTickCallbacks.remove(timerId)
+
+    fun onTimerReady(timerId: Int, callback: Entity.() -> Unit) {
+        timerReadyCallbacks[timerId] = callback
+    }
+
+    fun removeTimerReadyCallback(timerId: Int) = timerReadyCallbacks.remove(timerId)
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        entity.timers.values.forEach { it.tick(deltaTime) }
-        timerCallbacks[entity.id]?.invoke(entity)
+        entity.timers.forEach { (id, timer) ->
+            timer.tick(deltaTime)
+            timerTickCallbacks[id]?.invoke(entity)
+            if (timer.isReady) timerReadyCallbacks[id]?.invoke(entity)
+        }
+    }
+
+    @HandlesEvent
+    fun unitDeactivated(event: UnitDeactivatedEvent) = engine.withUnit(event.unitId) {
+        it.timers.keys.forEach { key ->
+            timerTickCallbacks.remove(key)
+            timerReadyCallbacks.remove(key)
+        }
     }
 
     @HandlesEvent(BattleCompletedEvent::class)
     fun battleComplete() = engine.runOnEngineThread {
         logger.info { "Battle ended, resetting timers" }
         engine.getEntitiesFor(timersFamily).forEach { entity ->
-            entity.timers.values.forEach { it.reset(false) }
-            timerCallbacks[entity.id]?.invoke(entity)
+            entity.timers.forEach { (id, timer) ->
+                timer.reset(false)
+                timerTickCallbacks[id]?.invoke(entity)
+            }
         }
     }
 }

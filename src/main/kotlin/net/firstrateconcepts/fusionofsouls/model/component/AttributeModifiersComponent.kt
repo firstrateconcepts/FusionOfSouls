@@ -15,7 +15,5 @@ class AttributeModifiersComponent : Component, Iterable<AttributeModifier> {
 
 val attributeModifiersMapper = mapperFor<AttributeModifiersComponent>()
 val Entity.attrMods get() = this[attributeModifiersMapper]!!.modifiers
-fun Entity.addModifier(type: AttributeType, flatModifier: Float = 0f, percentModifier: Float = 0f, isTemporary: Boolean = false) =
-    attrMods.add(AttributeModifier(type, flatModifier, percentModifier, isTemporary))
 
 operator fun AttributeModifiersComponent.get(type: AttributeType) = modifiers.filter { it.type == type }

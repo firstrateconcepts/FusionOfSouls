@@ -12,11 +12,10 @@ import net.firstrateconcepts.fusionofsouls.model.component.unit.hasTarget
 import net.firstrateconcepts.fusionofsouls.model.component.unit.target
 import net.firstrateconcepts.fusionofsouls.model.component.unit.unitInfo
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
-import net.firstrateconcepts.fusionofsouls.model.unit.action.TargetAction
+import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitActionType
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.unit.UnitInteractionService
+import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
-import net.firstrateconcepts.fusionofsouls.service.unit.action.actionProcessor
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -25,26 +24,17 @@ class TargetingSystem(
     private val engine: AsyncPooledEngine,
     private val eventBus: EventBus,
     private val actionQueueBus: ActionQueueBus,
-    private val interactionService: UnitInteractionService
+    private val attackService: AttackService
 ) : IteratingSystem(aliveUnitFamily) {
     private val logger = fosLogger()
 
-    private val actionHandler = actionProcessor<TargetAction> { entity, action ->
-        val newTarget = action.newTarget
-        logger.info { "Unit(${entity.id} | ${entity.name}) changing target to [$newTarget]" }
-        val previousTarget = entity.target
-        engine.configureEntity(entity) { with<TargetComponent>(newTarget) }
-        eventBus.enqueueEventSync(TargetChangedEvent(entity.id, previousTarget, newTarget))
-    }
-
     init {
         engine.addSystem(this)
-        actionQueueBus.registerProcessor(actionHandler)
     }
 
     override fun processEntity(entity: Entity, deltaTime: Float) {
         // If entity has a target and can attack said target, no reason to try to switch targets
-        if (entity.hasTarget && interactionService.canEntityAttack(entity)) return
+        if (entity.hasTarget && attackService.canEntityAttack(entity)) return
 
         val unitTeam = entity.unitInfo.team
         val closestTarget = entities
@@ -52,7 +42,12 @@ class TargetingSystem(
             .minByOrNull { it.currentPosition.dst(entity.currentPosition) }?.id
 
         if (closestTarget != null && closestTarget != entity.target) {
-            actionQueueBus.addAction(TargetAction(entity.id, closestTarget))
+            actionQueueBus.addAction(entity, UnitActionType.TARGET) {
+                logger.info { "Unit(${entity.id} | ${entity.name}) changing target to [$closestTarget]" }
+                val previousTarget = entity.target
+                engine.configureEntity(entity) { with<TargetComponent>(closestTarget) }
+                eventBus.enqueueEventSync(TargetChangedEvent(entity.id, previousTarget, closestTarget))
+            }
         }
     }
 }

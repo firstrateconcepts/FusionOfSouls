@@ -3,8 +3,10 @@ package net.firstrateconcepts.fusionofsouls.service.unit
 import com.badlogic.ashley.core.Entity
 import net.firstrateconcepts.fusionofsouls.model.component.unit.interceptors
 import net.firstrateconcepts.fusionofsouls.model.component.unit.passives
+import net.firstrateconcepts.fusionofsouls.model.loot.Rarity
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.InterceptorPassiveStrategy
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.PassiveDefinition
+import net.firstrateconcepts.fusionofsouls.model.loot.passive.Ravenous
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -36,5 +38,11 @@ class PassiveService(eventBus: EventBus, registry: RunServiceRegistry) : RunServ
             if (target.isUnit) removeUnitInterceptor(interceptor)
             if (target.isTarget) removeTargetInterceptor(interceptor)
         }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun randomPassive(rarity: Rarity): PassiveDefinition {
+        // TODO: Random
+        return Ravenous
     }
 }

@@ -1,16 +1,21 @@
 package net.firstrateconcepts.fusionofsouls.service.unit
 
 import com.badlogic.ashley.core.Entity
+import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.component.attackBonus
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.evasion
+import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.unit.ability
 import net.firstrateconcepts.fusionofsouls.model.component.unit.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.unit.currentHp
 import net.firstrateconcepts.fusionofsouls.model.component.unit.team
+import net.firstrateconcepts.fusionofsouls.model.component.unit.timerInfo
+import net.firstrateconcepts.fusionofsouls.model.component.unit.timers
+import net.firstrateconcepts.fusionofsouls.model.event.UnitActivatedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.DamageRequest
 import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
 import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorScope
@@ -19,12 +24,17 @@ import net.firstrateconcepts.fusionofsouls.model.unit.ability.DamageAction
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.EffectAction
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.HealAction
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.TargetType
+import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitActionType
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
+import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
+import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
+import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
+import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
 // TODO: Mix strategy + factory for the action types, splitting out the "do" methods into individual classes
 // TODO: Unit test individual strategy classes
@@ -34,11 +44,15 @@ class AbilityService(
     private val engine: AsyncPooledEngine,
     private val randomizer: RandomizerService,
     private val interactionService: UnitInteractionService,
-    private val effectService: EffectService
+    private val effectService: EffectService,
+    private val attributeService: AttributeService,
+    private val timersSystem: TimersSystem,
+    private val actionQueueBus: ActionQueueBus,
+    private val unitCommunicator: UnitCommunicator
 ) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
-    fun processEntityAbility(entity: Entity) {
+    private fun processEntityAbility(entity: Entity) {
         runOnServiceThread {
             with(entity.ability) {
                 actions.forEach { usage ->
@@ -108,6 +122,30 @@ class AbilityService(
         return if (usage.targets > 0) areaTargets.shuffled(randomizer.rng).take(usage.targets) else areaTargets
     }
 
+    @HandlesEvent
+    fun unitActivated(event: UnitActivatedEvent) = engine.withUnit(event.unitId) { addAbilityTimer(it) }
+
     // For now, using an ability is possible if there's any valid targets
-    fun canUseAbility(entity: Entity) = entity.ability.actions.any { findTargets(entity, it).isNotEmpty() }
+    private fun canUseAbility(entity: Entity) = entity.ability.actions.any { findTargets(entity, it).isNotEmpty() }
+    
+    private fun addAbilityTimer(entity: Entity) {
+        val timerId = entity.timerInfo.newTimer(0f)
+        val timer = entity.timers[timerId]!!
+        attributeService.onChange(entity.id, AttributeType.COOLDOWN_REDUCTION) { e, attr -> timer.targetTime = e.ability.cooldown / attr() }
+        
+        timersSystem.onTimerReady(timerId) {
+            if (!canUseAbility(entity)) return@onTimerReady
+
+            actionQueueBus.addAction(entity, UnitActionType.ABILITY) {
+                unitCommunicator.getUnit(entity.id)?.ability {
+                    logger.info { "Processing ability for ${entity.id}" }
+                    processEntityAbility(entity)
+                    timer.reset()
+                    timer.resume()
+                }
+            }
+        }
+
+        timersSystem.onTimerTick(timerId) { unitCommunicator.getUnit(entity.id)?.updateAbilityTimer(timer.percentComplete) }
+    }
 }

@@ -84,13 +84,13 @@ class EnemyGeneratorTest {
     @MethodSource("enemyCountArgs")
     fun `Test Enemy Count`(floor: Int, room: Int, count: Int) {
         val runState = RunState(floor = floor, room = room)
-        assertThat(EnemyGenerator(mockk(), mockk(), mockk()).enemyCount(runState)).isEqualTo(count)
+        assertThat(EnemyGenerator(mockk(), mockk(), mockk(), mockk()).enemyCount(runState)).isEqualTo(count)
     }
 
     @ParameterizedTest(name = "Room {0}:{1} enemies have {2}% primary attributes")
     @MethodSource("enemyStrengthArgs")
     fun `Test Enemy Strength`(floor: Int, room: Int, strength: Int) {
         val runState = RunState(floor = floor, room = room)
-        assertThat(EnemyGenerator(mockk(), mockk(), mockk()).enemyStrength(runState)).isEqualTo(strength)
+        assertThat(EnemyGenerator(mockk(), mockk(), mockk(), mockk()).enemyStrength(runState)).isEqualTo(strength)
     }
 }

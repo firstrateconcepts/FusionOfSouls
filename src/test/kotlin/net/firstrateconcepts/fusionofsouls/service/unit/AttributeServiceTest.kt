@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx
 import io.mockk.mockk
 import ktx.ashley.entity
 import ktx.ashley.with
+import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeModifier
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ABILITY_MULTI
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ACCURACY
@@ -26,7 +27,7 @@ import net.firstrateconcepts.fusionofsouls.model.attribute.definition.descriptio
 import net.firstrateconcepts.fusionofsouls.model.component.AttributeModifiersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.AttributesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.IdComponent
-import net.firstrateconcepts.fusionofsouls.model.component.addModifier
+import net.firstrateconcepts.fusionofsouls.model.component.attrMods
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.get
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
@@ -36,15 +37,19 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-class AttributeCalculatorTest {
+fun Entity.addModifier(type: AttributeType, flatModifier: Float = 0f, percentModifier: Float = 0f, isTemporary: Boolean = false) =
+    attrMods.add(AttributeModifier(type, flatModifier, percentModifier, isTemporary))
+
+// TODO: Test clamping + tertiary attrs
+class AttributeServiceTest {
     private lateinit var engine: AsyncPooledEngine
-    private lateinit var attrCalculator: AttributeCalculator
+    private lateinit var attrCalculator: AttributeService
     private lateinit var entity: Entity
 
     @BeforeEach
     fun setup() {
         engine = AsyncPooledEngine(mockk(relaxed = true))
-        attrCalculator = AttributeCalculator(mockk(relaxed = true), mockk(relaxed = true))
+        attrCalculator = AttributeService(mockk(relaxed = true), mockk(relaxed = true))
         Gdx.app = mockk(relaxed = true)
 
         entity = engine.entity {
@@ -54,7 +59,7 @@ class AttributeCalculatorTest {
         }
     }
 
-    private fun recalculate() = attrCalculator.recalculate(entity)
+    private fun recalculate() = attrCalculator.recalculateAll(entity)
     private fun assertAttr(attr: AttributeType, value: Float) = assertThat(entity.attrs[attr]).transform { it() }.isCloseTo(value, 0.01f)
 
     companion object {
@@ -214,16 +219,16 @@ class AttributeCalculatorTest {
         @JvmStatic
         fun descriptionArgs(): Stream<Arguments> = Stream.of(
             Arguments.of(BODY, "Represents the physical prowess of this unit. Affects Max HP, Base Damage, Defense, Crit Multiplier, Attack Speed"),
-            Arguments.of(MIND, "Represents the mental capacity of this unit. Affects Max HP, Ability Multiplier, Attack Bonus, Attack Speed, Cooldown Reduction"),
+            Arguments.of(MIND, "Represents the mental capacity of this unit. Affects Max HP, Ability Multiplier, Accuracy, Attack Speed, Cooldown Reduction"),
             Arguments.of(INSTINCT, "Represents the innate focus and reactions of this unit. Affects Base Damage, Ability Multiplier, Evasion, Cooldown Reduction"),
-            Arguments.of(LUCK, "Represents how much randomness favors this unit. Affects Defense, Evasion, Attack Bonus, Crit Multiplier"),
+            Arguments.of(LUCK, "Represents how much randomness favors this unit. Affects Defense, Evasion, Accuracy, Crit Multiplier"),
 
             Arguments.of(MAX_HP, "How much damage the unit can take before it dies. Affected by Body and Mind"),
             Arguments.of(BASE_DAMAGE, "The base amount of damage done by attacks and abilities. Reduced by enemy Defense. Affected by Body and Instinct"),
             Arguments.of(ABILITY_MULTI, "Ability damage is multiplied by this amount. Affected by Mind and Instinct"),
             Arguments.of(DEFENSE, "Incoming damage divided by this amount. Affected by Body and Luck"),
-            Arguments.of(EVASION, "Reduces enemy attack rolls by a flat amount, countered by Attack Bonus. Affected by Instinct and Luck"),
-            Arguments.of(ACCURACY, "Flat amount added to attack rolls, countered by Evasion. Affected by Mind and Luck"),
+            Arguments.of(EVASION, "Reduces enemy hit checks by a flat amount, countered by Accuracy. Affected by Instinct and Luck"),
+            Arguments.of(ACCURACY, "Flat amount added to hit checks, countered by Evasion. Affected by Mind and Luck"),
             Arguments.of(CRIT_MULTI, "Critical hits multiply their damage by this amount. Affected by Body and Luck"),
             Arguments.of(ATTACK_SPEED, "How many times per second this unit will attack. Affected by Body and Mind"),
             Arguments.of(COOLDOWN_REDUCTION, "This unit's ability cooldown is divided by this amount. Affected by Mind and Instinct")

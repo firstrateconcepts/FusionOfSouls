@@ -10,19 +10,14 @@ import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.rotation
 import net.firstrateconcepts.fusionofsouls.model.component.unit.ability
-import net.firstrateconcepts.fusionofsouls.model.component.unit.abilityTimer
-import net.firstrateconcepts.fusionofsouls.model.component.unit.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.event.HpChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.KillUnitEvent
-import net.firstrateconcepts.fusionofsouls.model.event.UnitAbilityAnimationComplete
-import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackAnimationComplete
-import net.firstrateconcepts.fusionofsouls.model.event.UnitAttackingEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDiedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitEvent
-import net.firstrateconcepts.fusionofsouls.model.event.UnitUsingAbilityEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitCommunicator
 import net.firstrateconcepts.fusionofsouls.util.ext.degRad
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
@@ -43,24 +38,21 @@ class UnitController(
     private val engine: AsyncPooledEngine,
     private val eventBus: EventBus,
     private val steeringSystem: SteeringSystem,
-    private val timersSystem: TimersSystem
+    private val timersSystem: TimersSystem,
+    private val unitCommunicator: UnitCommunicator
 ) : Controller {
     private val logger = fosLogger()
     override lateinit var vm: UnitViewModel
     override val view by lazy { UnitView(this, vm) }
-    val unitId by lazy { vm.id }
+    private val unitId by lazy { vm.id }
 
     override fun load() {
         eventBus.registerHandlers(this)
+        unitCommunicator.registerUnit(unitId, this)
 
         steeringSystem.onUnitMove(unitId) {
             vm.position(currentPosition.cpy())
             vm.rotation(rotation)
-        }
-
-        timersSystem.onTimerTick(unitId) {
-            vm.attackTimerPercent(attackTimer.percentComplete)
-            vm.abilityTimerPercent(abilityTimer.percentComplete)
         }
     }
 
@@ -79,41 +71,28 @@ class UnitController(
             vm.addActorAction(ActorActionTarget.UNIT, action)
         }
     }
+    
+    fun updateAttackTimer(percentComplete: Float) = vm.attackTimerPercent(percentComplete)
+    fun updateAbilityTimer(percentComplete: Float) = vm.abilityTimerPercent(percentComplete)
 
-    @HandlesEvent
-    suspend fun unitAttacking(event: UnitAttackingEvent) {
-        if (!filterEvent(event)) return
-
-        onRenderingThread {
-            withUnit {
-                val xMove = cos((rotation + 90f).degRad) * 0.1f
-                val yMove = sin((rotation + 90f).degRad) * 0.1f
-                val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveBy(-xMove, -yMove, 0.15f) then Actions.run {
-                    eventBus.enqueueEventSync(UnitAttackAnimationComplete(id))
-                }
-                vm.addActorAction(ActorActionTarget.IMAGE, action)
-            }
-        }
+    fun attack(callback: () -> Unit) = withUnit {
+        val xMove = cos((rotation + 90f).degRad) * 0.1f
+        val yMove = sin((rotation + 90f).degRad) * 0.1f
+        val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveBy(-xMove, -yMove, 0.15f) then Actions.run(callback)
+        vm.addActorAction(ActorActionTarget.IMAGE, action)
     }
 
-    @HandlesEvent
-    suspend fun unitUsingAbility(event: UnitUsingAbilityEvent) {
-        if (!filterEvent(event)) return
-
-        onRenderingThread {
-            withUnit {
-                val action = ability.animation then Actions.run {
-                    eventBus.enqueueEventSync(UnitAbilityAnimationComplete(id))
-                }
-                vm.addActorAction(ActorActionTarget.IMAGE, action)
-            }
-        }
+    fun ability(callback: () -> Unit) = withUnit {
+        val action = ability.animation then Actions.run(callback)
+        vm.addActorAction(ActorActionTarget.IMAGE, action)
     }
 
     override fun dispose() {
         logger.info { "Disposing unit [$unitId]" }
         eventBus.unregisterHandlers(this)
         steeringSystem.removeUnitMoveCallback(unitId)
+        timersSystem.removeTimerTickCallback(unitId)
+        unitCommunicator.unregisterUnit(unitId)
         super.dispose()
     }
 

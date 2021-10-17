@@ -1,12 +1,12 @@
 package net.firstrateconcepts.fusionofsouls.service.unit
 
 import com.badlogic.ashley.core.Entity
+import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.unit.actions
 import net.firstrateconcepts.fusionofsouls.model.component.unit.effects
-import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.unit.timerInfo
 import net.firstrateconcepts.fusionofsouls.model.unit.action.ActionBlocker
-import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
+import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitActionType
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.ActionBlockerEffectStrategy
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.Effect
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.definition.EffectDefinition
@@ -14,7 +14,6 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
-import kotlin.reflect.KClass
 
 // TODO: Mix strategy + factory for the action types, splitting out the "apply/remove" methods into individual classes
 // TODO: Unit test individual strategy classes
@@ -43,7 +42,7 @@ class EffectService(eventBus: EventBus, registry: RunServiceRegistry) : RunServi
         }
     }
 
-    private fun applyActionBlockers(entity: Entity, effect: Effect, actions: Array<out KClass<out UnitAction>>) =
+    private fun applyActionBlockers(entity: Entity, effect: Effect, actions: Array<out UnitActionType>) =
         entity.actions.blockers.addAll(actions.map { ActionBlocker(effect, it) })
     private fun removeActionBlockers(entity: Entity, effect: Effect) = entity.actions.blockers.removeIf { it.source == effect }
 

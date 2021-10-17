@@ -14,17 +14,19 @@ import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunInitializer
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
-import net.firstrateconcepts.fusionofsouls.service.system.AbilitySystem
-import net.firstrateconcepts.fusionofsouls.service.system.AttackingSystem
 import net.firstrateconcepts.fusionofsouls.service.system.EffectsSystem
 import net.firstrateconcepts.fusionofsouls.service.system.SteeringSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TargetingSystem
 import net.firstrateconcepts.fusionofsouls.service.system.TimersSystem
 import net.firstrateconcepts.fusionofsouls.service.unit.AbilityService
-import net.firstrateconcepts.fusionofsouls.service.unit.AttributeCalculator
+import net.firstrateconcepts.fusionofsouls.service.unit.AttackService
+import net.firstrateconcepts.fusionofsouls.service.unit.AttributeService
 import net.firstrateconcepts.fusionofsouls.service.unit.EffectService
 import net.firstrateconcepts.fusionofsouls.service.unit.EnemyGenerator
+import net.firstrateconcepts.fusionofsouls.service.unit.HeroService
 import net.firstrateconcepts.fusionofsouls.service.unit.PassiveService
+import net.firstrateconcepts.fusionofsouls.service.unit.RuneService
+import net.firstrateconcepts.fusionofsouls.service.unit.UnitCommunicator
 import net.firstrateconcepts.fusionofsouls.service.unit.UnitInteractionService
 import net.firstrateconcepts.fusionofsouls.service.unit.UnitManager
 import net.firstrateconcepts.fusionofsouls.service.unit.action.ActionQueueBus
@@ -72,22 +74,24 @@ object Injector : Context() {
 
         bindSingleton<AsyncPooledEngine>()
         bindSingleton<RunServiceRegistry>()
-
-        bindSingleton<AttributeCalculator>()
-        bindSingleton<EffectService>()
-        bindSingleton<PassiveService>()
-        bindSingleton<UnitManager>()
         bindSingleton<RunStateService>()
         bindSingleton<RandomizerService>()
+
+        bindSingleton<UnitCommunicator>()
+        bindSingleton<AttributeService>()
+        bindSingleton<EffectService>()
+        bindSingleton<PassiveService>()
+        bindSingleton<RuneService>()
+        bindSingleton<UnitManager>()
+        bindSingleton<HeroService>()
         bindSingleton<ActionQueueBus>()
         bindSingleton<UnitInteractionService>()
         bindSingleton<AbilityService>()
 
         bindSingleton<SteeringSystem>()
         bindSingleton<TargetingSystem>()
-        bindSingleton<AttackingSystem>()
+        bindSingleton<AttackService>()
         bindSingleton<TimersSystem>()
-        bindSingleton<AbilitySystem>()
         bindSingleton<EffectsSystem>()
 
         bindSingleton<RunInitializer>()
