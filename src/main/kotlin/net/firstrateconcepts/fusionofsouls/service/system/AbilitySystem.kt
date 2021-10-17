@@ -2,12 +2,12 @@ package net.firstrateconcepts.fusionofsouls.service.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
-import net.firstrateconcepts.fusionofsouls.model.component.ability
-import net.firstrateconcepts.fusionofsouls.model.component.abilityTimer
-import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.cooldownReduction
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.unit.ability
+import net.firstrateconcepts.fusionofsouls.model.component.unit.abilityTimer
+import net.firstrateconcepts.fusionofsouls.model.component.unit.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAbilityAnimationComplete
 import net.firstrateconcepts.fusionofsouls.model.event.UnitUsingAbilityEvent
@@ -39,7 +39,8 @@ class AbilitySystem(
     }
 
     @HandlesEvent
-    fun updateAbilityTimer(event: AttributesChangedEvent) = engine.withUnit(event.unitId) { e -> e.abilityTimer.targetTime = e.ability.cooldown / e.attrs.cooldownReduction() }
+    fun updateAbilityTimer(event: AttributesChangedEvent) =
+        engine.withUnit(event.unitId) { e -> e.abilityTimer.targetTime = e.ability.cooldown / e.attrs.cooldownReduction() }
 
     @HandlesEvent
     fun processAbility(event: UnitAbilityAnimationComplete) = engine.withUnit(event.unitId) { entity ->
@@ -49,11 +50,8 @@ class AbilitySystem(
         entity.abilityTimer.resume()
     }
 
-    // TODO: Ability "can use" likely needs to be a strategy pattern based on things like "InRangeStrategy" or "AllyInRangeStrategy"
-    //  Might just work as "has valid targets" based on AbilityService#findTargets
-    
     override fun processEntity(entity: Entity, deltaTime: Float) {
-        if (entity.abilityTimer.isReady) {
+        if (entity.abilityTimer.isReady && abilityService.canUseAbility(entity)) {
             actionQueueBus.addAction(AbilityAction(entity.id))
             entity.abilityTimer.pause()
         }

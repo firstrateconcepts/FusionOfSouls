@@ -7,10 +7,10 @@ import kotlinx.coroutines.launch
 import ktx.ashley.allOf
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
-import net.firstrateconcepts.fusionofsouls.model.component.ActionsComponent
-import net.firstrateconcepts.fusionofsouls.model.component.AliveComponent
-import net.firstrateconcepts.fusionofsouls.model.component.UnitComponent
-import net.firstrateconcepts.fusionofsouls.model.component.actions
+import net.firstrateconcepts.fusionofsouls.model.component.unit.ActionsComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.UnitComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.actions
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent

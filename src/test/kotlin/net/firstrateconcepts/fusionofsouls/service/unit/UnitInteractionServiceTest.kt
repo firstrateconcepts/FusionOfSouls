@@ -16,8 +16,8 @@ import net.firstrateconcepts.fusionofsouls.model.component.baseDamage
 import net.firstrateconcepts.fusionofsouls.model.component.critBonus
 import net.firstrateconcepts.fusionofsouls.model.component.defense
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.interceptAsTarget
-import net.firstrateconcepts.fusionofsouls.model.component.interceptAsUnit
+import net.firstrateconcepts.fusionofsouls.model.component.unit.interceptAsTarget
+import net.firstrateconcepts.fusionofsouls.model.component.unit.interceptAsUnit
 import net.firstrateconcepts.fusionofsouls.model.unit.DamageRequest
 import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
 import net.firstrateconcepts.fusionofsouls.model.unit.HitResult

@@ -3,10 +3,10 @@ package net.firstrateconcepts.fusionofsouls.service.system
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.allOf
-import net.firstrateconcepts.fusionofsouls.model.component.AliveComponent
-import net.firstrateconcepts.fusionofsouls.model.component.TimersComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.TimersComponent
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.timers
+import net.firstrateconcepts.fusionofsouls.model.component.unit.timers
 import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger

@@ -5,11 +5,11 @@ import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.ai.steer.SteeringAcceleration
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.allOf
-import net.firstrateconcepts.fusionofsouls.model.component.AliveComponent
 import net.firstrateconcepts.fusionofsouls.model.component.SteerableComponent
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.steerable
+import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
 import net.firstrateconcepts.fusionofsouls.model.event.BattleCompletedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent

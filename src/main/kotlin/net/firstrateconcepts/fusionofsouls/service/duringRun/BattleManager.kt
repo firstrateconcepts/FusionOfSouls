@@ -1,7 +1,7 @@
 package net.firstrateconcepts.fusionofsouls.service.duringRun
 
-import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
-import net.firstrateconcepts.fusionofsouls.model.component.team
+import net.firstrateconcepts.fusionofsouls.model.component.unit.aliveUnitFamily
+import net.firstrateconcepts.fusionofsouls.model.component.unit.team
 import net.firstrateconcepts.fusionofsouls.model.event.NewBattleEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitDiedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.battleComplete

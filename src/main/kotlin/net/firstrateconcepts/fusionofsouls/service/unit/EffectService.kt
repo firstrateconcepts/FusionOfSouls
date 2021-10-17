@@ -1,10 +1,10 @@
 package net.firstrateconcepts.fusionofsouls.service.unit
 
 import com.badlogic.ashley.core.Entity
-import net.firstrateconcepts.fusionofsouls.model.component.actions
-import net.firstrateconcepts.fusionofsouls.model.component.effects
+import net.firstrateconcepts.fusionofsouls.model.component.unit.actions
+import net.firstrateconcepts.fusionofsouls.model.component.unit.effects
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.timerInfo
+import net.firstrateconcepts.fusionofsouls.model.component.unit.timerInfo
 import net.firstrateconcepts.fusionofsouls.model.unit.action.ActionBlocker
 import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.ActionBlockerEffectStrategy

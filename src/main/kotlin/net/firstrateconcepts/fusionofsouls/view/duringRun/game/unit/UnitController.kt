@@ -6,12 +6,12 @@ import ktx.actors.then
 import ktx.async.onRenderingThread
 import ktx.scene2d.KWidget
 import ktx.scene2d.Scene2dDsl
-import net.firstrateconcepts.fusionofsouls.model.component.ability
-import net.firstrateconcepts.fusionofsouls.model.component.abilityTimer
-import net.firstrateconcepts.fusionofsouls.model.component.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.rotation
+import net.firstrateconcepts.fusionofsouls.model.component.unit.ability
+import net.firstrateconcepts.fusionofsouls.model.component.unit.abilityTimer
+import net.firstrateconcepts.fusionofsouls.model.component.unit.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.event.HpChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.event.KillUnitEvent
 import net.firstrateconcepts.fusionofsouls.model.event.UnitAbilityAnimationComplete

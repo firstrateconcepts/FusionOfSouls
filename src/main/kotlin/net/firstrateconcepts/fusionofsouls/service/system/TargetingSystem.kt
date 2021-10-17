@@ -3,14 +3,14 @@ package net.firstrateconcepts.fusionofsouls.service.system
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.configureEntity
-import net.firstrateconcepts.fusionofsouls.model.component.TargetComponent
-import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
-import net.firstrateconcepts.fusionofsouls.model.component.hasTarget
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.name
-import net.firstrateconcepts.fusionofsouls.model.component.target
-import net.firstrateconcepts.fusionofsouls.model.component.unitInfo
+import net.firstrateconcepts.fusionofsouls.model.component.unit.TargetComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.aliveUnitFamily
+import net.firstrateconcepts.fusionofsouls.model.component.unit.hasTarget
+import net.firstrateconcepts.fusionofsouls.model.component.unit.target
+import net.firstrateconcepts.fusionofsouls.model.component.unit.unitInfo
 import net.firstrateconcepts.fusionofsouls.model.event.TargetChangedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.TargetAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
@@ -21,7 +21,6 @@ import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
-// TODO: Find out for sure on the performance of this. It might be a good idea to make this an interval system and only update a couple of times per second
 class TargetingSystem(
     private val engine: AsyncPooledEngine,
     private val eventBus: EventBus,
@@ -49,7 +48,6 @@ class TargetingSystem(
 
         val unitTeam = entity.unitInfo.team
         val closestTarget = entities
-            // TOOD: Handle untargetable, i.e. stealth
             .filter { it.unitInfo.team != unitTeam }
             .minByOrNull { it.currentPosition.dst(entity.currentPosition) }?.id
 

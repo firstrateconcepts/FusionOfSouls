@@ -1,8 +1,8 @@
 package net.firstrateconcepts.fusionofsouls.service.unit
 
 import com.badlogic.ashley.core.Entity
-import net.firstrateconcepts.fusionofsouls.model.component.interceptors
-import net.firstrateconcepts.fusionofsouls.model.component.passives
+import net.firstrateconcepts.fusionofsouls.model.component.unit.interceptors
+import net.firstrateconcepts.fusionofsouls.model.component.unit.passives
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.InterceptorPassiveStrategy
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.PassiveDefinition
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService

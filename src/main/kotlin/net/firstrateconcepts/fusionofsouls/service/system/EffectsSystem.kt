@@ -3,11 +3,11 @@ package net.firstrateconcepts.fusionofsouls.service.system
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
 import ktx.ashley.allOf
-import net.firstrateconcepts.fusionofsouls.model.component.AliveComponent
-import net.firstrateconcepts.fusionofsouls.model.component.EffectsComponent
-import net.firstrateconcepts.fusionofsouls.model.component.UnitComponent
-import net.firstrateconcepts.fusionofsouls.model.component.effects
-import net.firstrateconcepts.fusionofsouls.model.component.timers
+import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.EffectsComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.UnitComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.effects
+import net.firstrateconcepts.fusionofsouls.model.component.unit.timers
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.Effect
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.unit.EffectService

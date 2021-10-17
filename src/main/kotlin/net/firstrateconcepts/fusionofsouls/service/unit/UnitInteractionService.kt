@@ -5,17 +5,17 @@ import net.firstrateconcepts.fusionofsouls.model.component.attackBonus
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.baseDamage
 import net.firstrateconcepts.fusionofsouls.model.component.critBonus
-import net.firstrateconcepts.fusionofsouls.model.component.currentHp
 import net.firstrateconcepts.fusionofsouls.model.component.defense
 import net.firstrateconcepts.fusionofsouls.model.component.evasion
-import net.firstrateconcepts.fusionofsouls.model.component.hasTarget
 import net.firstrateconcepts.fusionofsouls.model.component.id
-import net.firstrateconcepts.fusionofsouls.model.component.interceptAsTarget
-import net.firstrateconcepts.fusionofsouls.model.component.interceptAsUnit
 import net.firstrateconcepts.fusionofsouls.model.component.isInRangeOfTarget
 import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.name
-import net.firstrateconcepts.fusionofsouls.model.component.target
+import net.firstrateconcepts.fusionofsouls.model.component.unit.currentHp
+import net.firstrateconcepts.fusionofsouls.model.component.unit.hasTarget
+import net.firstrateconcepts.fusionofsouls.model.component.unit.interceptAsTarget
+import net.firstrateconcepts.fusionofsouls.model.component.unit.interceptAsUnit
+import net.firstrateconcepts.fusionofsouls.model.component.unit.target
 import net.firstrateconcepts.fusionofsouls.model.unit.DamageRequest
 import net.firstrateconcepts.fusionofsouls.model.unit.DamageResult
 import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
@@ -32,7 +32,6 @@ import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import kotlin.math.roundToInt
 
-// TODO: Do the requisite unit testing for this class
 class UnitInteractionService(
     eventBus: EventBus,
     registry: RunServiceRegistry,

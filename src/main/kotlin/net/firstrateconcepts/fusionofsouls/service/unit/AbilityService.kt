@@ -1,16 +1,16 @@
 package net.firstrateconcepts.fusionofsouls.service.unit
 
 import com.badlogic.ashley.core.Entity
-import net.firstrateconcepts.fusionofsouls.model.component.ability
-import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.attackBonus
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
-import net.firstrateconcepts.fusionofsouls.model.component.currentHp
 import net.firstrateconcepts.fusionofsouls.model.component.currentPosition
 import net.firstrateconcepts.fusionofsouls.model.component.evasion
 import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.name
-import net.firstrateconcepts.fusionofsouls.model.component.team
+import net.firstrateconcepts.fusionofsouls.model.component.unit.ability
+import net.firstrateconcepts.fusionofsouls.model.component.unit.aliveUnitFamily
+import net.firstrateconcepts.fusionofsouls.model.component.unit.currentHp
+import net.firstrateconcepts.fusionofsouls.model.component.unit.team
 import net.firstrateconcepts.fusionofsouls.model.unit.DamageRequest
 import net.firstrateconcepts.fusionofsouls.model.unit.HitCheck
 import net.firstrateconcepts.fusionofsouls.model.unit.InterceptorScope
@@ -88,7 +88,6 @@ class AbilityService(
 
     // TODO: Support better targeting strategy
     private fun findTargets(self: Entity, usage: AbilityUsage): List<Entity> {
-        // TODO: Filter untargetable
         val allTargets = mutableListOf<Entity>()
 
         if (usage.targetTypes.contains(TargetType.SELF)) {
@@ -108,4 +107,7 @@ class AbilityService(
         val areaTargets = if (usage.area > 0) allTargets.filter { it.currentPosition.dst(self.currentPosition) <= usage.area } else allTargets
         return if (usage.targets > 0) areaTargets.shuffled(randomizer.rng).take(usage.targets) else areaTargets
     }
+
+    // For now, using an ability is possible if there's any valid targets
+    fun canUseAbility(entity: Entity) = entity.ability.actions.any { findTargets(entity, it).isNotEmpty() }
 }

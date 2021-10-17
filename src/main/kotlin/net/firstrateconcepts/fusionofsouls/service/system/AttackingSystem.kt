@@ -2,9 +2,9 @@ package net.firstrateconcepts.fusionofsouls.service.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
-import net.firstrateconcepts.fusionofsouls.model.component.aliveUnitFamily
+import net.firstrateconcepts.fusionofsouls.model.component.unit.aliveUnitFamily
 import net.firstrateconcepts.fusionofsouls.model.component.attackSpeed
-import net.firstrateconcepts.fusionofsouls.model.component.attackTimer
+import net.firstrateconcepts.fusionofsouls.model.component.unit.attackTimer
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
