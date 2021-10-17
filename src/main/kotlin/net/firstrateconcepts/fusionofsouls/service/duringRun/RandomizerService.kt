@@ -3,7 +3,7 @@ package net.firstrateconcepts.fusionofsouls.service.duringRun
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import kotlin.random.Random
 
-class RandomizerService(private val runStateService: RunStateService, override val eventBus: EventBus) : RunService() {
+class RandomizerService(private val runStateService: RunStateService, eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     lateinit var rng: Random
 
     override fun startInternal() {

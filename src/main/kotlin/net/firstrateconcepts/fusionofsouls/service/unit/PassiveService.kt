@@ -6,9 +6,10 @@ import net.firstrateconcepts.fusionofsouls.model.component.passives
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.InterceptorPassiveStrategy
 import net.firstrateconcepts.fusionofsouls.model.loot.passive.PassiveDefinition
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
-class PassiveService(override val eventBus: EventBus) : RunService() {
+class PassiveService(eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     fun addPassive(entity: Entity, passive: PassiveDefinition) {
         entity.passives.add(passive)
         when (passive.strategy) {

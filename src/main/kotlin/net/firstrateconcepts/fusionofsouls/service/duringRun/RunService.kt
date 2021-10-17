@@ -5,16 +5,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import ktx.async.newSingleThreadAsyncContext
-import net.firstrateconcepts.fusionofsouls.config.inject
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 @Suppress("LeakingThis")
-abstract class RunService : Disposable {
+abstract class RunService(private val eventBus: EventBus, registry: RunServiceRegistry) : Disposable {
     private val serviceContext = newSingleThreadAsyncContext("Service-Thread")
-    abstract val eventBus: EventBus
 
     init {
-        inject<RunServiceRegistry>().register(this)
+        registry.register(this)
     }
 
     fun start() {

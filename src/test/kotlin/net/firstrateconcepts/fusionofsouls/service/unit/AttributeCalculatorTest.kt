@@ -8,7 +8,6 @@ import com.badlogic.gdx.Gdx
 import io.mockk.mockk
 import ktx.ashley.entity
 import ktx.ashley.with
-import net.firstrateconcepts.fusionofsouls.config.Injector
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ABILITY_MULTI
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType.ACCURACY
@@ -31,8 +30,6 @@ import net.firstrateconcepts.fusionofsouls.model.component.addModifier
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.get
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
-import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -46,9 +43,8 @@ class AttributeCalculatorTest {
 
     @BeforeEach
     fun setup() {
-        Injector.bindSingleton(mockk<RunServiceRegistry>(relaxed = true))
         engine = AsyncPooledEngine(mockk(relaxed = true))
-        attrCalculator = AttributeCalculator(mockk(relaxed = true))
+        attrCalculator = AttributeCalculator(mockk(relaxed = true), mockk(relaxed = true))
         Gdx.app = mockk(relaxed = true)
 
         entity = engine.entity {
@@ -56,11 +52,6 @@ class AttributeCalculatorTest {
             with<AttributesComponent>()
             with<AttributeModifiersComponent>()
         }
-    }
-
-    @AfterEach
-    fun tearDown() {
-        Injector.clear()
     }
 
     private fun recalculate() = attrCalculator.recalculate(entity)

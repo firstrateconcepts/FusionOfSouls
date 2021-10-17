@@ -26,6 +26,7 @@ import net.firstrateconcepts.fusionofsouls.model.unit.UnitInteraction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -33,11 +34,12 @@ import kotlin.math.roundToInt
 
 // TODO: Do the requisite unit testing for this class
 class UnitInteractionService(
-    override val eventBus: EventBus,
+    eventBus: EventBus,
+    registry: RunServiceRegistry,
     private val randomizer: RandomizerService,
     private val engine: AsyncPooledEngine,
     private val unitManager: UnitManager
-) : RunService() {
+) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
     fun canEntityAttack(entity: Entity): Boolean {
@@ -80,7 +82,8 @@ class UnitInteractionService(
 
         val damage = damage(InterceptorScope.ATTACK, attacker, defender, DamageRequest(hitResult))
 
-        combatStr.append("Damage Data: [Damage Scale: ${hitResult.damageScale} | Raw Damage: ${damage.rawDamage} | Defense: ${defender.attrs.defense} | Final: ${damage.finalDamage} | Defender HP: ${defender.currentHp} / ${defender.attrs.maxHp()}]")
+        combatStr.append("Damage Data: [Damage Scale: ${hitResult.damageScale} | Raw Damage: ${damage.rawDamage} | Defense: ${defender.attrs.defense} |")
+            .append(" Final: ${damage.finalDamage} | Defender HP: ${defender.currentHp} / ${defender.attrs.maxHp()}]")
         logger.info { combatStr.toString() }
     }
 
@@ -116,7 +119,7 @@ class UnitInteractionService(
         return result
     }
 
-    inline fun <reified I: UnitInteraction> intercept(scope: InterceptorScope, hook: InterceptorHook, unit: Entity, target: Entity, interaction: I) {
+    fun <I: UnitInteraction> intercept(scope: InterceptorScope, hook: InterceptorHook, unit: Entity, target: Entity, interaction: I) {
         unit.interceptAsUnit(scope, hook, target, interaction)
         target.interceptAsTarget(scope, hook, unit, interaction)
     }

@@ -10,10 +10,11 @@ import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.event.AttributesChangedEvent
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
-class AttributeCalculator(override val eventBus: EventBus) : RunService() {
+class AttributeCalculator(private val eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
     fun recalculate(entity: Entity) {

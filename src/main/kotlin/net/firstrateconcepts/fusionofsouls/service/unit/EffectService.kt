@@ -11,13 +11,14 @@ import net.firstrateconcepts.fusionofsouls.model.unit.effect.ActionBlockerEffect
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.Effect
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.definition.EffectDefinition
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import kotlin.reflect.KClass
 
 // TODO: Mix strategy + factory for the action types, splitting out the "apply/remove" methods into individual classes
 // TODO: Unit test individual strategy classes
-class EffectService(override val eventBus: EventBus) : RunService() {
+class EffectService(eventBus: EventBus, registry: RunServiceRegistry) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
     fun addEffect(entity: Entity, effectDef: EffectDefinition, duration: Float) {

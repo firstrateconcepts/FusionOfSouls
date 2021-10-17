@@ -43,6 +43,7 @@ import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.AbilityDefinition
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.with
 import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
@@ -52,12 +53,15 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 class UnitManager(
     private val engine: AsyncPooledEngine,
     private val assets: AssetStorage,
-    override val eventBus: EventBus,
+    private val eventBus: EventBus,
+    registry: RunServiceRegistry,
     private val attributeCalculator: AttributeCalculator,
     private val passiveService: PassiveService
-) : RunService() {
+) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
+    // TODO: Better unit creation, remove suppression
+    @SuppressWarnings("LongParameterList")
     fun buildUnit(
         name: String,
         texture: UnitTexture,

@@ -17,6 +17,7 @@ import net.firstrateconcepts.fusionofsouls.model.event.BattleStartedEvent
 import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -26,7 +27,7 @@ import kotlin.reflect.full.isSubclassOf
 
 private val actionsFamily = allOf(UnitComponent::class, AliveComponent::class, ActionsComponent::class).get()!!
 
-class ActionQueueBus(override val eventBus: EventBus, private val engine: AsyncPooledEngine) : RunService() {
+class ActionQueueBus(eventBus: EventBus, registry: RunServiceRegistry, private val engine: AsyncPooledEngine) : RunService(eventBus, registry) {
     private val logger = fosLogger()
     private val asyncContext = newSingleThreadAsyncContext("ActionQueue-Thread")
     private val queueLoopMap = mutableMapOf<Int, Job>()

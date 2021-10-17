@@ -22,18 +22,20 @@ import net.firstrateconcepts.fusionofsouls.model.unit.ability.TargetType
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
+import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 
 // TODO: Mix strategy + factory for the action types, splitting out the "do" methods into individual classes
 // TODO: Unit test individual strategy classes
 class AbilityService(
-    override val eventBus: EventBus,
+    eventBus: EventBus,
+    registry: RunServiceRegistry,
     private val engine: AsyncPooledEngine,
     private val randomizer: RandomizerService,
     private val interactionService: UnitInteractionService,
     private val effectService: EffectService
-) : RunService() {
+) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
     fun processEntityAbility(entity: Entity) {
@@ -65,7 +67,9 @@ class AbilityService(
             if (!hitResult.isHit) return@forEach
             val damageRequest = DamageRequest(hitResult).apply { addDamageMultiplier(action.damageMultiplier) }
             val damage = interactionService.damage(InterceptorScope.ABILITY, entity, target, damageRequest)
-            logger.info { "[${entity.name} -> ${target.name}] ability damage: [${damage.finalDamage} | Defender HP: ${target.currentHp} / ${target.attrs.maxHp()}]" }
+            logger.info {
+                "[${entity.name} -> ${target.name}] ability damage: [${damage.finalDamage} | Defender HP: ${target.currentHp} / ${target.attrs.maxHp()}]"
+            }
         }
     }
 

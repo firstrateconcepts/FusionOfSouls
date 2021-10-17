@@ -20,6 +20,8 @@ import net.firstrateconcepts.fusionofsouls.model.unit.action.UnitAction
 import net.firstrateconcepts.fusionofsouls.model.unit.effect.Effect
 import net.firstrateconcepts.fusionofsouls.util.ext.Timer
 
+// TODO: Break this file up
+
 class UnitComponent(val type: UnitType, val team: UnitTeam, val ability: AbilityDefinition) : Component
 val unitFamily = oneOf(UnitComponent::class).get()!!
 val unitMapper = mapperFor<UnitComponent>()
@@ -49,17 +51,17 @@ class InterceptorsComponent : Component {
 val interceptorsMapper = mapperFor<InterceptorsComponent>()
 val Entity.interceptors get() = this[interceptorsMapper]!!
 
-private fun <I : UnitInteraction> MutableMap<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>.intercept(
+private fun MutableMap<InterceptorHook, MutableList<UnitInterceptor<UnitInteraction>>>.intercept(
     scope: InterceptorScope,
     hook: InterceptorHook,
     unit: Entity,
     target: Entity,
-    interaction: I
+    interaction: UnitInteraction
 ) = this[hook]?.filter { it.scope.matches(scope) }?.forEach { it.intercept(unit, target, interaction) }
 
-fun <I: UnitInteraction> Entity.interceptAsUnit(scope: InterceptorScope, hook: InterceptorHook, target: Entity, interaction: I) =
+fun Entity.interceptAsUnit(scope: InterceptorScope, hook: InterceptorHook, target: Entity, interaction: UnitInteraction) =
     interceptors.asUnitInterceptors.intercept(scope, hook, this, target, interaction)
-fun <I: UnitInteraction> Entity.interceptAsTarget(scope: InterceptorScope, hook: InterceptorHook, unit: Entity, interaction: I) =
+fun Entity.interceptAsTarget(scope: InterceptorScope, hook: InterceptorHook, unit: Entity, interaction: UnitInteraction) =
     interceptors.asTargetInterceptors.intercept(scope, hook, unit, this, interaction)
 
 class TimersComponent : Component {

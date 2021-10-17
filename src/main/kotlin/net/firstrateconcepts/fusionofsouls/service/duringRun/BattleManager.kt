@@ -12,7 +12,12 @@ import net.firstrateconcepts.fusionofsouls.util.ext.withUnit
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
 import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 
-class BattleManager(private val enemyGenerator: EnemyGenerator, override val eventBus: EventBus, private val engine: AsyncPooledEngine) : RunService() {
+class BattleManager(
+    private val enemyGenerator: EnemyGenerator,
+    private val eventBus: EventBus,
+    registry: RunServiceRegistry,
+    private val engine: AsyncPooledEngine
+) : RunService(eventBus, registry) {
     private val logger = fosLogger()
 
     @HandlesEvent(NewBattleEvent::class)
