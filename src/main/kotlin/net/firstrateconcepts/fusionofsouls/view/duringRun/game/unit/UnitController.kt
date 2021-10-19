@@ -56,6 +56,7 @@ class UnitController(
         }
     }
 
+    // TODO: Refactor the below to not handle events and instead get called directly from unit communicator
     @HandlesEvent
     fun hpChanged(event: HpChangedEvent) {
         if (!filterEvent(event)) return
@@ -68,6 +69,7 @@ class UnitController(
 
         withUnit {
             val action = Actions.fadeOut(0.5f) then Actions.run { eventBus.enqueueEventSync(UnitDiedEvent(id)) } then Actions.removeActor()
+            logger.debug { "Adding die action for unit [${vm.id}]" }
             vm.addActorAction(ActorActionTarget.UNIT, action)
         }
     }
@@ -79,11 +81,13 @@ class UnitController(
         val xMove = cos((rotation + 90f).degRad) * 0.1f
         val yMove = sin((rotation + 90f).degRad) * 0.1f
         val action = Actions.moveBy(xMove, yMove, 0.025f) then Actions.moveBy(-xMove, -yMove, 0.15f) then Actions.run(callback)
+        logger.debug { "Adding attack action for unit [${vm.id}]" }
         vm.addActorAction(ActorActionTarget.IMAGE, action)
     }
 
     fun ability(callback: () -> Unit) = withUnit {
         val action = ability.animation then Actions.run(callback)
+        logger.debug { "Adding ability action for unit [${vm.id}]" }
         vm.addActorAction(ActorActionTarget.IMAGE, action)
     }
 
@@ -91,7 +95,6 @@ class UnitController(
         logger.info { "Disposing unit [$unitId]" }
         eventBus.unregisterHandlers(this)
         steeringSystem.removeUnitMoveCallback(unitId)
-        timersSystem.removeTimerTickCallback(unitId)
         unitCommunicator.unregisterUnit(unitId)
         super.dispose()
     }

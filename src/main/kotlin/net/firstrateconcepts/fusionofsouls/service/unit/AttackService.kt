@@ -3,6 +3,7 @@ package net.firstrateconcepts.fusionofsouls.service.unit
 import com.badlogic.ashley.core.Entity
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
 import net.firstrateconcepts.fusionofsouls.model.component.attackBonus
+import net.firstrateconcepts.fusionofsouls.model.component.attackSpeed
 import net.firstrateconcepts.fusionofsouls.model.component.attrs
 import net.firstrateconcepts.fusionofsouls.model.component.critBonus
 import net.firstrateconcepts.fusionofsouls.model.component.defense
@@ -93,14 +94,19 @@ class AttackService(
     @HandlesEvent
     fun unitActivated(event: UnitActivatedEvent) = engine.withUnit(event.unitId) { addAttackTimer(it) }
 
+    // TODO: Basically the same as ability service one, see if can make same function
     private fun addAttackTimer(entity: Entity) {
-        val timerId = entity.timerInfo.newTimer(0f)
+        logger.info { "Adding attack timer for ${entity.id}" }
+        val timerId = entity.timerInfo.newTimer(1f / entity.attrs.attackSpeed())
         val timer = entity.timers[timerId]!!
 
         attributeService.onChange(entity.id, AttributeType.ATTACK_SPEED) { _, attr -> timer.targetTime = 1f / attr() }
 
         timersSystem.onTimerReady(timerId) {
             if (!canEntityAttack(entity)) return@onTimerReady
+
+            logger.info { "Pausing attack timer for ${entity.id}" }
+            entity.timers[timerId]?.pause()
 
             actionQueueBus.addAction(entity, UnitActionType.ATTACK) {
                 unitCommunicator.getUnit(entity.id)?.attack {

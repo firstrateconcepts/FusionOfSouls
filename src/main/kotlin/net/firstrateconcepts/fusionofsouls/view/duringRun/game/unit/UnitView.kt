@@ -53,7 +53,6 @@ class UnitView(override val controller: UnitController, override val vm: UnitVie
         }
 
         bindUpdatable(vm.actorActions) {
-            this@UnitView.logger.debug { "Adding actor action for unit [${vm.id}]" }
             val actions = vm.actorActions.get()
             while (actions.isNotEmpty()) {
                 val actionDef = actions.removeFirst()

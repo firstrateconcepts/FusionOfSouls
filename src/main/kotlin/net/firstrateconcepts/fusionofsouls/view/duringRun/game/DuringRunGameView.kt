@@ -20,6 +20,7 @@ class DuringRunGameView(override val controller: DuringRunGameController, overri
         setSize(GAME_WIDTH, GAME_HEIGHT)
         centerPosition()
 
+        // TODO: Make this work with add/remove from binding list instead of clearing and redrawing every time
         unitPanel = floatingGroup {
             vm.units.bind {
                 this@DuringRunGameView.logger.info { "Updating all units" }

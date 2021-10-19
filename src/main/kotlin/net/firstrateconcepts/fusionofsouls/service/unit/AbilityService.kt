@@ -129,12 +129,16 @@ class AbilityService(
     private fun canUseAbility(entity: Entity) = entity.ability.actions.any { findTargets(entity, it).isNotEmpty() }
     
     private fun addAbilityTimer(entity: Entity) {
-        val timerId = entity.timerInfo.newTimer(0f)
+        logger.info { "Adding ability timer for ${entity.id}" }
+        val timerId = entity.timerInfo.newTimer(entity.ability.cooldown)
         val timer = entity.timers[timerId]!!
         attributeService.onChange(entity.id, AttributeType.COOLDOWN_REDUCTION) { e, attr -> timer.targetTime = e.ability.cooldown / attr() }
         
         timersSystem.onTimerReady(timerId) {
             if (!canUseAbility(entity)) return@onTimerReady
+
+            logger.info { "Pausing ability timer for ${entity.id}" }
+            entity.timers[timerId]?.pause()
 
             actionQueueBus.addAction(entity, UnitActionType.ABILITY) {
                 unitCommunicator.getUnit(entity.id)?.ability {

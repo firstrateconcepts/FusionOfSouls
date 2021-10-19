@@ -86,12 +86,13 @@ object Injector : Context() {
         bindSingleton<HeroService>()
         bindSingleton<ActionQueueBus>()
         bindSingleton<UnitInteractionService>()
+
+        bindSingleton<TimersSystem>()
         bindSingleton<AbilityService>()
+        bindSingleton<AttackService>()
 
         bindSingleton<SteeringSystem>()
         bindSingleton<TargetingSystem>()
-        bindSingleton<AttackService>()
-        bindSingleton<TimersSystem>()
         bindSingleton<EffectsSystem>()
 
         bindSingleton<RunInitializer>()

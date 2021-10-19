@@ -103,7 +103,6 @@ class EventBus : Disposable {
         }
 
         fun registerHandlers() {
-            logger.debug { "Registering event handlers for ${obj::class.simpleName}" }
             handlers.forEach {
                 logger.debug { "Registering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
                 registerHandler(it.key, it.value)
@@ -111,7 +110,6 @@ class EventBus : Disposable {
         }
 
         fun unregisterHandlers() {
-            logger.debug { "Unregistering event handlers for ${obj::class.simpleName}" }
             handlers.forEach {
                 logger.debug { "Unregistering handler for ${it.key.simpleName} from ${obj::class.simpleName}" }
                 unregisterHandler(it.key, it.value)

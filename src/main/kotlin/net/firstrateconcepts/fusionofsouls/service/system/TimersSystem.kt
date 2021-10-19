@@ -28,16 +28,14 @@ class TimersSystem(private val engine: AsyncPooledEngine) : IteratingSystem(time
         timerTickCallbacks[timerId] = callback
     }
 
-    fun removeTimerTickCallback(timerId: Int) = timerTickCallbacks.remove(timerId)
-
     fun onTimerReady(timerId: Int, callback: Entity.() -> Unit) {
         timerReadyCallbacks[timerId] = callback
     }
 
-    fun removeTimerReadyCallback(timerId: Int) = timerReadyCallbacks.remove(timerId)
-
     override fun processEntity(entity: Entity, deltaTime: Float) {
         entity.timers.forEach { (id, timer) ->
+            if (timer.isPaused) return@forEach
+
             timer.tick(deltaTime)
             timerTickCallbacks[id]?.invoke(entity)
             if (timer.isReady) timerReadyCallbacks[id]?.invoke(entity)
