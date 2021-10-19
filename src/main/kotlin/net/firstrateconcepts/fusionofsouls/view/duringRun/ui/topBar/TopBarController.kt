@@ -13,6 +13,7 @@ import net.firstrateconcepts.fusionofsouls.util.framework.event.HandlesEvent
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.Controller
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.uiComponent
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.menu.MenuDialogController
+import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitDialog.UnitDialogController
 
 @Scene2dDsl
 fun <S> KWidget<S>.topBar(init: TopBarView.(S) -> Unit = {}) = uiComponent<S, TopBarController, TopBarView>(init = init)
@@ -40,7 +41,7 @@ class TopBarController(private val eventBus: EventBus) : Controller {
         eventBus.registerHandlers(this)
     }
 
-    fun heroButtonClicked() = Unit
+    fun heroButtonClicked() = eventBus.enqueueShowDialog<UnitDialogController>()
     fun bossButtonClicked() = Unit
     fun menuButtonClicked() = eventBus.enqueueShowDialog<MenuDialogController>()
 

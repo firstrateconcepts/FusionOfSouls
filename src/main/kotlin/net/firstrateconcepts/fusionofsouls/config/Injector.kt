@@ -38,6 +38,7 @@ import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.DuringRunUiControll
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.menu.MenuDialogController
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.topBar.TopBarController
 import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitBench.UnitBenchController
+import net.firstrateconcepts.fusionofsouls.view.duringRun.ui.unitDialog.UnitDialogController
 import net.firstrateconcepts.fusionofsouls.view.heroSelect.HeroSelectScreenController
 import net.firstrateconcepts.fusionofsouls.view.loading.LoadingScreenController
 import net.firstrateconcepts.fusionofsouls.view.mainMenu.MainMenuScreenController
@@ -110,5 +111,6 @@ object Injector : Context() {
         bindSingleton<TopBarController>()
         bindSingleton<UnitBenchController>()
         bindSingleton<MenuDialogController>()
+        bindSingleton<UnitDialogController>()
     }
 }

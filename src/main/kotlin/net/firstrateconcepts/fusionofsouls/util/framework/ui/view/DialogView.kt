@@ -4,7 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.kotcrab.vis.ui.widget.VisDialog
+import ktx.actors.onChange
 import ktx.scene2d.KTable
+import ktx.scene2d.textButton
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.controller.DialogController
 import net.firstrateconcepts.fusionofsouls.util.framework.ui.viewModel.ViewModel
 
@@ -43,6 +45,8 @@ abstract class DialogView(
         buttonsTable.clear()
         remove()
     }
+
+    protected fun KTable.closeButton(text: String = "Done") = textButton("Done") { onChange { controller.hide() } }
 
     override fun getPrefWidth() = screenWidth * widthScale
     override fun getPrefHeight() = screenHeight * heightScale
