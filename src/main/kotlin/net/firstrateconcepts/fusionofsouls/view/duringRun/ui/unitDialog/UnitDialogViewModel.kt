@@ -13,6 +13,9 @@ class UnitDialogViewModel(val id: Int, val name: String, val texture: Texture) :
     val abilityCurrentCooldown = Binding(0f)
     val runes = Binding(listOf<Rune>())
     val runeCap = Binding(0)
+    val xp = Binding(0)
+    val xpToLevel = Binding(0)
+    val level = Binding(0)
 
     // TODO: This has to be a binding from a binding????
     val activeRuneCount get() = runes.get().count { it.active }

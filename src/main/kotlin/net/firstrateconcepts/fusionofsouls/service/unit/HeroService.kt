@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import ktx.ashley.with
 import net.firstrateconcepts.fusionofsouls.model.component.id
 import net.firstrateconcepts.fusionofsouls.model.component.unit.RunesComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.XpComponent
 import net.firstrateconcepts.fusionofsouls.model.loot.Rarity
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
@@ -44,6 +45,7 @@ class HeroService(
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
+            with<XpComponent>()
         }
 
         unitManager.activateUnit(entity.id, Vector2())

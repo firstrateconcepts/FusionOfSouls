@@ -10,6 +10,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.name
 import net.firstrateconcepts.fusionofsouls.model.component.texture
 import net.firstrateconcepts.fusionofsouls.model.component.unit.ability
 import net.firstrateconcepts.fusionofsouls.model.component.unit.runes
+import net.firstrateconcepts.fusionofsouls.model.component.unit.xp
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunStateService
 import net.firstrateconcepts.fusionofsouls.util.ext.withHero
@@ -35,6 +36,11 @@ class UnitDialogController(
                 vm.abilityCurrentCooldown(it.ability.cooldown / it.attrs.cooldownReduction())
                 vm.runes(it.runes)
                 vm.runeCap(runStateService.load().runeCap)
+                it.xp.apply {
+                    vm.xp(xp)
+                    vm.xpToLevel(xpToLevel)
+                    vm.level(level)
+                }
 
             }.join()
         }
