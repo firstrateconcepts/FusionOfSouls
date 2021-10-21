@@ -39,8 +39,11 @@ class HeroService(
 
         val entity = unitManager.buildUnit(hero.name, hero.texture, hero.ability, hero.passive, UnitType.HERO, UnitTeam.PLAYER) {
             with<RunesComponent>()
-            val rune = runeService.generateRune(Rarity.COMMON)
-            runeService.addRune(this@buildUnit.entity, rune)
+            runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
+            runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
+            runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
+            runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
+            runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
         }
 
         unitManager.activateUnit(entity.id, Vector2())

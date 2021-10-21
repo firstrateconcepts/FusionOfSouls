@@ -15,3 +15,5 @@ fun Float.sqrt() = sqrt(this)
 fun Int.sqrt() = toDouble().sqrt()
 
 fun ClosedRange<Float>.random(rng: Random) = rng.nextFloat() * (endInclusive - start) + start
+
+fun Float.displayRound(decimals: Int = 2) = "%.${decimals}f".format(this)

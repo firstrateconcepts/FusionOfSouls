@@ -3,10 +3,10 @@ package net.firstrateconcepts.fusionofsouls.service.unit
 import com.badlogic.ashley.core.Entity
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeModifier
 import net.firstrateconcepts.fusionofsouls.model.attribute.AttributeType
-import net.firstrateconcepts.fusionofsouls.model.component.attrMods
 import net.firstrateconcepts.fusionofsouls.model.component.unit.runes
 import net.firstrateconcepts.fusionofsouls.model.loot.Rarity
 import net.firstrateconcepts.fusionofsouls.model.loot.Rune
+import net.firstrateconcepts.fusionofsouls.model.loot.RuneTexture
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RandomizerService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
@@ -49,7 +49,7 @@ class RuneService(
         val passive = if (rarity == Rarity.LEGENDARY) passiveService.randomPassive(rarity) else null
 
         // TODO: Rune name generator
-        return Rune(++runeIdCounter, "Rune", modifiers, passive)
+        return Rune(++runeIdCounter, "Rune", RuneTexture.ACTIVE, RuneTexture.INACTIVE, modifiers, passive)
     }
 
     private val Rarity.numRuneAttrs: Int get() = when (this) {

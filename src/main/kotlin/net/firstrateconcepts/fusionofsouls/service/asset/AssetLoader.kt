@@ -8,6 +8,7 @@ import ktx.assets.async.AssetStorage
 import ktx.async.KtxAsync
 import net.firstrateconcepts.fusionofsouls.config.AssetConfig
 import net.firstrateconcepts.fusionofsouls.model.event.AssetsLoadedEvent
+import net.firstrateconcepts.fusionofsouls.model.loot.RuneTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.util.ext.fosLogger
 import net.firstrateconcepts.fusionofsouls.util.framework.event.EventBus
@@ -21,7 +22,9 @@ class AssetLoader(
 
     fun load() = KtxAsync.launch(assetConfig.asyncContext) {
         logger.info { "Loading assets" }
+        // TODO: Make this a standard function
         val assetsToLoad = UnitTexture.values().map { assets.loadAsync<Texture>(it.assetFile) }
+        RuneTexture.values().map { assets.loadAsync<Texture>(it.assetFile) }
         assetsToLoad.joinAll()
         logger.info { "Asset loading complete" }
         eventBus.enqueueEvent(AssetsLoadedEvent())
