@@ -23,6 +23,7 @@ import net.firstrateconcepts.fusionofsouls.model.component.maxHp
 import net.firstrateconcepts.fusionofsouls.model.component.unit.ActionsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.AliveComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.BattleDataComponent
+import net.firstrateconcepts.fusionofsouls.model.component.unit.ClassesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.EffectsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.InterceptorsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.PassivesComponent
@@ -42,6 +43,7 @@ import net.firstrateconcepts.fusionofsouls.model.unit.UnitTeam
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitTexture
 import net.firstrateconcepts.fusionofsouls.model.unit.UnitType
 import net.firstrateconcepts.fusionofsouls.model.unit.ability.AbilityDefinition
+import net.firstrateconcepts.fusionofsouls.model.unit.unitClass.UnitClass
 import net.firstrateconcepts.fusionofsouls.service.AsyncPooledEngine
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunService
 import net.firstrateconcepts.fusionofsouls.service.duringRun.RunServiceRegistry
@@ -71,6 +73,7 @@ class UnitManager(
         passive: PassiveDefinition,
         type: UnitType,
         team: UnitTeam,
+        classes: List<UnitClass>,
         config: EngineEntity.() -> Unit = {}
     ): Entity {
         val unit = engine.entity {
@@ -82,6 +85,7 @@ class UnitManager(
             with<TextureComponent>(assets.get<Texture>(texture.assetFile))
             with<AttributesComponent>()
             with<AttributeModifiersComponent>()
+            with<ClassesComponent>(classes.associateWith { 1 }.toMutableMap())
             config()
         }
 

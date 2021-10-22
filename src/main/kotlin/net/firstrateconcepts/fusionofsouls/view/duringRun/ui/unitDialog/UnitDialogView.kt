@@ -71,20 +71,14 @@ class UnitDialogView(
                     }.cell(row = true, expand = true, align = Align.center)
                 }
                 visTable {
-                    label("Ranger").cell(row = true, expand = true, align = Align.center)
-                    label("Fighter").cell(row = true, expand = true, align = Align.center)
+                    bindUpdatable(vm.classes) {
+                        clear()
+                        vm.classes().forEach { (c, v) ->
+                            label(c.name).cell(expand = true, align = Align.left)
+                            label(v.toString()).cell(row = true, expand = true, align = Align.center)
+                        }
+                    }
                 }
-            }.cell(grow = true, row = true, spaceBottom = 20f)
-
-            visTable {
-                label(vm.abilityName()).cell(expandX = true, row = true, align = Align.center)
-                label("") {
-                    bindLabelText { "Cooldown: ${vm.abilityCurrentCooldown().displayRound()}s (${vm.abilityBaseCooldown()}s)" }
-                }.cell(expandX = true, row = true, align = Align.center)
-                label(vm.abilityDescription()) {
-                    setAlignment(Align.center)
-                    wrap = true
-                }.cell(grow = true)
             }.cell(grow = true, row = true, spaceBottom = 20f)
 
             visTable {
@@ -96,18 +90,87 @@ class UnitDialogView(
                     vm.runes().forEach { rune ->
                         val texture = if (rune.active) rune.activeTexture else rune.inactiveTexture
                         visImage(assets.get<Texture>(texture.assetFile)) {
-                            onClick {
-                                rune.active = !rune.active
-                                val texture = if (rune.active) rune.activeTexture else rune.inactiveTexture
-                                setDrawable(assets.get<Texture>(texture.assetFile))
-                            }
+                            onClick { controller.runeClick(rune) }
                         }
                     }
                 }.cell(expand = true, padLeft = 10f, padRight = 10f, align = Align.center)
-            }.cell(grow = true)
+            }.cell(grow = true, row = true, spaceBottom = 10f)
+
+            visTable {
+                label("") {
+                    bindLabelText { "Fusions (${vm.fusionCount()} / ${vm.fusionCap()})" }
+                }.cell(expandX = true, row = true, align = Align.center, spaceBottom = 10f)
+
+                visTable {
+                    label("Passives").cell(expandX = true, row = true, align = Align.center, spaceBottom = 10f)
+
+                    visTable {
+                        bindUpdatable(vm.passives) {
+                            clear()
+                            vm.passives().forEach {
+                                label("- ${it.name}").cell(expandX = true, row = true)
+                            }
+                        }
+                    }.cell(grow = true, row = true)
+
+                    label("Attribute Modifiers").cell(expandX = true, row = true, align = Align.center, spaceBottom = 10f)
+
+                    visTable {
+                        bindUpdatable(vm.attrMods) {
+                            clear()
+                            vm.attrMods().forEach {
+                                label("- ${it.name}").cell(expandX = true, row = true)
+                            }
+                        }
+                    }.cell(grow = true, row = true)
+
+                    label("Ability Augments").cell(expandX = true, row = true, align = Align.center, spaceBottom = 10f)
+
+                    visTable {
+                        bindUpdatable(vm.abilityAugs) {
+                            clear()
+                            vm.abilityAugs().forEach {
+                                label("- ${it.name}").cell(expandX = true, row = true)
+                            }
+                        }
+                    }.cell(grow = true, row = true)
+
+                    label("Synergies").cell(expandX = true, row = true, align = Align.center, spaceBottom = 10f)
+
+                    visTable {
+                        bindUpdatable(vm.synergies) {
+                            clear()
+                            vm.synergies().forEach {
+                                label("- ${it.name}").cell(expandX = true, row = true)
+                            }
+                        }
+                    }.cell(grow = true, row = true)
+                }.cell(grow = true, row = true, pad = 5f)
+            }
         }.cell(growX = true, pad = 20f)
 
         visTable {
+            visTable {
+                vm.passive.apply {
+                    label(name).cell(expandX = true, row = true, align = Align.center)
+                    label(description) {
+                        setAlignment(Align.center)
+                        wrap = true
+                    }.cell(grow = true)
+                }
+            }.cell(grow = true, row = true, spaceBottom = 10f)
+
+            visTable {
+                label(vm.abilityName()).cell(expandX = true, row = true, align = Align.center)
+                label("") {
+                    bindLabelText { "Cooldown: ${vm.abilityCurrentCooldown().displayRound()}s (${vm.abilityBaseCooldown()}s)" }
+                }.cell(expandX = true, row = true, align = Align.center)
+                label(vm.abilityDescription()) {
+                    setAlignment(Align.center)
+                    wrap = true
+                }.cell(grow = true)
+            }.cell(grow = true, row = true, spaceBottom = 10f)
+
             label("Attributes").cell(row = true)
             visTable {
                 bindUpdatable(vm.attrs) {

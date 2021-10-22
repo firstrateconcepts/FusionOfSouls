@@ -22,15 +22,23 @@ class RuneService(
     private var runeIdCounter = 0
 
     fun addRune(hero: Entity, rune: Rune) {
-        attributeService.addModifiers(hero, rune.modifiers)
-        rune.passive?.let { passiveService.addPassive(hero, it) }
         hero.runes.add(rune)
     }
 
+    fun activateRune(hero: Entity, rune: Rune) {
+        attributeService.addModifiers(hero, rune.modifiers)
+        rune.passive?.let { passiveService.addPassive(hero, it) }
+        rune.active = true
+    }
+
     fun removeRune(hero: Entity, rune: Rune) {
+        hero.runes.remove(rune)
+    }
+
+    fun deactivateRune(hero: Entity, rune: Rune) {
         attributeService.removeModifiers(hero, rune.modifiers)
         rune.passive?.let { passiveService.removePassive(hero, it) }
-        hero.runes.remove(rune)
+        rune.active = false
     }
 
     fun generateRune(rarity: Rarity): Rune {

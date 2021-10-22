@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.math.Vector2
 import ktx.ashley.with
 import net.firstrateconcepts.fusionofsouls.model.component.id
+import net.firstrateconcepts.fusionofsouls.model.component.unit.FusionsComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.RunesComponent
 import net.firstrateconcepts.fusionofsouls.model.component.unit.XpComponent
 import net.firstrateconcepts.fusionofsouls.model.loot.Rarity
@@ -38,7 +39,7 @@ class HeroService(
             fusionCap = hero.fusionCap
         })
 
-        val entity = unitManager.buildUnit(hero.name, hero.texture, hero.ability, hero.passive, UnitType.HERO, UnitTeam.PLAYER) {
+        val entity = unitManager.buildUnit(hero.name, hero.texture, hero.ability, hero.passive, UnitType.HERO, UnitTeam.PLAYER, hero.classes) {
             with<RunesComponent>()
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
@@ -46,6 +47,7 @@ class HeroService(
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
             runeService.addRune(this@buildUnit.entity, runeService.generateRune(Rarity.COMMON))
             with<XpComponent>()
+            with<FusionsComponent>()
         }
 
         unitManager.activateUnit(entity.id, Vector2())
